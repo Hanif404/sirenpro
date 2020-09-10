@@ -1,0 +1,78 @@
+#mapid {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+.main-page .row{
+  margin-left: -15px !important;
+  margin-right: 0px !important;
+}
+.sidebar-wrapper{
+  padding: 20px 15px 0px 15px;
+}
+.div-block{
+  height: 10px;
+}
+.sidemenu-profile {
+  position: absolute;
+  right: 0;
+  padding: 10px;
+  z-index: 1001;
+}
+
+.sidemenu-profile img{
+  border: 2px solid #fff;
+}
+
+.sidemenu-legenda {
+  position: absolute;
+  right: 0;
+  padding: 10px;
+  z-index: 1000;
+  bottom: 0;
+  font-size: 10pt;
+}
+.sidemenu-legenda ul li{
+  list-style-type: none;
+}
+.legenda-line{
+  height: 10px;
+  width: 50px;
+  background-color: #436216;
+  display: inline-block;
+}
+.card-profile {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  max-width: 300px;
+  margin: auto;
+  text-align: center;
+  display: none;
+  width: 400px;
+  margin-top: 10px;
+}
+.content-view{
+  height:200px;
+  width: 100%;
+  background-color:#fff;
+  position: absolute;
+  bottom: 0px;
+  z-index:1000;
+  display:none;
+  padding:15px;
+  border-radius: 5px 5px 0px 0px;
+  overflow: auto;
+}
+
+.form-control.error{
+  border-color: #dc3545;
+  padding-right: calc(1.5em + .75rem);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right calc(.375em + .1875rem) center;
+  background-size: calc(.75em + .375rem) calc(.75em + .375rem);
+}
+.error{
+  color:#dc3545;
+}

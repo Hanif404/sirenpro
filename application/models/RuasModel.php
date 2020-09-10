@@ -1,0 +1,183 @@
+<?php
+class RuasModel extends CI_Model {
+	var $periode = "periode";
+	var $ruas = "ruas_jalan";
+	var $ruas_detail = "ruas_jalan_detail";
+	var $ruas_koordinat = "ruas_jalan_koordinat";
+	var $kategori = "kategori";
+
+	public function __construct()
+    {
+		parent::__construct();
+	}
+
+	private function setData(){
+    $this->id = $this->input->post('id');
+		$this->kode = $this->input->post('kode');
+		$this->nama = $this->input->post('nama');
+		$this->urutan = $this->input->post('urutan');
+		$this->posisi = $this->input->post('posisi');
+		$this->awal_km = $this->input->post('awal_km');
+		$this->akhir_km = $this->input->post('akhir_km');
+  }
+
+  public function drawKoordinat($id){
+		$this->db->select('rd.*, kg.name, kg.warna');
+		$this->db->from($this->ruas_detail.' rd');
+		$this->db->join($this->kategori.' kg', 'rd.kategori_id=kg.id');
+		$this->db->where('no_ruas', $id);
+		$list = $this->db->get();
+		if($list->num_rows() > 0){
+			$arraylist = $list->result_array();
+      $data = array();
+
+      foreach ($arraylist as $ls) {
+        $koordinat = $this->listKoordinat($ls['hash_data']);
+
+        if(count($koordinat) > 0){
+          $feature = new stdClass();
+          $properties = new stdClass();
+          $geometry = new stdClass();
+
+          $properties->color = $ls['warna'];
+          $geometry->type = "LineString";
+          $geometry->coordinates = $koordinat;
+
+          $feature->type = "Feature";
+          $feature->properties = $properties;
+          $feature->geometry = $geometry;
+
+          $data[]=$feature;
+        }
+      }
+
+			return json_encode($data);
+		} else {
+			return json_encode([]);
+		}
+	}
+
+  private function listKoordinat($value){
+    $this->db->select('*');
+    $this->db->from($this->ruas_koordinat);
+    $this->db->where('hash_data', $value);
+    $list = $this->db->get();
+    if($list->num_rows() > 0){
+			$arraylist = $list->result_array();
+      $data = array();
+
+      foreach ($arraylist as $ls) {
+        $row = array();
+
+        $row[0] = $ls['longtitude'];
+        $row[1] = $ls['latitude'];
+
+        $data[]=$row;
+      }
+
+      return $data;
+    }else{
+      return array();
+    }
+  }
+
+  public function saving(){
+    $this->setData();
+    if($this->id != ""){
+      $this->db->set('kode', $this->kode);
+      $this->db->set('nama', $this->nama);
+      $this->db->set('urutan', $this->urutan);
+      $this->db->set('posisi', $this->posisi);
+      $this->db->set('awal_km', $this->awal_km);
+      $this->db->set('akhir_km', $this->akhir_km);
+      $this->db->where('id', $this->id);
+      $this->db->update($this->ruas);
+    }else{
+      $this->db->set('kode', $this->kode);
+      $this->db->set('nama', $this->nama);
+      $this->db->set('urutan', $this->urutan);
+      $this->db->set('posisi', $this->posisi);
+      $this->db->set('awal_km', $this->awal_km);
+      $this->db->set('akhir_km', $this->akhir_km);
+      $this->db->insert($this->ruas);
+    }
+  }
+
+  public function getOneRecord($id){
+    $this->db->select('*');
+    $this->db->from($this->ruas);
+    $this->db->where('no_ruas', $id);
+    $list = $this->db->get();
+    if($list->num_rows() > 0){
+      $arraylist = $list->result();
+      return json_encode($arraylist);
+    } else {
+      return json_encode('');
+    }
+  }
+
+	public function getOneRecordDetail($id){
+    $this->db->select('*, kg.name');
+    $this->db->from($this->ruas_detail.' rd');
+    $this->db->join($this->kategori.' kg', 'rd.kategori_id=kg.id');
+    $this->db->order_by('awal_km', 'asc');
+    $this->db->where('no_ruas', $id);
+    $list = $this->db->get();
+    if($list->num_rows() > 0){
+      $arraylist = $list->result_array();
+			$data = array();
+
+			foreach ($arraylist as $ls) {
+				$row = array();
+    			$row[] = $ls['panjang'];
+    			$row[] = $ls['lebar'];
+    			$row[] = $ls['luas'];
+    			$row[] = $ls['awal_km'];
+					$row[] = $ls['akhir_km'];
+					$row[] = $ls['posisi'];
+					$row[] = $ls['name'];
+					$row[] = $ls['petugas_survey'];
+					$row[] = $ls['tgl_survey'];
+
+ 					$arrKoordinat = $this->listKoordinat($ls['hash_data']);
+					$lastArr = end($arrKoordinat);
+					$row[] = json_encode(array('latitude'=>$lastArr[1], 'longtitude'=>$lastArr[0]));
+
+				$data[] = $row;
+			}
+
+			return json_encode(['data'=>$data]);
+    } else {
+      return json_encode(['data'=>'']);
+    }
+  }
+
+  public function deleteRecord($id){
+    $this->db->where('id', $id);
+    $this->db->delete($this->ruas);
+  }
+
+	public function dataCombo($filter, $id){
+		$this->db->select('no_ruas as id, CONCAT(no_ruas, " :: ", nama_ruas) as nama');
+		$this->db->from($this->ruas);
+		$this->db->where('periode_id', $id);
+		if(strlen($filter) > 0){
+			$this->db->like('CONCAT(no_ruas, " :: ", nama_ruas)', $filter);
+		}
+		$this->db->order_by('no_ruas', 'asc');
+		$list = $this->db->get();
+		if($list->num_rows() > 0){
+			$arraylist = $list->result_array();
+			return json_encode($arraylist);
+		} else {
+			return json_encode('');
+		}
+	}
+
+	public function dataKategori(){
+    $this->db->select('*');
+    $this->db->from($this->kategori);
+		$this->db->order_by('id', 'asc');
+    return json_encode($this->db->get()->result());
+	}
+}
