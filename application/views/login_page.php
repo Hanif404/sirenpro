@@ -69,7 +69,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                      <div id="login-box-msg" class="text-center w-100" style="color:red;display:none;"></div>
                                      <div class="dropdown-divider my-4"></div>
                                      <div class="text-center w-100">
-                                         <small>Built by <a href="https://www.instagram.com/realjblaq/">@realjblaq</a> </small>
+                                         <small>version 1.0.0</small>
                                      </div>
                                  </div>
                              </div>
