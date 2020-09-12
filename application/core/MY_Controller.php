@@ -2,9 +2,12 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class MY_Controller extends CI_Controller {
-	   public function __construct(){
-        parent::__construct();
 
+		public $basicAuth="";
+
+	  public function __construct(){
+        parent::__construct();
+				$this->basicAuth = $this->config->item('basic_username').":".$this->config->item('basic_password');
     }
 
     public function httpStatus($code){
@@ -63,6 +66,21 @@ class MY_Controller extends CI_Controller {
         header($this->httpStatus($code));
         echo json_encode($result);
         exit();
+    }
+
+		public function basicAuth(){
+        $header=$this->input->request_headers();
+        if(empty($header['Authorization'])){
+            $this->wrapper(false,null,"Forbidden",403);
+        }
+        $auth=explode(' ',$header['Authorization']);
+        if($auth[0]!='Basic'){
+            $this->wrapper(false,null,"unathorized",401);
+        }
+
+        if(trim($auth[1])!=trim(base64_encode($this->basicAuth))){
+            $this->wrapper(false,null,"unathorized",401);
+        }
     }
 
     public function verifySession(){
