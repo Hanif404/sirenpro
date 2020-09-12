@@ -23,6 +23,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.11/jquery.csv.min.js" integrity="sha512-Y8iWYJDo6HiTo5xtml1g4QqHtl/PO1w+dmUpQfQSOTqKNsMhExfyPN2ncNAe9JuJUSKzwK/b6oaNPop4MXzkwg==" crossorigin="anonymous"></script>
 	<script src="<?= base_url('assets/js/jquery.md5.js')?>"></script>
+	<script src="<?= base_url('assets/js/jquery.loading.block.js')?>"></script>
 </head>
 <body>
 	<?php $this->load->view('main_right_content'); ?>
@@ -117,6 +118,30 @@
 			$('.profile_photo').attr("src", url);
 		}
 	});
+
+	function blockShow(){
+		$.loadingBlockShow({
+		 imgPath: '<?php echo base_url() ?>assets/image/icon.gif',
+		 imgStyle: {
+			 width: 'auto',
+			 textAlign: 'center',
+			 marginTop: '20%'
+		 },
+		 style: {
+				position: 'fixed',
+				width: '100%',
+				height: '100%',
+				background: 'rgba(0, 0, 0, .8)',
+				left: 0,
+				top: 0,
+				zIndex: 10000
+			}
+		});
+	}
+
+	function blockHide(){
+		$.loadingBlockHide();
+	}
 	</script>
 </body>
 </html>

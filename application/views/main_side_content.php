@@ -7,7 +7,7 @@
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#hargaSatuanModal">Harga Satuan Pekerjaan</a>
       <?php if($_SESSION['is_admin'] == "1"):?>
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#kategoriModal">Warna Garis</a>
-      <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#koordinatModal">Import Ruas Koordinat</a>
+      <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#koordinatModal">Import Koordinat Jalan</a>
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#penggunaModal">Pengguna</a>
       <?php endif;?>
     </div>
@@ -46,10 +46,12 @@
 
     $('#btnSubmitSatuan').on('click', function(e){
       e.stopImmediatePropagation();
+      blockShow();
 
       var $form = $('.form-satuan-pekerjaan');
       if ($form.valid()){
         $.post($form.attr('action'), $form.serialize(), function(data){
+          blockHide();
           if(data.code === 200){
             Swal.fire({
               icon: 'success',
@@ -137,6 +139,7 @@
 
     $('#btnSubmitPengguna').on('click', function(e){
       e.stopImmediatePropagation();
+      blockShow();
 
       var $form = $('.form-pengguna');
       if ($form.valid()){
@@ -161,6 +164,7 @@
             contentType: false,
             data: data_input,
             success: function (data) {
+                blockHide();
                 if(data.code === 200){
                   Swal.fire({
                     icon: 'success',
@@ -261,10 +265,12 @@
 
     $('#btnSubmitKategori').on('click', function(e){
       e.stopImmediatePropagation();
+      blockShow();
 
       var $form = $('.form-kategori');
       if ($form.valid()){
         $.post($form.attr('action'), $form.serialize(), function(data){
+          blockHide();
           if(data.code === 200){
             Swal.fire({
               icon: 'success',
@@ -339,6 +345,7 @@
   function loadKoordinatForm(){
     $('#btnSubmitKoordinat').on('click', function(e){
       e.stopImmediatePropagation();
+      blockShow();
 
       var filecsv = $("input[name=file_csv]")[0].files[0];
       var ext = $("input[name=file_csv]").val().split(".").pop().toLowerCase();
@@ -361,6 +368,7 @@
             var postdata = JSON.stringify(arr);
             var $form = $('.form-koordinat');
             $.post($form.attr('action'), {body:postdata}, function(data){
+              blockHide();
               if(data.code === 200){
                 Swal.fire({
                   icon: 'success',
@@ -423,7 +431,7 @@
   			"columnDefs": [{
   				"targets": -1,
   				"data": null,
-  				"defaultContent": '<button id="btnDataView" class="btn btn-xs btn-primary btn-margin-bottom"><i class="fa fa-edit" ></i> LIHAT</button>'
+  				"defaultContent": '<button id="btnDataView" class="btn btn-xs btn-primary btn-margin-bottom">LIHAT</button>'
   			}]
   		});
     }else{
@@ -433,7 +441,7 @@
   			"columnDefs": [{
   				"targets": -1,
   				"data": null,
-  				"defaultContent": '<button id="btnDataView" class="btn btn-xs btn-primary btn-margin-bottom"><i class="fa fa-edit" ></i> LIHAT</button>'
+  				"defaultContent": '<button id="btnDataView" class="btn btn-sm btn-primary btn-margin-bottom"><i class="fa fa-edit" ></i> LIHAT</button>'
   			}]
   		});
     }

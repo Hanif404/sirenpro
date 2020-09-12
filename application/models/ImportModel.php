@@ -62,7 +62,7 @@ class ImportModel extends CI_Model {
 			//TODO detail ruas jalan
 			foreach ($value['detail'] as $key => $detRuas) {
 				$rjd = $this->dataRuasDetail($value['no'], $detRuas['awal_km'], $detRuas['posisi']);
-				$hash = md5($value['no']."".$detRuas['awal_km']."".$detRuas['posisi']);
+				$hash = md5($value['no'].number_format($detRuas['awal_km'], 3, '.', '').strtoupper($detRuas['posisi']));
 				$idKategori = 0;
 
 				foreach ($kg as $key => $kgData) {

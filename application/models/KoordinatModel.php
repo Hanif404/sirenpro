@@ -7,22 +7,22 @@ class KoordinatModel extends CI_Model {
 		parent::__construct();
 	}
 
-	private function setData(){
-    $this->data = json_decode($this->input->post('body'), true);
-  }
-
   public function saving(){
-    $this->setData();
+		$data = json_decode($this->input->post('body'), true);
+		
+		if(count($data)>0){
+			foreach ($data as $key => $value) {
+				$this->deleteData($value["hash"], $value["lat_data"]);
 
-		foreach ($this->data as $key => $value) {
-			$this->deleteData($value["hash"], $value["lat_data"]);
-
-			$this->db->set('hash_data', $value["hash"]);
-      $this->db->set('latitude', $value["lat_data"]);
-      $this->db->set('longtitude', $value["long_data"]);
-    	$this->db->insert($this->koordinat);
+				$this->db->set('hash_data', $value["hash"]);
+	      $this->db->set('latitude', $value["lat_data"]);
+	      $this->db->set('longtitude', $value["long_data"]);
+	    	$this->db->insert($this->koordinat);
+			}
+			return true;
+		}else{
+			return false;
 		}
-		return true;
   }
 
 	public function deleteData($id, $lat){
