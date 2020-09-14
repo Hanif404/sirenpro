@@ -70,7 +70,7 @@
 		accessToken: 'pk.eyJ1IjoiaGFuaWZrNDA0IiwiYSI6ImNrZWY1enl6cTE4ZnUyc3J2eGZobXo1cXUifQ.88_Q6x8ktPdlE-FtCUZT-g'
 	}).addTo(mymap);
 
-	$.getJSON('<?= base_url("assets/wilayah_kerja_uptd4.geojson");?>', function(data){
+	$.getJSON('<?= base_url("assets/map/wilayah_kerja_uptd4.geojson");?>', function(data){
 		L.geoJson(data).addTo(mymap);
 	});
 

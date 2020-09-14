@@ -83,7 +83,11 @@ class PenggunaModel extends CI_Model {
     return $this->db->get()->result();
   }
 
-  public function deleteRecord($id){
+  public function deleteData($id){
+		$return = json_decode(json_encode($this->getDetailData($id)), true);
+		if($return[0]['photo'] != ""){
+			@unlink('assets/image/upload/'.$return[0]['photo']);
+		}
     $this->db->where('id', $id);
     return $this->db->delete($this->pengguna);
   }
