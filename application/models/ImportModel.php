@@ -38,6 +38,7 @@ class ImportModel extends CI_Model {
 	      $this->db->set('long_awal', $value['long_awal']);
 	      $this->db->set('lat_akhir', $value['lat_akhir']);
 	      $this->db->set('long_akhir', $value['long_akhir']);
+	      $this->db->set('unit_kerja', $value['unit_kerja']);
 	      $this->db->where('no_ruas', $value['no']);
 	      $this->db->update($this->ruas);
 			} else {
@@ -56,6 +57,7 @@ class ImportModel extends CI_Model {
 	      $this->db->set('long_awal', $value['long_awal']);
 	      $this->db->set('lat_akhir', $value['lat_akhir']);
 	      $this->db->set('long_akhir', $value['long_akhir']);
+				$this->db->set('unit_kerja', $value['unit_kerja']);
 	      $this->db->insert($this->ruas);
 			}
 
