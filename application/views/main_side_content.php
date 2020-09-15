@@ -358,14 +358,21 @@
         reader.onload = function(e) {
             var arr = [];
             var lines = e.target.result.split('\r\n');
+            var dataSplit = lines[1].split(";");
+
+            var main = {};
+            main["no_ruas"] = dataSplit[0];
             for (i = 0; i < lines.length-1; ++i)
             {
               //no get header
               if(i>0){
+
                 arr.push(createJSON(lines[i]));
               }
             }
-            var postdata = JSON.stringify(arr);
+            main["data"] = arr;
+
+            var postdata = JSON.stringify(main);
             var $form = $('.form-koordinat');
             $.post($form.attr('action'), {body:postdata}, function(data){
               blockHide();

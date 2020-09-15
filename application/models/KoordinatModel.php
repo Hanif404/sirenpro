@@ -9,11 +9,11 @@ class KoordinatModel extends CI_Model {
 
   public function saving(){
 		$data = json_decode($this->input->post('body'), true);
-		
-		if(count($data)>0){
-			foreach ($data as $key => $value) {
-				$this->deleteData($value["hash"], $value["lat_data"]);
 
+		if(count($data)>0){
+			$this->deleteData($data['no_ruas']);
+			foreach ($data['data'] as $key => $value) {
+				$this->db->set('no_ruas', $data['no_ruas']);
 				$this->db->set('hash_data', $value["hash"]);
 	      $this->db->set('latitude', $value["lat_data"]);
 	      $this->db->set('longtitude', $value["long_data"]);
@@ -25,9 +25,8 @@ class KoordinatModel extends CI_Model {
 		}
   }
 
-	public function deleteData($id, $lat){
-    $this->db->where('hash_data', $id);
-    $this->db->where('latitude', $lat);
+	public function deleteData($id){
+    $this->db->where('no_ruas', $id);
     return $this->db->delete($this->koordinat);
   }
 }

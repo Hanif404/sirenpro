@@ -88,7 +88,7 @@
 				style: function(feature) {
 					return {
 						color: feature.properties.color,
-						weight: 10
+						weight: 3
 					};
 				}
 			}).addTo(mymap);
