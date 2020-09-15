@@ -14,25 +14,28 @@ class Map extends MY_Controller {
   }
 
   public function setItem(){
-    $file_element_name = 'file_map';
+    $notifications = json_decode(file_get_contents("php://input"), true);
+    if(!is_array($notifications)) {
+		    $notifications = json_decode( $notifications );
+		}
 
-		//upload file
-    $config['upload_path'] =  'assets/map/';
-    $config['allowed_types'] = '*';
-    $config['max_filename'] = '255';
-    $config['encrypt_name'] = TRUE;
-    $config['max_size'] = '5000'; //1 MB
+		if(count($notifications) > 0 ) {
+      $this->load->helper('path');
+      $file_path = 'assets/map/';
 
-		$this->load->library('upload', $config);
-		if (!$this->upload->do_upload($file_element_name))
-    {
-			$pesan = preg_replace('/<[^>]*>/', '', $this->upload->display_errors());
-      $this->wrapper(false, $pesan ,'error upload',409);
-    } else {
-			$data = $this->upload->data();
-      $id = $this->MapModel->saving($data['file_name']);
+      $image = base64_decode($notifications['file_map']);
+      // decoding base64 string value
+      $image_name = md5(uniqid(rand(), true));// image name generating with random number with 32 characters
+      $filename = $image_name . '.' . 'geojson';
+      //rename file name with random number
+      $path = set_realpath($file_path);
+      //image uploading folder path
+      file_put_contents($path . $filename, $image);
+
+      // insert file
+      $id = $this->MapModel->saving($filename);
       $this->wrapper(true,array('id' => $id),'success set',200);
-    }
+		}
   }
 
   public function deleteItem($id){
