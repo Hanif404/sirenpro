@@ -440,7 +440,6 @@
     var daerah = $(".daerah option:selected").val();
     var ksp = $(".ksp option:selected").val();
     $('.rekap1').empty();
-    console.log(periode, daerah, ksp);
     if(periode !== "" && (daerah == "" || daerah == undefined) && (ksp == "" || ksp == undefined)){
 
     }else{
