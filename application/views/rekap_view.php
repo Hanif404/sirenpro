@@ -1,11 +1,11 @@
 <style>
-  .tableRekap {
+  .table-style {
     border-collapse: collapse;
     width: 100%;
     font-size: 8pt;
   }
 
-  .tableRekap, th, td {
+  .table-style, th, td {
     border: 1px solid black;
   }
 
@@ -18,7 +18,8 @@
     padding-left: 5px;
   }
 </style>
-<table class="tableRekap"></table>
+<table class="table-style rekap1"></table>
+<table class="table-style rekap2"></table>
 <div class="container-fluid" style="text-align: right;font-size: 8pt;margin-top: 10px;">
   <div class="row d-flex justify-content-end">
     <div class="col-sm-2">Mantap</div>

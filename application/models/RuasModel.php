@@ -206,10 +206,10 @@ class RuasModel extends CI_Model {
 		$periode = $this->input->post('periode');
 		$daerah = $this->input->post('daerah');
 		$ksp = $this->input->post('ksp');
-		
+
 		$this->db->select('rj.nama_ruas, rj.panjang, vsk.*');
     $this->db->from($this->ruas.' rj');
-    $this->db->join($this->view_sum.' vsk', 'rj.no_ruas = vsk.no_ruas');
+    $this->db->join($this->view_sum.' vsk', 'rj.no_ruas = vsk.no_ruas and rj.periode_id = vsk.periode_id');
 		if($daerah != ""){
 			$this->db->where('lower(nama_kota)', $daerah);
 		}
@@ -217,7 +217,7 @@ class RuasModel extends CI_Model {
 			$this->db->where('unit_kerja', $ksp);
 		}
 		if($periode != ""){
-			$this->db->where('periode_id', $periode);
+			$this->db->where('rj.periode_id', $periode);
 		}
 		return json_encode($this->db->get()->result_array());
 	}

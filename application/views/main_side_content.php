@@ -439,13 +439,18 @@
     var periode = $(".periode option:selected").val();
     var daerah = $(".daerah option:selected").val();
     var ksp = $(".ksp option:selected").val();
-    $('.tableRekap').empty();
-    viewRekap1(periode, daerah, ksp);
+    $('.rekap1').empty();
+    console.log(periode, daerah, ksp);
+    if(periode !== "" && (daerah == "" || daerah == undefined) && (ksp == "" || ksp == undefined)){
+
+    }else{
+      viewRekap1(periode, daerah, ksp);
+    }
   });
 
   function viewRekap1(periode, daerah, ksp){
     var header = '<tr class="table-header"> <th rowspan="3">No</th> <th rowspan="3">Nama ruas jalan</th> <th rowspan="3">Kuantitas</th> <th rowspan="3">total</th> <th colspan="7">kondisi jalan</th> </tr> <tr class="table-header"> <th colspan="3">mantap</th> <th colspan="4">tidak mantap</th> </tr> <tr class="table-header"> <th>sangat baik</th> <th>baik</th> <th>sedang</th> <th>jelek</th> <th>parah</th> <th>sangat parah</th> <th>hancur</th> </tr>';
-    $('.tableRekap').append(header);
+    $('.rekap1').append(header);
     $.post("<?php echo base_url('ruas/getDataRekap')?>", {periode:periode, daerah:daerah, ksp:ksp}, function(data){
       var urut = 1;
       var total_all = 0, total_luas = 0;
@@ -486,7 +491,7 @@
         content += "<td>"+view_m2_6.toFixed(3)+"<br/>"+view_km_6.toFixed(3)+"</td>";
         content += "<td>"+view_m2_7.toFixed(3)+"<br/>"+view_km_7.toFixed(3)+"</td>";
         content += "</tr>";
-        $('.tableRekap').append(content);
+        $('.rekap1').append(content);
 
         // Total
         total_luas = parseFloat(total_luas) + view_luas;
@@ -531,7 +536,7 @@
       content += "<td>"+total_6.toFixed(3)+"</td>";
       content += "<td>"+total_7.toFixed(3)+"</td>";
       content += "</tr>";
-      $('.tableRekap').append(content);
+      $('.rekap1').append(content);
 
       // add footer presentasi
       var content = "<tr class=\"table-body\">";
@@ -547,7 +552,7 @@
       content += "<td>"+persentase_6.toFixed(3)+"%</td>";
       content += "<td>"+persentase_7.toFixed(3)+"%</td>";
       content += "</tr>";
-      $('.tableRekap').append(content);
+      $('.rekap1').append(content);
 
       var km_mantap = total_km_1+total_km_2+total_km_3;
       var km_tmantap = total_km_4+total_km_5+total_km_6+total_km_7;

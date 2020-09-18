@@ -64,7 +64,7 @@ class ImportModel extends CI_Model {
 
 			//TODO detail ruas jalan
 			foreach ($value['detail'] as $key => $detRuas) {
-				$rjd = $this->dataRuasDetail($value['no'], number_format($detRuas['awal_km'], 3, '.', ''), strtoupper($detRuas['posisi']));
+				$rjd = $this->dataRuasDetail($value['no'], $idPeriode, number_format($detRuas['awal_km'], 3, '.', ''), strtoupper($detRuas['posisi']));
 				// echo $this->db->last_query();exit;
 
 				$hash = md5($value['no'].number_format($detRuas['awal_km'], 3, '.', '').strtoupper($detRuas['posisi']));
@@ -91,6 +91,7 @@ class ImportModel extends CI_Model {
 		      $this->db->set('nm_ikp',  strtoupper($detRuas['nm_ikp']));
 		      $this->db->set('hash_data', $hash);
 
+					$this->db->where('periode_id', $idPeriode);
 					$this->db->where('awal_km = '.$detRuas['awal_km'], null, false);
 					$this->db->where('UPPER(posisi) = "'.strtoupper($detRuas['posisi']).'"', null, false);
 		      $this->db->where('no_ruas', $value['no']);
@@ -106,6 +107,7 @@ class ImportModel extends CI_Model {
 					$this->db->set('lebar', $detRuas['lebar']);
 					$this->db->set('luas', $detRuas['luas']);
 					$this->db->set('kategori_id', $idKategori);
+					$this->db->set('periode_id', $idPeriode);
 					$this->db->set('ikp', $detRuas['ikp']);
 					$this->db->set('petugas_survey', $detRuas['nm_survey']);
 					$this->db->set('tgl_survey', $detRuas['tgl_survey']);
@@ -118,10 +120,11 @@ class ImportModel extends CI_Model {
 	}
 
 	// Begin Ruas Jalan ======================
-	private function dataRuasDetail($no, $km, $pos){
+	private function dataRuasDetail($no, $periode, $km, $pos){
 		$this->db->select('*');
 		$this->db->from($this->ruas_detail);
 		$this->db->where('no_ruas', $no);
+		$this->db->where('periode_id', $periode);
 		$this->db->where('awal_km = '.$km, null, false);
 		$this->db->where('UPPER(posisi) = "'.$pos.'"', null, false);
 		return $this->db->get()->result_array();
