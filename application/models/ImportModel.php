@@ -33,12 +33,13 @@ class ImportModel extends CI_Model {
 	      $this->db->set('awal_km', $value['awal_km']);
 	      $this->db->set('akhir_km', $value['akhir_km']);
 	      $this->db->set('jns_permukaan', $value['jns_permukaan']);
-	      $this->db->set('periode_id', $idPeriode);
+	      // $this->db->set('periode_id', $idPeriode);
 	      $this->db->set('lat_awal', $value['lat_awal']);
 	      $this->db->set('long_awal', $value['long_awal']);
 	      $this->db->set('lat_akhir', $value['lat_akhir']);
 	      $this->db->set('long_akhir', $value['long_akhir']);
 	      $this->db->set('unit_kerja', $value['unit_kerja']);
+	      $this->db->where('periode_id', $idPeriode);
 	      $this->db->where('no_ruas', $value['no']);
 	      $this->db->update($this->ruas);
 			} else {
@@ -63,7 +64,9 @@ class ImportModel extends CI_Model {
 
 			//TODO detail ruas jalan
 			foreach ($value['detail'] as $key => $detRuas) {
-				$rjd = $this->dataRuasDetail($value['no'], $detRuas['awal_km'], $detRuas['posisi']);
+				$rjd = $this->dataRuasDetail($value['no'], number_format($detRuas['awal_km'], 3, '.', ''), strtoupper($detRuas['posisi']));
+				// echo $this->db->last_query();exit;
+
 				$hash = md5($value['no'].number_format($detRuas['awal_km'], 3, '.', '').strtoupper($detRuas['posisi']));
 				$idKategori = 0;
 
@@ -75,9 +78,9 @@ class ImportModel extends CI_Model {
 				if(count($rjd) > 0){
 					// TODO update detail ruas jalan
 					$this->db->set('no_seksi', $detRuas['no_seksi']);
-		      $this->db->set('awal_km', $detRuas['awal_km']);
+		      // $this->db->set('awal_km', $detRuas['awal_km']);
 		      $this->db->set('akhir_km', $detRuas['akhir_km']);
-		      $this->db->set('posisi', $detRuas['posisi']);
+		      // $this->db->set('posisi', strtoupper($detRuas['posisi']));
 		      $this->db->set('panjang', $detRuas['panjang']);
 		      $this->db->set('lebar', $detRuas['lebar']);
 		      $this->db->set('luas', $detRuas['luas']);
@@ -87,6 +90,9 @@ class ImportModel extends CI_Model {
 		      $this->db->set('tgl_survey', $detRuas['tgl_survey']);
 		      $this->db->set('nm_ikp',  strtoupper($detRuas['nm_ikp']));
 		      $this->db->set('hash_data', $hash);
+
+					$this->db->where('awal_km = '.$detRuas['awal_km'], null, false);
+					$this->db->where('UPPER(posisi) = "'.strtoupper($detRuas['posisi']).'"', null, false);
 		      $this->db->where('no_ruas', $value['no']);
 		      $this->db->update($this->ruas_detail);
 				} else {
@@ -95,7 +101,7 @@ class ImportModel extends CI_Model {
 					$this->db->set('no_seksi', $detRuas['no_seksi']);
 					$this->db->set('awal_km', $detRuas['awal_km']);
 					$this->db->set('akhir_km', $detRuas['akhir_km']);
-					$this->db->set('posisi', $detRuas['posisi']);
+					$this->db->set('posisi', strtoupper($detRuas['posisi']));
 					$this->db->set('panjang', $detRuas['panjang']);
 					$this->db->set('lebar', $detRuas['lebar']);
 					$this->db->set('luas', $detRuas['luas']);
@@ -116,8 +122,8 @@ class ImportModel extends CI_Model {
 		$this->db->select('*');
 		$this->db->from($this->ruas_detail);
 		$this->db->where('no_ruas', $no);
-		$this->db->where('awal_km', $km);
-		$this->db->where('UPPER(posisi) = "'.strtoupper($pos).'"', null, false);
+		$this->db->where('awal_km = '.$km, null, false);
+		$this->db->where('UPPER(posisi) = "'.$pos.'"', null, false);
 		return $this->db->get()->result_array();
 	}
 

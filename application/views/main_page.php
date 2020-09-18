@@ -60,6 +60,7 @@
 
 	});
 
+	var ruasLayer;
 	var mymap = L.map('mapid').setView([-7.232236136, 107.90085746], 10);
 	L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
 		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -84,7 +85,7 @@
 		});
 
 		$.get('<?= base_url("ruas/getKoordinat/");?>' + id, function(data) {
-			L.geoJSON(JSON.parse(data), {
+			ruasLayer = L.geoJSON(JSON.parse(data), {
 				style: function(feature) {
 					return {
 						color: feature.properties.color,
@@ -93,6 +94,11 @@
 				}
 			}).addTo(mymap);
 		});
+	}
+
+	function clearLine(){
+		mymap.setZoom(10);
+		mymap.removeLayer(ruasLayer);
 	}
 
 	$.get('<?= base_url("ruas/getLegenda");?>', function(data) {

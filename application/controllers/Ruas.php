@@ -48,4 +48,24 @@ class Ruas extends MY_Controller {
     $filter = $this->input->get('q');
     echo $this->RuasModel->dataCombo($filter, $id);
   }
+
+  public function getComboKsp($region = ""){
+    $this->verifySession();
+    $filter = $this->input->get('q');
+    echo $this->RuasModel->dataComboKsp($filter, $region);
+  }
+
+  public function getDataRekap(){
+    $this->verifySession();
+    echo $this->RuasModel->dataRekap();
+  }
+
+  public function rekap(){
+      $data = array("data" => json_decode($this->RuasModel->dataRekap(), true));
+
+      $this->load->library('pdf');
+      $this->pdf->setPaper('A4', 'landscape');
+      $this->pdf->filename = "laporan-petanikode.pdf";
+      $this->pdf->load_view('rekap_pdf', $data);
+  }
 }

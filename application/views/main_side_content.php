@@ -12,20 +12,29 @@
       <?php endif;?>
     </div>
   </div>
-  <div class="div-block"></div>
   <div class="sidebar-wrapper">
     <h5>Kemantapan Jalan</h5>
     <select class="periode select-2" name="periode" style="width:100%"></select>
     <div class="div-block"></div>
+    <select class="daerah select-2" name="daerah" style="width:100%">
+      <option value=""></option>
+      <option value="garut">Garut</option>
+      <option value="sumedang">Sumedang</option>
+    </select>
+    <div class="div-block"></div>
+    <select class="ksp select-2" name="ksp" style="width:100%"></select>
+    <div class="div-block"></div>
     <select class="ruas select-2" name="ruas" style="width:100%"></select>
     <div class="div-block"></div>
-    <button id="btnView" class="btn btn-block btn-primary">Tampilkan Data</button>
+    <button id="btnView" class="btn btn-block btn-primary disabled">Tampilkan Data</button>
+    <button id="btnRekap" class="btn btn-block btn-success disabled">Rekap Data</button>
   </div>
   <?php $this->load->view('modal_content');?>
 </div>
 <script>
   var tableKemantapan, tableSatuan, tablePengguna, tableKategori;
   var isShowTable = false;
+  var selectDaerah = "";
   $(document).ready(function() {
     loadDropdown();
     loadSatuanPekerjaanForm();
@@ -425,6 +434,133 @@
     }
   });
 
+  $('#btnRekap').click(function(){
+    $('#rekapModal').modal('show');
+    var periode = $(".periode option:selected").val();
+    var daerah = $(".daerah option:selected").val();
+    var ksp = $(".ksp option:selected").val();
+    $('.tableRekap').empty();
+    viewRekap1(periode, daerah, ksp);
+  });
+
+  function viewRekap1(periode, daerah, ksp){
+    var header = '<tr class="table-header"> <th rowspan="3">No</th> <th rowspan="3">Nama ruas jalan</th> <th rowspan="3">Kuantitas</th> <th rowspan="3">total</th> <th colspan="7">kondisi jalan</th> </tr> <tr class="table-header"> <th colspan="3">mantap</th> <th colspan="4">tidak mantap</th> </tr> <tr class="table-header"> <th>sangat baik</th> <th>baik</th> <th>sedang</th> <th>jelek</th> <th>parah</th> <th>sangat parah</th> <th>hancur</th> </tr>';
+    $('.tableRekap').append(header);
+    $.post("<?php echo base_url('ruas/getDataRekap')?>", {periode:periode, daerah:daerah, ksp:ksp}, function(data){
+      var urut = 1;
+      var total_all = 0, total_luas = 0;
+      var total_1 = 0, persentase_1 = 0, total_km_1 = 0;
+      var total_2 = 0, persentase_2 = 0, total_km_2 = 0;
+      var total_3 = 0, persentase_3 = 0, total_km_3 = 0;
+      var total_4 = 0, persentase_4 = 0, total_km_4 = 0;
+      var total_5 = 0, persentase_5 = 0, total_km_5 = 0;
+      var total_6 = 0, persentase_6 = 0, total_km_6 = 0;
+      var total_7 = 0, persentase_7 = 0, total_km_7 = 0;
+      for (var i = 0; i < data.length; i++) {
+        var view_luas = parseFloat(data[i].total_m2_all);
+        var view_m2_1 = parseFloat(data[i].total_m2_1);
+        var view_m2_2 = parseFloat(data[i].total_m2_2);
+        var view_m2_3 = parseFloat(data[i].total_m2_3);
+        var view_m2_4 = parseFloat(data[i].total_m2_4);
+        var view_m2_5 = parseFloat(data[i].total_m2_5);
+        var view_m2_6 = parseFloat(data[i].total_m2_6);
+        var view_m2_7 = parseFloat(data[i].total_m2_7);
+        var view_km_1 = parseFloat(data[i].total_km_1);
+        var view_km_2 = parseFloat(data[i].total_km_2);
+        var view_km_3 = parseFloat(data[i].total_km_3);
+        var view_km_4 = parseFloat(data[i].total_km_4);
+        var view_km_5 = parseFloat(data[i].total_km_5);
+        var view_km_6 = parseFloat(data[i].total_km_6);
+        var view_km_7 = parseFloat(data[i].total_km_7);
+
+        var content = "<tr class=\"table-body\">";
+        content += "<td>"+ urut +"</td>";
+        content += "<td>"+data[i].nama_ruas+"</td>";
+        content += "<td>M2<br/>KM</td>";
+        content += "<td>"+view_luas.toFixed(3)+"<br/>"+parseFloat(data[i].panjang).toFixed(3)+"</td>";
+        content += "<td>"+view_m2_1.toFixed(3)+"<br/>"+view_km_1.toFixed(3)+"</td>";
+        content += "<td>"+view_m2_2.toFixed(3)+"<br/>"+view_km_2.toFixed(3)+"</td>";
+        content += "<td>"+view_m2_3.toFixed(3)+"<br/>"+view_km_3.toFixed(3)+"</td>";
+        content += "<td>"+view_m2_4.toFixed(3)+"<br/>"+view_km_4.toFixed(3)+"</td>";
+        content += "<td>"+view_m2_5.toFixed(3)+"<br/>"+view_km_5.toFixed(3)+"</td>";
+        content += "<td>"+view_m2_6.toFixed(3)+"<br/>"+view_km_6.toFixed(3)+"</td>";
+        content += "<td>"+view_m2_7.toFixed(3)+"<br/>"+view_km_7.toFixed(3)+"</td>";
+        content += "</tr>";
+        $('.tableRekap').append(content);
+
+        // Total
+        total_luas = parseFloat(total_luas) + view_luas;
+        total_all = parseFloat(total_all) + parseFloat(data[i].panjang);
+        total_1 = parseFloat(total_1) + view_m2_1;
+        total_2 = parseFloat(total_2) + view_m2_2;
+        total_3 = parseFloat(total_3) + view_m2_3;
+        total_4 = parseFloat(total_4) + view_m2_4;
+        total_5 = parseFloat(total_5) + view_m2_5;
+        total_6 = parseFloat(total_6) + view_m2_6;
+        total_7 = parseFloat(total_7) + view_m2_7;
+        total_km_1 = parseFloat(total_km_1) + view_km_1;
+        total_km_2 = parseFloat(total_km_2) + view_km_2;
+        total_km_3 = parseFloat(total_km_3) + view_km_3;
+        total_km_4 = parseFloat(total_km_4) + view_km_4;
+        total_km_5 = parseFloat(total_km_5) + view_km_5;
+        total_km_6 = parseFloat(total_km_6) + view_km_6;
+        total_km_7 = parseFloat(total_km_7) + view_km_7;
+
+        urut++;
+      }
+      // Persentase
+      persentase_1 = (total_1/total_luas) * 100;
+      persentase_2 = (total_2/total_luas) * 100;
+      persentase_3 = (total_3/total_luas) * 100;
+      persentase_4 = (total_4/total_luas) * 100;
+      persentase_5 = (total_5/total_luas) * 100;
+      persentase_6 = (total_6/total_luas) * 100;
+      persentase_7 = (total_7/total_luas) * 100;
+
+      // add footer total
+      var content = "<tr class=\"table-body\">";
+      content += "<td></td>";
+      content += "<td>Jumlah</td>";
+      content += "<td></td>";
+      content += "<td>"+total_all.toFixed(3)+"</td>";
+      content += "<td>"+total_1.toFixed(3)+"</td>";
+      content += "<td>"+total_2.toFixed(3)+"</td>";
+      content += "<td>"+total_3.toFixed(3)+"</td>";
+      content += "<td>"+total_4.toFixed(3)+"</td>";
+      content += "<td>"+total_5.toFixed(3)+"</td>";
+      content += "<td>"+total_6.toFixed(3)+"</td>";
+      content += "<td>"+total_7.toFixed(3)+"</td>";
+      content += "</tr>";
+      $('.tableRekap').append(content);
+
+      // add footer presentasi
+      var content = "<tr class=\"table-body\">";
+      content += "<td></td>";
+      content += "<td>Persentasi</td>";
+      content += "<td></td>";
+      content += "<td></td>";
+      content += "<td>"+persentase_1.toFixed(3)+"%</td>";
+      content += "<td>"+persentase_2.toFixed(3)+"%</td>";
+      content += "<td>"+persentase_3.toFixed(3)+"%</td>";
+      content += "<td>"+persentase_4.toFixed(3)+"%</td>";
+      content += "<td>"+persentase_5.toFixed(3)+"%</td>";
+      content += "<td>"+persentase_6.toFixed(3)+"%</td>";
+      content += "<td>"+persentase_7.toFixed(3)+"%</td>";
+      content += "</tr>";
+      $('.tableRekap').append(content);
+
+      var km_mantap = total_km_1+total_km_2+total_km_3;
+      var km_tmantap = total_km_4+total_km_5+total_km_6+total_km_7;
+      $('#km_mantap').text(km_mantap.toFixed(2)+" Km");
+      $('#km_tmantap').text(km_tmantap.toFixed(2)+" Km");
+
+      var persentase_mantap = persentase_1+persentase_2+persentase_3;
+      var persentase_tmantap = persentase_4+persentase_5+persentase_6+persentase_7;
+      $('#persentase_mantap').text(persentase_mantap.toFixed(2)+" %");
+      $('#persentase_tmantap').text(persentase_tmantap.toFixed(2)+" %");
+    }, 'json');
+  }
+
   function resetView(){
     $('#contentData').hide();
     $('.sidemenu-legenda').css("bottom", "0px");
@@ -471,6 +607,42 @@
       minimumResultsForSearch: Infinity
     });
 
+    $('.daerah').select2({
+      placeholder: "Pilih Kabupaten/Kota",
+      allowClear: true,
+      minimumResultsForSearch: Infinity
+    }).on('select2:select', function(e) {
+      var id = e.params.data.id;
+      loadKsp(id);
+    });
+    loadKsp("");
+
+    function loadKsp(id){
+      $('.ksp').select2({
+        placeholder: "Pilih KSP",
+        allowClear: true,
+        ajax: {
+            url: "<?= base_url('ruas/getComboKsp/') ?>"+id,
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+              return {
+                q: params.term, // search term
+                page: params.page
+              };
+            },
+            processResults: function (data, page) {
+              return {
+                results: $.map(data, function(obj) {
+                    return { id: obj.id, text: obj.nama };
+                })
+              };
+            },
+            cache: false
+          }
+      });
+    }
+
     $('.ruas').select2({
       placeholder: "Pilih Ruas",
       allowClear: true,
@@ -500,6 +672,7 @@
         }
     }).on('select2:select', function(e) {
       var id = e.params.data.id;
+      $('#btnRekap').removeClass('disabled');
 
       $('.ruas').select2({
         placeholder: "Pilih Ruas",
@@ -525,7 +698,15 @@
           }
       }).on('select2:select', function(e) {
         var id = e.params.data.id;
+
+        $('#btnView').removeClass('disabled');
         showLine(id);
+      }).on('select2:clear', function(e) {
+        clearLine();
+        $('#btnView').addClass('disabled');
+        $('#contentData').hide();
+        $('.sidemenu-legenda').css("bottom", "0px");
+        $('#mapid').css("bottom", "0px");
       });
     });
   }

@@ -5,6 +5,7 @@ class RuasModel extends CI_Model {
 	var $ruas_detail = "ruas_jalan_detail";
 	var $ruas_koordinat = "ruas_jalan_koordinat";
 	var $kategori = "kategori";
+	var $view_sum = "view_sum_kategori";
 
 	public function __construct()
     {
@@ -174,10 +175,50 @@ class RuasModel extends CI_Model {
 		}
 	}
 
+	public function dataComboKsp($filter, $region){
+		$this->db->select('unit_kerja as id, unit_kerja as nama');
+		$this->db->from($this->ruas);
+		$this->db->group_by("unit_kerja");
+		if(strlen($filter) > 0){
+			$this->db->like('unit_kerja', $filter);
+		}
+		if(strlen($region) > 0){
+			$this->db->where('lower(nama_kota)', $region);
+		}
+		$this->db->order_by('unit_kerja', 'asc');
+		$list = $this->db->get();
+		if($list->num_rows() > 0){
+			$arraylist = $list->result_array();
+			return json_encode($arraylist);
+		} else {
+			return json_encode('');
+		}
+	}
+
 	public function dataKategori(){
     $this->db->select('*');
     $this->db->from($this->kategori);
 		$this->db->order_by('id', 'asc');
     return json_encode($this->db->get()->result());
+	}
+
+	public function dataRekap(){
+		$periode = $this->input->post('periode');
+		$daerah = $this->input->post('daerah');
+		$ksp = $this->input->post('ksp');
+		
+		$this->db->select('rj.nama_ruas, rj.panjang, vsk.*');
+    $this->db->from($this->ruas.' rj');
+    $this->db->join($this->view_sum.' vsk', 'rj.no_ruas = vsk.no_ruas');
+		if($daerah != ""){
+			$this->db->where('lower(nama_kota)', $daerah);
+		}
+		if($ksp != ""){
+			$this->db->where('unit_kerja', $ksp);
+		}
+		if($periode != ""){
+			$this->db->where('periode_id', $periode);
+		}
+		return json_encode($this->db->get()->result_array());
 	}
 }
