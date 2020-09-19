@@ -207,7 +207,7 @@ class RuasModel extends CI_Model {
 		$daerah = $this->input->post('daerah');
 		$ksp = $this->input->post('ksp');
 
-		$this->db->select('rj.nama_ruas, rj.panjang, vsk.*');
+		$this->db->select('rj.nama_ruas, rj.nama_kota, rj.panjang, vsk.*');
     $this->db->from($this->ruas.' rj');
     $this->db->join($this->view_sum.' vsk', 'rj.no_ruas = vsk.no_ruas and rj.periode_id = vsk.periode_id');
 		if($daerah != ""){
@@ -219,6 +219,18 @@ class RuasModel extends CI_Model {
 		if($periode != ""){
 			$this->db->where('rj.periode_id', $periode);
 		}
+		return json_encode($this->db->get()->result_array());
+	}
+	public function dataRekapTotal(){
+		$periode = $this->input->post('periode');
+
+		$this->db->select('rj.nama_kota, sum(vsk.total_km_all) as total_all, sum(vsk.total_km_1) as total_1,sum(vsk.total_km_2) as total_2,sum(vsk.total_km_3) as total_3,sum(vsk.total_km_4) as total_4,sum(vsk.total_km_5) as total_5,sum(vsk.total_km_6) as total_6,sum(vsk.total_km_7) as total_7');
+    $this->db->from($this->ruas.' rj');
+    $this->db->join($this->view_sum.' vsk', 'rj.no_ruas = vsk.no_ruas and rj.periode_id = vsk.periode_id');
+		if($periode != ""){
+			$this->db->where('rj.periode_id', $periode);
+		}
+		$this->db->group_by('rj.nama_kota');
 		return json_encode($this->db->get()->result_array());
 	}
 }

@@ -41,12 +41,18 @@ class Pdf extends Dompdf{
      * @param    array    $data The view data
      * @return    void
      */
-    public function load_view($view, $data = array()){
-        $html = $this->ci()->load->view($view, $data, TRUE);
-        $this->load_html($html);
+    public function load_view($view){
+        // $html = $this->ci()->load->view($view, $data, TRUE);
+        $this->load_html($view);
         // Render the PDF
         $this->render();
-            // Output the generated PDF to Browser
-               $this->stream($this->filename, array("Attachment" => false));
+
+        $output = $this->output();
+        $file = "assets/file/rekap.pdf";
+        
+        @unlink($file);
+        file_put_contents($file, $output);
+        // Output the generated PDF to Browser
+        // $this->stream($this->filename, array("Attachment" => false));
     }
 }

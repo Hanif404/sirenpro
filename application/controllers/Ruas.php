@@ -59,13 +59,17 @@ class Ruas extends MY_Controller {
     $this->verifySession();
     echo $this->RuasModel->dataRekap();
   }
+  public function getDataRekapTotal(){
+    $this->verifySession();
+    echo $this->RuasModel->dataRekapTotal();
+  }
 
-  public function rekap(){
-      $data = array("data" => json_decode($this->RuasModel->dataRekap(), true));
+  public function download(){
+      $view = $this->input->post('html');
 
       $this->load->library('pdf');
       $this->pdf->setPaper('A4', 'landscape');
-      $this->pdf->filename = "laporan-petanikode.pdf";
-      $this->pdf->load_view('rekap_pdf', $data);
+      $this->pdf->filename = "rekapitulasi.pdf";
+      $this->pdf->load_view($view);
   }
 }

@@ -434,14 +434,28 @@
     }
   });
 
+  $('#btnPdf').click(function(){
+    var htmlTag = $("#rekapBody").html();
+    $.post('<?= base_url("ruas/download");?>',{html:htmlTag}, function(data) {
+      var win = window.open('<?php echo base_url("assets/file/rekap.pdf")?>', '_blank');
+      if (win) {
+          win.focus();
+      } else {
+          //Browser has blocked it
+          alert('Please allow popups for this website');
+      }
+    }, 'html');
+  });
+
   $('#btnRekap').click(function(){
     $('#rekapModal').modal('show');
     var periode = $(".periode option:selected").val();
     var daerah = $(".daerah option:selected").val();
     var ksp = $(".ksp option:selected").val();
     $('.rekap1').empty();
+    $('.rekap2').empty();
     if(periode !== "" && (daerah == "" || daerah == undefined) && (ksp == "" || ksp == undefined)){
-
+      viewRekap2(periode);
     }else{
       viewRekap1(periode, daerah, ksp);
     }
@@ -563,6 +577,116 @@
       $('#persentase_mantap').text(persentase_mantap.toFixed(2)+" %");
       $('#persentase_tmantap').text(persentase_tmantap.toFixed(2)+" %");
     }, 'json');
+  }
+
+  function viewRekap2(periode){
+    var header = '<tr class="table-header"> <th rowspan="3">no</th> <th rowspan="3">kabupaten / kota</th> <th rowspan="3">status</th> <th rowspan="3">panjang ruas jalan <br/>( KM )</th> <th colspan="14">kondisi jalan</th> </tr> <tr class="table-header"> <th colspan="6">Mantap</th> <th colspan="8">Tidak Mantap</th> </tr> <tr class="table-header"> <th>Sangat Baik <br/>( KM )</th> <th>%</th> <th>Baik <br/>( KM )</th> <th>%</th> <th>Sedang <br/>( KM )</th> <th>%</th> <th>jelek <br/>( KM )</th> <th>%</th> <th>parah <br/>( KM )</th> <th>%</th> <th>Sangat parah <br/>( KM )</th> <th>%</th> <th>hancur <br/>( KM )</th> <th>%</th> </tr>';
+    $('.rekap2').append(header);
+
+    $.post("<?php echo base_url('ruas/getDataRekapTotal')?>", {periode:periode}, function(data){
+      var area = ["GARUT", "SUMEDANG"];
+      var urut = 1;
+      var total_all = 0;
+      var total_all_1 = 0, persentase_all_1 = 0;
+      var total_all_2 = 0, persentase_all_2 = 0;
+      var total_all_3 = 0, persentase_all_3 = 0;
+      var total_all_4 = 0, persentase_all_4 = 0;
+      var total_all_5 = 0, persentase_all_5 = 0;
+      var total_all_6 = 0, persentase_all_6 = 0;
+      var total_all_7 = 0, persentase_all_7 = 0;
+      for (var i = 0; i < area.length; i++) {
+        for (var j = 0; j < data.length; j++) {
+          if(area[i] === data[j].nama_kota){
+            var total_km = parseFloat(data[j].total_all);
+            var total_km_1 = parseFloat(data[j].total_1);
+            var total_km_2 = parseFloat(data[j].total_2);
+            var total_km_3 = parseFloat(data[j].total_3);
+            var total_km_4 = parseFloat(data[j].total_4);
+            var total_km_5 = parseFloat(data[j].total_5);
+            var total_km_6 = parseFloat(data[j].total_6);
+            var total_km_7 = parseFloat(data[j].total_7);
+
+            var persentase_1 = (total_km_1/total_km) * 100;
+            var persentase_2 = (total_km_2/total_km) * 100;
+            var persentase_3 = (total_km_3/total_km) * 100;
+            var persentase_4 = (total_km_4/total_km) * 100;
+            var persentase_5 = (total_km_5/total_km) * 100;
+            var persentase_6 = (total_km_6/total_km) * 100;
+            var persentase_7 = (total_km_7/total_km) * 100;
+
+            var content = "<tr class=\"table-body\">";
+            content += "<td>"+ urut +"</td>";
+            content += "<td> KABUPATEN "+area[i]+"</td>";
+            content += "<td>P</td>";
+            content += "<td>"+total_km.toFixed(3)+"</td>";
+            content += "<td>"+total_km_1.toFixed(3)+"</td>";
+            content += "<td>"+persentase_1.toFixed(2)+"</td>";
+            content += "<td>"+total_km_2.toFixed(3)+"</td>";
+            content += "<td>"+persentase_2.toFixed(2)+"</td>";
+            content += "<td>"+total_km_3.toFixed(3)+"</td>";
+            content += "<td>"+persentase_3.toFixed(2)+"</td>";
+            content += "<td>"+total_km_4.toFixed(3)+"</td>";
+            content += "<td>"+persentase_4.toFixed(2)+"</td>";
+            content += "<td>"+total_km_5.toFixed(3)+"</td>";
+            content += "<td>"+persentase_5.toFixed(2)+"</td>";
+            content += "<td>"+total_km_6.toFixed(3)+"</td>";
+            content += "<td>"+persentase_6.toFixed(2)+"</td>";
+            content += "<td>"+total_km_7.toFixed(3)+"</td>";
+            content += "<td>"+persentase_7.toFixed(2)+"</td>";
+            content += "</tr>";
+            $('.rekap2').append(content);
+
+            total_all = parseFloat(total_all) + total_km;
+            total_all_1 = parseFloat(total_all_1) + total_km_1;
+            total_all_2 = parseFloat(total_all_2) + total_km_2;
+            total_all_3 = parseFloat(total_all_3) + total_km_3;
+            total_all_4 = parseFloat(total_all_4) + total_km_4;
+            total_all_5 = parseFloat(total_all_5) + total_km_5;
+            total_all_6 = parseFloat(total_all_6) + total_km_6;
+            total_all_7 = parseFloat(total_all_7) + total_km_7;
+            persentase_all_1 = parseFloat(persentase_all_1) + persentase_1;
+            persentase_all_2 = parseFloat(persentase_all_2) + persentase_2;
+            persentase_all_3 = parseFloat(persentase_all_3) + persentase_3;
+            persentase_all_4 = parseFloat(persentase_all_4) + persentase_4;
+            persentase_all_5 = parseFloat(persentase_all_5) + persentase_5;
+            persentase_all_6 = parseFloat(persentase_all_6) + persentase_6;
+            persentase_all_7 = parseFloat(persentase_all_7) + persentase_7;
+          }
+        }
+        urut++;
+      }
+
+      var content = "<tr class=\"table-footer\">";
+      content += "<td colspan=\"2\" style=\"text-align: right;padding-right: 10px;\">Jumlah total</td>";
+      content += "<td>P</td>";
+      content += "<td>"+total_all.toFixed(3)+"</td>";
+      content += "<td>"+total_all_1.toFixed(3)+"</td>";
+      content += "<td>"+persentase_all_1.toFixed(2)+"</td>";
+      content += "<td>"+total_all_2.toFixed(3)+"</td>";
+      content += "<td>"+persentase_all_2.toFixed(2)+"</td>";
+      content += "<td>"+total_all_3.toFixed(3)+"</td>";
+      content += "<td>"+persentase_all_3.toFixed(2)+"</td>";
+      content += "<td>"+total_all_4.toFixed(3)+"</td>";
+      content += "<td>"+persentase_all_4.toFixed(2)+"</td>";
+      content += "<td>"+total_all_5.toFixed(3)+"</td>";
+      content += "<td>"+persentase_all_5.toFixed(2)+"</td>";
+      content += "<td>"+total_all_6.toFixed(3)+"</td>";
+      content += "<td>"+persentase_all_6.toFixed(2)+"</td>";
+      content += "<td>"+total_all_7.toFixed(3)+"</td>";
+      content += "<td>"+persentase_all_7.toFixed(2)+"</td>";
+      content += "</tr>";
+      $('.rekap2').append(content);
+
+      var km_mantap = total_all_1+total_all_2+total_all_3;
+      var km_tmantap = total_all_4+total_all_5+total_all_6+total_all_7;
+      $('#km_mantap').text(km_mantap.toFixed(2)+" Km");
+      $('#km_tmantap').text(km_tmantap.toFixed(2)+" Km");
+
+      var persentase_mantap = persentase_all_1+persentase_all_2+persentase_all_3;
+      var persentase_tmantap = persentase_all_4+persentase_all_5+persentase_all_6+persentase_all_7;
+      $('#persentase_mantap').text(persentase_mantap.toFixed(2)+" %");
+      $('#persentase_tmantap').text(persentase_tmantap.toFixed(2)+" %");
+    },'json');
   }
 
   function resetView(){
