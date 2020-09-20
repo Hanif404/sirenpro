@@ -76,3 +76,11 @@
 .error{
   color:#dc3545;
 }
+
+@keyframes fade {
+  from { opacity: 0; }
+}
+
+.blinking {
+  animation: fade 1s infinite alternate;
+}

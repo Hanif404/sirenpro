@@ -33,7 +33,16 @@
     float: left;
     width: 5%;
   }
+
+  .header{
+    text-align: center;
+    margin-bottom: 20px;
+  }
 </style>
+<div class="header">
+  <h5>REKAPITULASI KONDISI JALAN <span id="txt_total" style="display: none;">PROVINSI</span></h5> 
+  <h6>PADA UPTD PENGELOLAAN JALAN DAN JEMBATAN WILAYAH PELAYANAN IV</h6>
+</div>
 <table class="table-style rekap1"></table>
 <table class="table-style rekap2"></table>
 <table width="100%">

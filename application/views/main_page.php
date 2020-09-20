@@ -75,6 +75,18 @@
 		L.geoJson(data).addTo(mymap);
 	});
 
+	$.get('<?= base_url("ruas/getDataRawan");?>', function(data) {
+		for (var i = 0; i < data.length; i++) {
+			var latlng = new L.LatLng(data[i].latitude, data[i].longtitude)
+			L.marker(latlng, {
+		  icon: L.icon({
+		    iconUrl: '<?= base_url("assets/image/hazard.png")?>',
+		    className: 'blinking'
+		  })
+		}).addTo(mymap);
+		}
+	}, 'json');
+
 	function showLine(id) {
 		resetView();
 

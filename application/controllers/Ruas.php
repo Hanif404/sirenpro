@@ -59,6 +59,7 @@ class Ruas extends MY_Controller {
     $this->verifySession();
     echo $this->RuasModel->dataRekap();
   }
+
   public function getDataRekapTotal(){
     $this->verifySession();
     echo $this->RuasModel->dataRekapTotal();
@@ -71,5 +72,10 @@ class Ruas extends MY_Controller {
       $this->pdf->setPaper('A4', 'landscape');
       $this->pdf->filename = "rekapitulasi.pdf";
       $this->pdf->load_view($view);
+  }
+
+  public function getDataRawan(){
+    $this->verifySession();
+    echo $this->RuasModel->dataRawan();
   }
 }

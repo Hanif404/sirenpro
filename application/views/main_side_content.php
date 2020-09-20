@@ -455,8 +455,10 @@
     $('.rekap1').empty();
     $('.rekap2').empty();
     if(periode !== "" && (daerah == "" || daerah == undefined) && (ksp == "" || ksp == undefined)){
+      $('#txt_total').show();
       viewRekap2(periode);
     }else{
+      $('#txt_total').hide();
       viewRekap1(periode, daerah, ksp);
     }
   });

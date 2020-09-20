@@ -6,6 +6,7 @@ class RuasModel extends CI_Model {
 	var $ruas_koordinat = "ruas_jalan_koordinat";
 	var $kategori = "kategori";
 	var $view_sum = "view_sum_kategori";
+	var $rawan = "ruas_jalan_rawan";
 
 	public function __construct()
     {
@@ -221,6 +222,7 @@ class RuasModel extends CI_Model {
 		}
 		return json_encode($this->db->get()->result_array());
 	}
+
 	public function dataRekapTotal(){
 		$periode = $this->input->post('periode');
 
@@ -231,6 +233,12 @@ class RuasModel extends CI_Model {
 			$this->db->where('rj.periode_id', $periode);
 		}
 		$this->db->group_by('rj.nama_kota');
+		return json_encode($this->db->get()->result_array());
+	}
+
+	public function dataRawan(){
+		$this->db->select('*');
+    $this->db->from($this->rawan);
 		return json_encode($this->db->get()->result_array());
 	}
 }
