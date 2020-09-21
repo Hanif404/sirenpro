@@ -714,7 +714,7 @@
   			"columnDefs": [{
   				"targets": -1,
   				"data": null,
-  				"defaultContent": '<button id="btnDataView" class="btn btn-sm btn-primary btn-margin-bottom"><i class="fa fa-edit" ></i> LIHAT</button>'
+  				"defaultContent": '<button id="btnDataView" class="btn btn-sm btn-primary btn-margin-bottom">LIHAT</button>'
   			}]
   		});
     }
