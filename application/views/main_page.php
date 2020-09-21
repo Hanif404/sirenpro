@@ -79,7 +79,7 @@
 		L.geoJson(data, {
 			style: function(feature) {
 				return {
-					color: "#5591f6",
+					color: "#000",
 					weight: 1
 				};
 			}
