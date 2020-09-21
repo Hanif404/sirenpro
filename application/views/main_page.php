@@ -75,15 +75,26 @@
 		L.geoJson(data).addTo(mymap);
 	});
 
+	$.getJSON('<?= base_url("assets/map/jalan_propinsi_all.geojson");?>', function(data){
+		L.geoJson(data, {
+			style: function(feature) {
+				return {
+					color: "#5591f6",
+					weight: 1
+				};
+			}
+		}).addTo(mymap);
+	});
+
 	$.get('<?= base_url("ruas/getDataRawan");?>', function(data) {
 		for (var i = 0; i < data.length; i++) {
 			var latlng = new L.LatLng(data[i].latitude, data[i].longtitude)
-			L.marker(latlng, {
-		  icon: L.icon({
-		    iconUrl: '<?= base_url("assets/image/hazard.png")?>',
-		    className: 'blinking'
-		  })
-		}).addTo(mymap);
+			var marker = L.marker(latlng, {
+			  icon: L.icon({
+			    iconUrl: '<?= base_url("assets/image/hazard.png")?>',
+			    className: 'blinking'
+			  })
+			}).bindPopup("KM "+data[i].lokasi).addTo(mymap);
 		}
 	}, 'json');
 
@@ -122,6 +133,7 @@
 		$.each(obj, function(key, value) {
 			content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + value['name'] + '</li>';
 		});
+		content += '<li><img src="<?php echo base_url('assets/image/hazard.png')?>"> Lokasi Rawan Longsor</li>';
 		content += '</ul>';
 		$('.sidemenu-legenda').html(content);
 	});

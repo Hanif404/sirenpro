@@ -83,4 +83,5 @@
 
 .blinking {
   animation: fade 1s infinite alternate;
+  left: -14px;
 }
