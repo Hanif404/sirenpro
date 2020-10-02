@@ -1,0 +1,4 @@
+{
+  "kategori":[{"id":1,"name":"Pemeliharaan Rutin"},{"id":2,"name":"Pemeliharaan Berkala"},{"id":3,"name":"Rehabilitasi"},{"id":4,"name":"Rekonstruksi"}],
+  "satuan":[{"id":1,"name":"KM"},{"id":2,"name":"M2"}]
+}

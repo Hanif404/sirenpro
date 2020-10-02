@@ -86,14 +86,38 @@
 		}).addTo(mymap);
 	});
 
-	$.get('<?= base_url("ruas/getDataRawan");?>', function(data) {
+	$.get('<?= base_url("rawan/getLongsor");?>', function(data) {
 		for (var i = 0; i < data.length; i++) {
 			var latlng = new L.LatLng(data[i].latitude, data[i].longtitude)
 			var marker = L.marker(latlng, {
 			  icon: L.icon({
-			    iconUrl: '<?= base_url("assets/image/hazard.png")?>',
+			    iconUrl: '<?= base_url("assets/image/rawan_longsor.png")?>',
 			    className: 'blinking'
 			  })
+			}).bindPopup("KM "+data[i].lokasi).addTo(mymap);
+		}
+	}, 'json');
+
+	$.get('<?= base_url("rawan/getBanjir");?>', function(data) {
+		for (var i = 0; i < data.length; i++) {
+			var latlng = new L.LatLng(data[i].latitude, data[i].longtitude)
+			var marker = L.marker(latlng, {
+				icon: L.icon({
+					iconUrl: '<?= base_url("assets/image/rawan_banjir.png")?>',
+					className: 'blinking'
+				})
+			}).bindPopup("KM "+data[i].lokasi).addTo(mymap);
+		}
+	}, 'json');
+
+	$.get('<?= base_url("rawan/getKecelakaan");?>', function(data) {
+		for (var i = 0; i < data.length; i++) {
+			var latlng = new L.LatLng(data[i].latitude, data[i].longtitude)
+			var marker = L.marker(latlng, {
+				icon: L.icon({
+					iconUrl: '<?= base_url("assets/image/rawan_kecelakaan.png")?>',
+					className: 'blinking'
+				})
 			}).bindPopup("KM "+data[i].lokasi).addTo(mymap);
 		}
 	}, 'json');
@@ -133,7 +157,9 @@
 		$.each(obj, function(key, value) {
 			content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + value['name'] + '</li>';
 		});
-		content += '<li><img src="<?php echo base_url('assets/image/hazard.png')?>"> Lokasi Rawan Longsor</li>';
+		content += '<li><img src="<?php echo base_url('assets/image/rawan_longsor.png')?>"> Lokasi Rawan Longsor</li>';
+		content += '<li style="padding-top:5px"><img src="<?php echo base_url('assets/image/rawan_banjir.png')?>"> Lokasi Rawan Banjir</li>';
+		content += '<li style="padding-top:5px"><img src="<?php echo base_url('assets/image/rawan_kecelakaan.png')?>"> Lokasi Rawan Kecelakaan</li>';
 		content += '</ul>';
 		$('.sidemenu-legenda').html(content);
 	});

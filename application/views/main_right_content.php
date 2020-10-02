@@ -19,3 +19,4 @@
   </div>
 </div>
 <div class="sidemenu-legenda"></div>
+<?php $this->load->view('modal_content');?>

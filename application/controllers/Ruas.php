@@ -73,9 +73,4 @@ class Ruas extends MY_Controller {
       $this->pdf->filename = "rekapitulasi.pdf";
       $this->pdf->load_view($view);
   }
-
-  public function getDataRawan(){
-    $this->verifySession();
-    echo $this->RuasModel->dataRawan();
-  }
 }

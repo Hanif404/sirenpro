@@ -1,10 +1,12 @@
-<div>
+<div style="top: 0;bottom:0;position:fixed;overflow-y:scroll;overflow-x:hidden;width: 24%;">
   <?php $this->load->view('head_side_content');?>
-  <div class="div-block"></div>
+  <div class="div-block" style="margin-top:40px"></div>
   <div class="sidebar-wrapper">
     <h5>Input Data</h5>
     <div class="list-group list-group-flush">
-      <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#hargaSatuanModal">Harga Satuan Pekerjaan</a>
+      <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#pekerjaanModal">Harga Satuan Pekerjaan</a>
+      <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#jenisKerjaModal">Jenis Pekerjaan</a>
+      <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#rawanModal">Rawan Bencana</a>
       <?php if($_SESSION['is_admin'] == "1"):?>
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#kategoriModal">Warna Garis</a>
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#koordinatModal">Import Koordinat Jalan</a>
@@ -12,7 +14,7 @@
       <?php endif;?>
     </div>
   </div>
-  <div class="sidebar-wrapper">
+  <div class="sidebar-wrapper" style="padding-bottom: 10px;">
     <h5>Kemantapan Jalan</h5>
     <select class="periode select-2" name="periode" style="width:100%"></select>
     <div class="div-block"></div>
@@ -29,23 +31,24 @@
     <button id="btnView" class="btn btn-block btn-primary disabled">Tampilkan Data</button>
     <button id="btnRekap" class="btn btn-block btn-success disabled">Rekap Data</button>
   </div>
-  <?php $this->load->view('modal_content');?>
 </div>
 <script>
-  var tableKemantapan, tableSatuan, tablePengguna, tableKategori;
+  var tableKemantapan, tablePekerjaan, tablePengguna, tableKategori, tableRawan, tableJenisKerja;
   var isShowTable = false;
   var selectDaerah = "";
   $(document).ready(function() {
     loadDropdown();
-    loadSatuanPekerjaanForm();
+    loadPekerjaanForm();
+    loadJenisKerjaForm();
     loadPenggunaForm();
     loadKategoriForm();
     loadKoordinatForm();
+    loadRawanForm();
   });
 
-  function loadSatuanPekerjaanForm(){
-    tableSatuan = $('#listHargaSatuan').DataTable({
-      "ajax": '<?= base_url("satuan");?>',
+  function loadJenisKerjaForm(){
+    tableJenisKerja = $('#listJenisKerja').DataTable({
+      "ajax": '<?= base_url("jenisKerja");?>',
       "columnDefs": [{
         "targets": -1,
         "data": null,
@@ -53,11 +56,21 @@
       }]
     });
 
-    $('#btnSubmitSatuan').on('click', function(e){
+    $('.btn-close-jenisKerja').on('click', function(){
+      resetForm();
+      $('#jenisKerjaModal').modal('hide');
+    });
+
+    function resetForm(){
+      $('.form-jenisKerja')[0].reset();
+      $('.kategori').val(null).trigger('change');
+    }
+
+    $('#btnSubmitJenisKerja').on('click', function(e){
       e.stopImmediatePropagation();
       blockShow();
 
-      var $form = $('.form-satuan-pekerjaan');
+      var $form = $('.form-jenisKerja');
       if ($form.valid()){
         $.post($form.attr('action'), $form.serialize(), function(data){
           blockHide();
@@ -67,8 +80,8 @@
               title: 'Submit Data',
               text: 'Data berhasil tersimpan'
             })
-            $('.form-satuan-pekerjaan')[0].reset();
-            tableSatuan.ajax.reload();
+            resetForm();
+            tableJenisKerja.ajax.reload();
           }else{
             Swal.fire({
               icon: 'error',
@@ -81,7 +94,104 @@
       return false;
     });
 
-    $('.form-satuan-pekerjaan').validate({
+    $('.form-jenisKerja').validate({
+  		ignore: 'input[type=hidden]',
+  		rules: {
+  			kategori_id : {
+  				required: true
+  			},
+  			name : {
+  				required: true
+  			}
+  		}
+  	});
+
+    $('#listJenisKerja tbody').on( 'click', '#btnEdit', function () {
+  		var data = tableJenisKerja.row( $(this).parents('tr') ).data();
+
+      //get data
+      $.get('<?= base_url("jenisKerja/getDetailItem/");?>' + data[2], function(dataJson) {
+        if(dataJson.code === 200){
+          $('input[name=id]').val(dataJson.data[0].id);
+          $('input[name=name]').val(dataJson.data[0].name);
+
+          var newOption = new Option(dataJson.data[0].kategori_text, dataJson.data[0].kategori_id, false, false);
+          $('.kategori').append(newOption).trigger('change');
+        }
+      }, 'json');
+  	});
+
+    $('#listJenisKerja tbody').on( 'click', '#btnDelete', function () {
+  		var data = tableJenisKerja.row( $(this).parents('tr') ).data();
+      $.confirm({
+          title: 'Confirm!',
+          content: 'Yakin akan menghapus data ini?',
+          buttons: {
+              Ya: function () {
+                $.get('<?= base_url("jenisKerja/deleteItem/");?>' + data[2], function(dataJson) {
+                  if(dataJson.code === 200){
+                    Swal.fire({
+                      icon: 'success',
+                      title: 'Submit Data',
+                      text: 'Data berhasil tersimpan'
+                    })
+                    resetForm();
+                    tableJenisKerja.ajax.reload();
+                  }
+                }, 'json');
+              },
+              Tidak: function () {
+
+              }
+          }
+      });
+  	});
+  }
+
+  function loadPekerjaanForm(){
+    tablePekerjaan = $('#listPekerjaan').DataTable({
+      "ajax": '<?= base_url("pekerjaan");?>',
+      "columnDefs": [{
+        "targets": -1,
+        "data": null,
+        "defaultContent": '<button id="btnEdit" class="btn btn-sm btn-primary btn-margin-bottom"><i class="fa fa-edit" ></i> Edit</button> <button id="btnDelete" class="btn btn-sm btn-danger btn-margin-bottom"><i class="far fa-trash-alt"></i> Delete</button>'
+      }]
+    });
+
+    $('.btn-close-pekerjaan').on('click', function(){
+      $('.form-pekerjaan')[0].reset();
+      $('#pekerjaanModal').modal('hide');
+    });
+
+    $('#btnSubmitPekerjaan').on('click', function(e){
+      e.stopImmediatePropagation();
+      blockShow();
+
+      var $form = $('.form-pekerjaan');
+      if ($form.valid()){
+        $.post($form.attr('action'), $form.serialize(), function(data){
+          blockHide();
+          if(data.code === 200){
+            Swal.fire({
+              icon: 'success',
+              title: 'Submit Data',
+              text: 'Data berhasil tersimpan'
+            })
+            $('.form-pekerjaan')[0].reset();
+            tablePekerjaan.ajax.reload();
+          }else{
+            Swal.fire({
+              icon: 'error',
+              title: 'Submit Data',
+              text: 'Gagal menyimpan data'
+            })
+          }
+        }, 'json');
+      }
+      return false;
+    });
+
+    $('.form-pekerjaan').validate({
   		ignore: 'input[type=hidden]',
   		rules: {
   			jenis_pekerjaan : {
@@ -96,8 +206,8 @@
   		}
   	});
 
-    $('#listHargaSatuan tbody').on( 'click', '#btnEdit', function () {
-  		var data = tableSatuan.row( $(this).parents('tr') ).data();
+    $('#listPekerjaan tbody').on( 'click', '#btnEdit', function () {
+  		var data = tablePekerjaan.row( $(this).parents('tr') ).data();
 
       //get data
       $.get('<?= base_url("satuan/getDetailItem/");?>' + data[3], function(dataJson) {
@@ -110,8 +220,8 @@
       }, 'json');
   	});
 
-    $('#listHargaSatuan tbody').on( 'click', '#btnDelete', function () {
-  		var data = tableSatuan.row( $(this).parents('tr') ).data();
+    $('#listPekerjaan tbody').on( 'click', '#btnDelete', function () {
+  		var data = tablePekerjaan.row( $(this).parents('tr') ).data();
       $.confirm({
           title: 'Confirm!',
           content: 'Yakin akan menghapus data ini?',
@@ -124,7 +234,8 @@
                       title: 'Submit Data',
                       text: 'Data berhasil tersimpan'
                     })
-                    tableSatuan.ajax.reload();
+                    $('.form-pekerjaan')[0].reset();
+                    tablePekerjaan.ajax.reload();
                   }
                 }, 'json');
               },
@@ -145,6 +256,17 @@
         "defaultContent": '<button id="btnEdit" class="btn btn-sm btn-primary btn-margin-bottom"><i class="fa fa-edit" ></i> Edit</button> <button id="btnDelete" class="btn btn-sm btn-danger btn-margin-bottom"><i class="far fa-trash-alt"></i> Delete</button>'
       }]
     });
+
+    $('.btn-close-pengguna').on('click', function(){
+      resetForm();
+      $('#penggunaModal').modal('hide');
+    });
+
+    function resetForm(){
+      $('.form-pengguna').validate().settings.ignore = "input[type=hidden]";
+      $('.form-pengguna')[0].reset();
+      $('.is-active').val("1").trigger('change');
+    }
 
     $('#btnSubmitPengguna').on('click', function(e){
       e.stopImmediatePropagation();
@@ -180,10 +302,7 @@
                     title: 'Submit Data',
                     text: 'Data berhasil tersimpan'
                   })
-                  $('.form-pengguna').validate().settings.ignore = "input[type=hidden]";
-                  $('.form-pengguna')[0].reset();
-                  $('.is-active').val("1"); // Select the option with a value of '1'
-                  $('.is-active').trigger('change'); // Notify any JS components that the value changed
+                  resetForm();
                   tablePengguna.ajax.reload();
                 }else{
                   Swal.fire({
@@ -250,6 +369,7 @@
                       title: 'Submit Data',
                       text: 'Data berhasil tersimpan'
                     })
+                    resetForm();
                     tablePengguna.ajax.reload();
                   }
                 }, 'json');
@@ -270,6 +390,11 @@
         "data": null,
         "defaultContent": '<button id="btnEdit" class="btn btn-sm btn-primary btn-margin-bottom"><i class="fa fa-edit" ></i> Edit</button> <button id="btnDelete" class="btn btn-sm btn-danger btn-margin-bottom"><i class="far fa-trash-alt"></i> Delete</button>'
       }]
+    });
+
+    $('.btn-close-kategori').on('click', function(){
+      $('.form-kategori')[0].reset();
+      $('#kategoriModal').modal('hide');
     });
 
     $('#btnSubmitKategori').on('click', function(e){
@@ -339,6 +464,7 @@
                       title: 'Submit Data',
                       text: 'Data berhasil tersimpan'
                     })
+                    $('.form-kategori')[0].reset();
                     tableKategori.ajax.reload();
                   }
                 }, 'json');
@@ -422,6 +548,109 @@
       item["long_data"] = dataSplit[5];
       return item;
     }
+  }
+
+  function loadRawanForm(){
+    tableRawan = $('#listRawan').DataTable({
+      "ajax": '<?= base_url("rawan");?>',
+      "columnDefs": [{
+        "targets": -1,
+        "data": null,
+        "defaultContent": '<button id="btnEdit" class="btn btn-sm btn-primary btn-margin-bottom"><i class="fa fa-edit" ></i> Edit</button> <button id="btnDelete" class="btn btn-sm btn-danger btn-margin-bottom"><i class="far fa-trash-alt"></i> Delete</button>'
+      }]
+    });
+
+    $('.btn-close-rawan').on('click', function(){
+      $('.form-rawan')[0].reset();
+      $('#rawanModal').modal('hide');
+    });
+
+    $('#btnSubmitRawan').on('click', function(e){
+      e.stopImmediatePropagation();
+      blockShow();
+
+      var $form = $('.form-rawan');
+      if ($form.valid()){
+        $.post($form.attr('action'), $form.serialize(), function(data){
+          blockHide();
+          if(data.code === 200){
+            Swal.fire({
+              icon: 'success',
+              title: 'Submit Data',
+              text: 'Data berhasil tersimpan'
+            })
+            $('.form-rawan')[0].reset();
+            tableRawan.ajax.reload();
+          }else{
+            Swal.fire({
+              icon: 'error',
+              title: 'Submit Data',
+              text: 'Gagal menyimpan data'
+            })
+          }
+        }, 'json');
+      }
+      return false;
+    });
+
+    $('.form-rawan').validate({
+  		ignore: 'input[type=hidden]',
+  		rules: {
+  			jns_bencana : {
+  				required: true
+  			},
+  			location : {
+  				required: true
+  			},
+  			latitude : {
+  				required: true
+  			},
+  			longtitude : {
+  				required: true
+  			}
+  		}
+  	});
+
+    $('#listRawan tbody').on( 'click', '#btnEdit', function () {
+  		var data = tableRawan.row( $(this).parents('tr') ).data();
+
+      //get data
+      $.get('<?= base_url("rawan/getDetailItem/");?>' + data[3], function(dataJson) {
+        if(dataJson.code === 200){
+          $('input[name=id]').val(dataJson.data[0].id);
+          $('input[name=location]').val(dataJson.data[0].location);
+          $('input[name=latitude]').val(dataJson.data[0].latitude);
+          $('input[name=longtitude]').val(dataJson.data[0].longtitude);
+          $('#fieldJnsBencana').val(dataJson.data[0].type);
+        }
+      }, 'json');
+  	});
+
+    $('#listRawan tbody').on( 'click', '#btnDelete', function () {
+  		var data = tableRawan.row( $(this).parents('tr') ).data();
+      $.confirm({
+          title: 'Confirm!',
+          content: 'Yakin akan menghapus data ini?',
+          buttons: {
+              Ya: function () {
+                $.get('<?= base_url("rawan/deleteItem/");?>' + data[3], function(dataJson) {
+                  if(dataJson.code === 200){
+                    Swal.fire({
+                      icon: 'success',
+                      title: 'Submit Data',
+                      text: 'Data berhasil tersimpan'
+                    })
+                    $('.form-rawan')[0].reset();
+                    tableRawan.ajax.reload();
+                  }
+                }, 'json');
+              },
+              Tidak: function () {
+
+              }
+          }
+      });
+  	});
   }
 
   $('#btnView').click(function(){
@@ -731,6 +960,31 @@
 	}
 
   function loadDropdown(){
+    $('.kategori').select2({
+      placeholder: "Pilih Kategori",
+      allowClear: false,
+      minimumResultsForSearch: Infinity,
+      ajax: {
+          url: "<?= base_url('pekerjaan/getCombo/kategori') ?>",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            return {
+              q: params.term, // search term
+              page: params.page
+            };
+          },
+          processResults: function (data, page) {
+            return {
+              results: $.map(data, function(obj) {
+                  return { id: obj.id, text: obj.name };
+              })
+            };
+          },
+          cache: true
+        }
+    })
+
     $('.is-active').select2({
       placeholder: "Pilih Active",
       allowClear: false,
