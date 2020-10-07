@@ -1,4 +1,172 @@
-<div class="modal fade" id="jenisKerjaModal" tabindex="-1" role="dialog" aria-labelledby="jenisKerjaModalTitle" aria-hidden="true">
+<div class="modal fade" id="penangananModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="penangananModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document" style="max-width: 80%;" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Program Penanganan</h5>
+        <button type="button" class="close btn-close-penanganan">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="container" style="margin-bottom: 10px;">
+          <div class="row">
+            <div class="col-lg-12">
+              <h6>Area Penanganan</h6>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="row">
+                <div class="col-md-6">
+                  <select class="form-control" id="fieldPeriode" style="width:100%"></select>
+                </div>
+                <div class="col-md-6">
+                  <select class="form-control" id="fieldNoRuas" style="width:100%"></select>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="row">
+                <div class="col-md-6">
+                  <select class="form-control combokm" id="fieldAwalKm" style="width:100%"></select>
+                </div>
+                <div class="col-md-6">
+                  <select class="form-control combokm" id="fieldAkhirKm" style="width:100%"></select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <button id="btnViewPenanganan" class="btn btn-primary" style="margin-top: 10px;">Tampilkan Data</button>
+            </div>
+          </div>
+        </div>
+        <div class="container" style="margin-top:20px">
+          <div class="row">
+            <div class="col-lg-12">
+              <table id="listPenanganan" class="table table-striped table-bordered" style="width:100%">
+    							<thead>
+    									<tr>
+    											<th>Kondisi</th>
+    											<th>Penanganan</th>
+                          <th>Panjang (KM)</th>
+                          <th>Volume (M2)</th>
+    											<th>&nbsp;</th>
+    									</tr>
+    							</thead>
+    					</table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="penangananDetModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="penangananDetModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document" style="max-width: 80%;" >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Program Penanganan</h5>
+        <button type="button" class="close btn-close-penangananDet">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="container" style="margin-bottom: 10px;">
+          <div class="row">
+            <div class="col-lg-12">
+              <h6>Area Penanganan</h6>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <table width="60%">
+                <tr>
+                  <td>Nama Ruas</td>
+                  <td>:</td>
+                  <td id="viewNameRuas">-</td>
+                  <td>Panjang</td>
+                  <td>:</td>
+                  <td id="viewPanjang">-</td>
+                </tr>
+                <tr>
+                  <td>Penanganan Jalan</td>
+                  <td>:</td>
+                  <td id="viewNamePenanganan">-</td>
+                  <td>Luas</td>
+                  <td>:</td>
+                  <td id="viewLuas">-</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <form class="form-penanganan" method="post" action="<?= base_url('penanganan/setItem');?>">
+          <input type="hidden" name="id" />
+          <input type="hidden" id="fieldKodeJalan" name="hash" >
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="input2">Jenis Pekerjaan</label>
+                  <select class="form-control jns_pekerjaan" name="jenis_id" id="fieldJnsPekerjaan" style="width:100%"></select>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="input3">Harga</label>
+                  <input type="hidden" id="fieldHargaPekerjaan" name="harga" >
+                  <input type="text" class="form-control" placeholder="Harga" id="viewHargaPekerjaan" disabled>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="input2">Volume</label>
+                  <input type="number" min="0" value="0" class="form-control" placeholder="Volume" oninput="hitungBiaya(this.value)" name="volume" />
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="input3">Total Biaya</label>
+                  <input type="text" class="form-control" placeholder="Total Biaya" id="fieldBiayaPenanganan" disabled>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-12">
+                <button id="btnSubmitPenangananDet" class="btn btn-primary">Submit</button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="container" style="margin-top:20px">
+          <div class="row">
+            <div class="col-lg-12">
+              <table id="listPenangananDet" class="table table-striped table-bordered" style="width:100%">
+    							<thead>
+    									<tr>
+    											<th>Jenis Pekerjaan</th>
+    											<th>Panjang (KM)</th>
+    											<th>Volume</th>
+    											<th>Harga (Rp)</th>
+    											<th>Total Biaya</th>
+    											<th>&nbsp;</th>
+    									</tr>
+    							</thead>
+    					</table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="jenisKerjaModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="jenisKerjaModalTitle" aria-hidden="true">
   <div class="modal-dialog" role="document" style="max-width: 80%;" >
     <div class="modal-content">
       <div class="modal-header">
@@ -52,7 +220,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="rawanModal" tabindex="-1" role="dialog" aria-labelledby="rawanModalTitle" aria-hidden="true">
+<div class="modal fade" id="rawanModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="rawanModalTitle" aria-hidden="true">
   <div class="modal-dialog" role="document" style="max-width: 80%;" >
     <div class="modal-content">
       <div class="modal-header">
@@ -131,7 +299,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="pekerjaanModal" tabindex="-1" role="dialog" aria-labelledby="pekerjaanModalTitle" aria-hidden="true">
+<div class="modal fade" id="pekerjaanModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="pekerjaanModalTitle" aria-hidden="true">
   <div class="modal-dialog" role="document" style="max-width: 80%;" >
     <div class="modal-content">
       <div class="modal-header">
@@ -141,28 +309,34 @@
         </button>
       </div>
       <div class="modal-body">
-        <form class="form-satuan-pekerjaan" method="post" action="<?= base_url('satuan/setItem');?>">
+        <form class="form-pekerjaan" method="post" action="<?= base_url('pekerjaan/setItem');?>">
           <input type="hidden" name="id_pekerjaan" />
           <div class="container">
             <div class="row">
-              <div class="col-lg-12">
+              <div class="col-lg-6">
                 <div class="form-group">
-                  <label for="input1">Jenis pekerjaan</label>
-                  <input type="text" class="form-control" aria-describedby="" name="jenis_pekerjaan" placeholder="Jenis pekerjaan">
+                  <label for="input2">Jenis Penanganan</label>
+                  <select class="form-control kategori" name="kategori_id" style="width:100%"></select>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="input3">Satuan</label>
+                  <select class="form-control satuan" name="satuan_id" style="width:100%"></select>
                 </div>
               </div>
             </div>
             <div class="row">
               <div class="col-lg-6">
                 <div class="form-group">
-                  <label for="input2">Harga</label>
-                  <input type="text" class="form-control" placeholder="Harga"  name="harga_pekerjaan" >
+                  <label for="input3">Jenis Pekerjaan</label>
+                  <select class="form-control jns_pekerjaan" name="jenis_id" style="width:100%"></select>
                 </div>
               </div>
               <div class="col-lg-6">
                 <div class="form-group">
-                  <label for="input3">Satuan</label>
-                  <input type="text" class="form-control" placeholder="Satuan"  name="satuan_pekerjaan" >
+                  <label for="input2">Harga</label>
+                  <input type="text" class="form-control" placeholder="Harga"  name="harga" >
                 </div>
               </div>
             </div>
@@ -179,9 +353,10 @@
               <table id="listPekerjaan" class="table table-striped table-bordered" style="width:100%">
     							<thead>
     									<tr>
+    											<th>Jenis Penanganan</th>
     											<th>Jenis Pekerjaan</th>
+                          <th>Satuan</th>
     											<th>Harga</th>
-    											<th>Satuan</th>
     											<th>&nbsp;</th>
     									</tr>
     							</thead>
@@ -194,7 +369,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="penggunaModal" tabindex="-1" role="dialog" aria-labelledby="penggunaModalTitle" aria-hidden="true">
+<div class="modal fade" id="penggunaModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="penggunaModalTitle" aria-hidden="true">
   <div class="modal-dialog" role="document" style="max-width: 80%;" >
     <div class="modal-content">
       <div class="modal-header">
@@ -281,7 +456,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="kategoriModal" tabindex="-1" role="dialog" aria-labelledby="kategoriModalTitle" aria-hidden="true">
+<div class="modal fade" id="kategoriModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="kategoriModalTitle" aria-hidden="true">
   <div class="modal-dialog" role="document" style="max-width: 80%;" >
     <div class="modal-content">
       <div class="modal-header">
@@ -335,7 +510,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="koordinatModal" tabindex="-1" role="dialog" aria-labelledby="KoordinatModalTitle" aria-hidden="true">
+<div class="modal fade" id="koordinatModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="KoordinatModalTitle" aria-hidden="true">
   <div class="modal-dialog" role="document" >
     <div class="modal-content">
       <div class="modal-header">
@@ -367,7 +542,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="rekapModal" tabindex="-1" role="dialog" aria-labelledby="RekapModalTitle" aria-hidden="true">
+<div class="modal fade" id="rekapModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="RekapModalTitle" aria-hidden="true">
   <div class="modal-dialog" role="document" style="max-width: 90%;">
     <div class="modal-content">
       <div class="modal-header">

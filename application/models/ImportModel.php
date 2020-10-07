@@ -68,6 +68,7 @@ class ImportModel extends CI_Model {
 				// echo $this->db->last_query();exit;
 
 				$hash = md5($value['no'].number_format($detRuas['awal_km'], 3, '.', '').strtoupper($detRuas['posisi']));
+				$hash_center = md5($value['no'].number_format($detRuas['awal_km'], 3, '.', '')));
 				$idKategori = 0;
 
 				foreach ($kg as $key => $kgData) {
@@ -90,6 +91,7 @@ class ImportModel extends CI_Model {
 		      $this->db->set('tgl_survey', $detRuas['tgl_survey']);
 		      $this->db->set('nm_ikp',  strtoupper($detRuas['nm_ikp']));
 		      $this->db->set('hash_data', $hash);
+		      $this->db->set('hash_center', $hash_center);
 
 					$this->db->where('periode_id', $idPeriode);
 					$this->db->where('awal_km = '.$detRuas['awal_km'], null, false);
@@ -112,6 +114,7 @@ class ImportModel extends CI_Model {
 					$this->db->set('petugas_survey', $detRuas['nm_survey']);
 					$this->db->set('tgl_survey', $detRuas['tgl_survey']);
 					$this->db->set('hash_data', $hash);
+					$this->db->set('hash_center', $hash_center);
 					$this->db->set('nm_ikp', strtoupper($detRuas['nm_ikp']));
 					$this->db->insert($this->ruas_detail);
 				}

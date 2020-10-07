@@ -10,7 +10,7 @@ class JenisKerjaModel extends CI_Model {
 	private function setData(){
     $this->id = $this->input->post('id');
 		$this->name = $this->input->post('name');
-		$this->kategori_id = $this->input->post('kategori_id');
+		$this->penanganan_id = $this->input->post('kategori_id');
   }
 
 	private function getMaster($code, $key){
@@ -33,7 +33,7 @@ class JenisKerjaModel extends CI_Model {
 
 			foreach ($arraylist as $ls) {
 				$row = array();
-    			$row[] = $this->getMaster("kategori",$ls['kategori_id']);
+    			$row[] = $this->getMaster("kategori",$ls['penanganan_id']);
     			$row[] = $ls['name'];
     			$row[] = $ls['id'];
 					$data[] = $row;
@@ -48,12 +48,12 @@ class JenisKerjaModel extends CI_Model {
   public function saving(){
     $this->setData();
     if($this->id != ""){
-      $this->db->set('kategori_id', $this->kategori_id);
+      $this->db->set('penanganan_id', $this->penanganan_id);
       $this->db->set('name', $this->name);
       $this->db->where('id', $this->id);
       return $this->db->update($this->jenisKerja);
     }else{
-			$this->db->set('kategori_id', $this->kategori_id);
+			$this->db->set('penanganan_id', $this->penanganan_id);
       $this->db->set('name', $this->name);
       return $this->db->insert($this->jenisKerja);
     }
@@ -70,8 +70,8 @@ class JenisKerjaModel extends CI_Model {
 
 			foreach ($arraylist as $ls) {
 				$row = array();
-    			$row['kategori_text'] = $this->getMaster("kategori",$ls['kategori_id']);
-    			$row['kategori_id'] = $ls['kategori_id'];
+    			$row['penanganan_text'] = $this->getMaster("kategori",$ls['penanganan_id']);
+    			$row['penanganan_id'] = $ls['penanganan_id'];
     			$row['name'] = $ls['name'];
     			$row['id'] = $ls['id'];
 					$data[] = $row;
@@ -85,9 +85,10 @@ class JenisKerjaModel extends CI_Model {
     return $this->db->delete($this->jenisKerja);
   }
 
-	public function dataCombo($filter){
+	public function dataCombo($filter, $val){
 		$this->db->select('id, name');
 		$this->db->from($this->jenisKerja);
+		$this->db->where('penanganan_id', $val);
 		if(strlen($filter) > 0){
 			$this->db->like('name', $filter);
 		}

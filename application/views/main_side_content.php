@@ -4,6 +4,7 @@
   <div class="sidebar-wrapper">
     <h5>Input Data</h5>
     <div class="list-group list-group-flush">
+      <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#penangananModal">Program Penanganan</a>
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#pekerjaanModal">Harga Satuan Pekerjaan</a>
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#jenisKerjaModal">Jenis Pekerjaan</a>
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#rawanModal">Rawan Bencana</a>
@@ -33,11 +34,13 @@
   </div>
 </div>
 <script>
-  var tableKemantapan, tablePekerjaan, tablePengguna, tableKategori, tableRawan, tableJenisKerja;
+  var tableKemantapan, tablePekerjaan, tablePengguna, tableKategori, tableRawan, tableJenisKerja, tablePenanganan, tablePenangananDet;
   var isShowTable = false;
   var selectDaerah = "";
   $(document).ready(function() {
     loadDropdown();
+    // loadPenangananDetForm();
+    loadPenangananForm();
     loadPekerjaanForm();
     loadJenisKerjaForm();
     loadPenggunaForm();
@@ -45,6 +48,177 @@
     loadKoordinatForm();
     loadRawanForm();
   });
+
+  function hitungBiaya(val){
+    var harga = $('#fieldHargaPekerjaan').val();
+    var total = parseFloat(val) * parseFloat(harga);
+    $('#fieldBiayaPenanganan').val(total.toMoney());
+  }
+
+  function loadPenangananDetForm(hash){
+    $('#listPenangananDet').DataTable().clear().destroy();
+    tablePenangananDet = $('#listPenangananDet').DataTable({
+      "ajax": '<?= base_url("penanganan/listDetail/");?>'+hash,
+      "columnDefs": [{
+        "targets": -1,
+        "data": null,
+        "defaultContent": '<button id="btnEdit" class="btn btn-sm btn-primary btn-margin-bottom"><i class="fa fa-edit" ></i> Edit</button> <button id="btnDelete" class="btn btn-sm btn-danger btn-margin-bottom"><i class="far fa-trash-alt"></i> Delete</button>'
+      }]
+    });
+
+    $('.btn-close-penangananDet').on('click', function(){
+      $('#penangananDetModal').modal('hide');
+      $('#penangananModal').modal('show');
+    });
+
+    function resetForm(){
+      $('.form-penanganan')[0].reset();
+      $('.jns_pekerjaan').val(null).trigger('change');
+    }
+
+    $('#btnSubmitPenangananDet').on('click', function(e){
+      e.stopImmediatePropagation();
+      blockShow();
+
+      var $form = $('.form-penanganan');
+      if ($form.valid()){
+        $.post($form.attr('action'), $form.serialize(), function(data){
+          blockHide();
+          if(data.code === 200){
+            Swal.fire({
+              icon: 'success',
+              title: 'Submit Data',
+              text: 'Data berhasil tersimpan'
+            })
+            resetForm();
+            tablePenangananDet.ajax.reload();
+          }else{
+            Swal.fire({
+              icon: 'error',
+              title: 'Submit Data',
+              text: 'Gagal menyimpan data'
+            })
+          }
+        }, 'json');
+      }else{
+        blockHide();
+      }
+      return false;
+    });
+
+    $('.form-penanganan').validate({
+  		ignore: 'input[type=hidden]',
+  		rules: {
+  			jenis_id : {
+  				required: true
+  			},
+  			volume : {
+  				required: true
+  			}
+  		}
+  	});
+
+    $('#listPenangananDet tbody').on( 'click', '#btnEdit', function () {
+  		var data = tablePenangananDet.row( $(this).parents('tr') ).data();
+
+      //get data
+      $.get('<?= base_url("penanganan/getDetailItem/");?>' + data[5], function(data) {
+        if(data.code === 200){
+          $('input[name=id]').val(data.data[0].id);
+          $('input[name=volume]').val(data.data[0].volume);
+          $('input[name=harga]').val(data.data[0].harga);
+          $('#viewHargaPekerjaan').val(data.data[0].harga_text);
+          $('#fieldBiayaPenanganan').val(data.data[0].total.toMoney());
+
+          var newOption = new Option(data.data[0].jenis_text, data.data[0].jenis_id, false, false);
+          $('.jns_pekerjaan').append(newOption).trigger('change');
+        }
+      }, 'json');
+  	});
+
+    $('#listPenangananDet tbody').on( 'click', '#btnDelete', function () {
+  		var data = tablePenangananDet.row( $(this).parents('tr') ).data();
+      $.confirm({
+          title: 'Confirm!',
+          content: 'Yakin akan menghapus data ini?',
+          buttons: {
+              Ya: function () {
+                $.get('<?= base_url("penanganan/deleteItem/");?>' + data[5], function(dataJson) {
+                  if(dataJson.code === 200){
+                    Swal.fire({
+                      icon: 'success',
+                      title: 'Submit Data',
+                      text: 'Data berhasil tersimpan'
+                    })
+                    resetForm();
+                    tablePenangananDet.ajax.reload();
+                  }
+                }, 'json');
+              },
+              Tidak: function () {
+
+              }
+          }
+      });
+  	});
+  }
+
+  function loadPenangananForm(){
+    tablePenanganan = $('#listPenanganan').DataTable();
+
+    $('.btn-close-penanganan').on('click', function(){
+      resetForm();
+      $('#penangananModal').modal('hide');
+    });
+
+    function resetForm(){
+      $('#fieldPeriode').val(null).trigger('change');
+      $('#fieldNoRuas').val(null).trigger('change');
+      $('#fieldAwalKm').val(null).trigger('change');
+      $('#fieldAkhirKm').val(null).trigger('change');
+
+      $('#listPenanganan').DataTable().clear().destroy();
+      tablePenanganan = $('#listPenanganan').DataTable();
+    }
+
+    $('#btnViewPenanganan').on('click', function(e){
+      var periode = $('#fieldPeriode').val();
+      var no_ruas = $('#fieldNoRuas').val();
+      var awal = $('#fieldAwalKm').val();
+      var akhir = $('#fieldAkhirKm').val();
+      if(periode != "" && no_ruas != "" && awal != "" && akhir != ""){
+        $('#listPenanganan').DataTable().clear().destroy();
+        tablePenanganan = $('#listPenanganan').DataTable({
+          "ajax": '<?= base_url("penanganan/index/");?>'+no_ruas+'/'+periode+'/'+awal+'/'+akhir,
+          "ordering": false,
+          "columnDefs": [{
+            "targets": -1,
+            "data": null,
+            "defaultContent": '<button id="btnEdit" class="btn btn-sm btn-primary btn-margin-bottom"><i class="fa fa-eye" ></i> detail</button>'
+          }]
+        });
+      }else{
+        Swal.fire({
+          icon: 'error',
+          title: 'View Data',
+          text: 'Field salah atau tidak boleh kosong'
+        })
+      }
+    });
+
+    $('#listPenanganan tbody').on( 'click', '#btnEdit', function () {
+  		var data = tablePenanganan.row( $(this).parents('tr') ).data();
+      $('#penangananModal').modal('hide');
+      $('#viewNamePenanganan').text(data[1]);
+      $('#viewPanjang').text(data[2]+" Km");
+      $('#viewLuas').text(data[3]+" m2");
+      $('#fieldKodeJalan').val(data[4]);
+
+      loadPenangananDetForm(data[4]);
+      loadDropdownJenisKerja(data[5]);
+      $('#penangananDetModal').modal('show');
+  	});
+  }
 
   function loadJenisKerjaForm(){
     tableJenisKerja = $('#listJenisKerja').DataTable({
@@ -90,6 +264,9 @@
             })
           }
         }, 'json');
+      }else{
+        $('#kategori_id-error').addClass('invalid-feedback');
+        blockHide();
       }
       return false;
     });
@@ -115,7 +292,7 @@
           $('input[name=id]').val(dataJson.data[0].id);
           $('input[name=name]').val(dataJson.data[0].name);
 
-          var newOption = new Option(dataJson.data[0].kategori_text, dataJson.data[0].kategori_id, false, false);
+          var newOption = new Option(dataJson.data[0].penanganan_text, dataJson.data[0].penanganan_id, false, false);
           $('.kategori').append(newOption).trigger('change');
         }
       }, 'json');
@@ -159,9 +336,17 @@
     });
 
     $('.btn-close-pekerjaan').on('click', function(){
-      $('.form-pekerjaan')[0].reset();
+      resetForm();
       $('#pekerjaanModal').modal('hide');
     });
+
+    function resetForm(){
+      $('.form-pekerjaan')[0].reset();
+
+      $('.kategori').val(null).trigger('change');
+      $('.satuan').val(null).trigger('change');
+      $('.jns_pekerjaan').val(null).trigger('change');
+    }
 
     $('#btnSubmitPekerjaan').on('click', function(e){
       e.stopImmediatePropagation();
@@ -177,7 +362,7 @@
               title: 'Submit Data',
               text: 'Data berhasil tersimpan'
             })
-            $('.form-pekerjaan')[0].reset();
+            resetForm();
             tablePekerjaan.ajax.reload();
           }else{
             Swal.fire({
@@ -187,6 +372,8 @@
             })
           }
         }, 'json');
+      }else{
+        blockHide();
       }
       return false;
     });
@@ -194,13 +381,16 @@
     $('.form-pekerjaan').validate({
   		ignore: 'input[type=hidden]',
   		rules: {
-  			jenis_pekerjaan : {
+  			jenis_id : {
   				required: true
   			},
-  			harga_pekerjaan : {
+  			harga : {
   				required: true
   			},
-  			satuan_pekerjaan : {
+  			satuan_id : {
+  				required: true
+  			},
+  			kategori_id : {
   				required: true
   			}
   		}
@@ -210,12 +400,21 @@
   		var data = tablePekerjaan.row( $(this).parents('tr') ).data();
 
       //get data
-      $.get('<?= base_url("satuan/getDetailItem/");?>' + data[3], function(dataJson) {
+      $.get('<?= base_url("pekerjaan/getDetailItem/");?>' + data[4], function(dataJson) {
         if(dataJson.code === 200){
+          var satuanOps = new Option(dataJson.data[0].satuan_text, dataJson.data[0].satuan_id, false, false);
+          $('.satuan').append(satuanOps).trigger('change');
+
+          var kategoriOps = new Option(dataJson.data[0].penanganan_text, dataJson.data[0].penanganan_id, false, false);
+          $('.kategori').append(kategoriOps).trigger('change');
+
+          var jenisOps = new Option(dataJson.data[0].jenis_text, dataJson.data[0].jenis_id, false, false);
+          $('.jns_pekerjaan').append(jenisOps).trigger('change');
+
           $('input[name=id_pekerjaan]').val(dataJson.data[0].id);
-          $('input[name=jenis_pekerjaan]').val(dataJson.data[0].nama);
-          $('input[name=harga_pekerjaan]').val(dataJson.data[0].harga);
-          $('input[name=satuan_pekerjaan]').val(dataJson.data[0].satuan);
+          $('input[name=harga]').val(dataJson.data[0].harga);
+
+          loadDropdownJenisKerja(dataJson.data[0].penanganan_id);
         }
       }, 'json');
   	});
@@ -227,14 +426,14 @@
           content: 'Yakin akan menghapus data ini?',
           buttons: {
               Ya: function () {
-                $.get('<?= base_url("satuan/deleteItem/");?>' + data[3], function(dataJson) {
+                $.get('<?= base_url("pekerjaan/deleteItem/");?>' + data[4], function(dataJson) {
                   if(dataJson.code === 200){
                     Swal.fire({
                       icon: 'success',
                       title: 'Submit Data',
                       text: 'Data berhasil tersimpan'
                     })
-                    $('.form-pekerjaan')[0].reset();
+                    resetForm();
                     tablePekerjaan.ajax.reload();
                   }
                 }, 'json');
@@ -316,6 +515,8 @@
                 //error
             }
         });
+      }else{
+        blockHide();
       }
       return false;
     });
@@ -421,6 +622,8 @@
             })
           }
         }, 'json');
+      }else{
+        blockHide();
       }
       return false;
     });
@@ -589,6 +792,8 @@
             })
           }
         }, 'json');
+      }else{
+        blockHide();
       }
       return false;
     });
@@ -959,6 +1164,39 @@
   	});
 	}
 
+  function loadDropdownJenisKerja(id){
+    $('.jns_pekerjaan').select2({
+      placeholder: "Pilih Jenis Pekerjaan",
+      allowClear: false,
+      ajax: {
+          url: "<?= base_url('jenisKerja/getCombo/') ?>"+id,
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            return {
+              q: params.term, // search term
+              page: params.page
+            };
+          },
+          processResults: function (data, page) {
+            return {
+              results: $.map(data, function(obj) {
+                  return { id: obj.id, text: obj.name };
+              })
+            };
+          },
+          cache: true
+        }
+    }).on('select2:select', function(e) {
+      var id = e.params.data.id;
+
+      $.get('<?= base_url("pekerjaan/getDetailItemByJenis/");?>'+id, function(data) {
+        $("#fieldHargaPekerjaan").val(data.data.harga);
+        $("#viewHargaPekerjaan").val(data.data.harga_text);
+    	}, 'json');
+    });
+  }
+
   function loadDropdown(){
     $('.kategori').select2({
       placeholder: "Pilih Kategori",
@@ -983,7 +1221,42 @@
           },
           cache: true
         }
-    })
+    });
+
+    $('.satuan').select2({
+      placeholder: "Pilih Kategori",
+      allowClear: false,
+      minimumResultsForSearch: Infinity,
+      ajax: {
+          url: "<?= base_url('pekerjaan/getCombo/satuan') ?>",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            return {
+              q: params.term, // search term
+              page: params.page
+            };
+          },
+          processResults: function (data, page) {
+            return {
+              results: $.map(data, function(obj) {
+                  return { id: obj.id, text: obj.name };
+              })
+            };
+          },
+          cache: true
+        }
+    });
+
+    $('.jns_pekerjaan').select2({
+      placeholder: "Pilih Jenis Pekerjaan",
+      allowClear: false
+    });
+
+    $('.kategori').on('select2:select', function (e) {
+      var id = e.params.data.id;
+      loadDropdownJenisKerja(id);
+    });
 
     $('.is-active').select2({
       placeholder: "Pilih Active",
@@ -1031,6 +1304,100 @@
       placeholder: "Pilih Ruas",
       allowClear: true,
     });
+
+    $('.combokm').select2({
+      placeholder: "Pilih Km",
+      allowClear: true,
+    });
+
+    $('#fieldNoRuas').select2({
+      placeholder: "Pilih Ruas",
+      allowClear: true,
+    });
+
+    $('#fieldPeriode').select2({
+      placeholder: "Pilih Periode",
+      allowClear: true,
+      ajax: {
+          url: "<?= base_url('periode/getCombo') ?>",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            return {
+              q: params.term, // search term
+              page: params.page
+            };
+          },
+          processResults: function (data, page) {
+            return {
+              results: $.map(data, function(obj) {
+                  return { id: obj.id, text: obj.nama };
+              })
+            };
+          },
+          cache: true
+        }
+    }).on('select2:select', function(e) {
+      var id = e.params.data.id;
+
+      $('#fieldNoRuas').select2({
+        placeholder: "Pilih Ruas",
+        allowClear: true,
+        ajax: {
+            url: "<?= base_url('ruas/getCombo/') ?>"+id,
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+              return {
+                q: params.term, // search term
+                page: params.page
+              };
+            },
+            processResults: function (data, page) {
+              return {
+                results: $.map(data, function(obj) {
+                    return { id: obj.id, text: obj.nama };
+                })
+              };
+            },
+            cache: true
+          }
+      }).on('select2:select', function(e) {
+        var name = e.params.data.text;
+        var noruas = e.params.data.id;
+        $('#viewNameRuas').text(name);
+        comboKm(id, noruas);
+      });
+    });
+
+    function comboKm(periode_id, noruas){
+      $('.combokm').select2({
+        placeholder: "Pilih Km",
+        allowClear: true,
+        ajax: {
+            url: "<?= base_url('penanganan/getComboKm/') ?>"+periode_id+"/"+noruas,
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+              return {
+                q: params.term, // search term
+                page: params.page
+              };
+            },
+            processResults: function (data, page) {
+              return {
+                results: $.map(data, function(obj) {
+                    return { id: obj.id, text: obj.id };
+                })
+              };
+            },
+            cache: true
+          }
+      }).on('select2:select', function(e) {
+        var id = e.params.data.id;
+        console.log(id);
+      });
+    }
 
     $('.periode').select2({
       placeholder: "Pilih Periode",

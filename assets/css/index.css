@@ -7,6 +7,25 @@
   top:5px !important;
 }
 
+#kategori_id-error{
+  /* position: absolute;
+  margin-top: 69px;
+  left: 15px;
+  padding-bottom: 15px; */
+}
+#jenis_id-error{
+  position: absolute;
+  margin-top: 69px;
+  left: 15px;
+  padding-bottom: 15px;
+}
+#satuan_id-error{
+  position: absolute;
+  margin-top: 69px;
+  left: 15px;
+  padding-bottom: 15px;
+}
+
 #mapid {
   position: absolute;
   top: 0;

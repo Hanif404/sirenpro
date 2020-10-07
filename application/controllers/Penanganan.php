@@ -1,26 +1,32 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Pekerjaan extends MY_Controller {
+class Penanganan extends MY_Controller {
 
   public function __construct(){
 		parent::__construct();
 		$this->verifySession();
 
-		$this->load->model('PekerjaanModel');
+		$this->load->model('PenangananModel');
 	}
 
-  public function index(){
-    $return = $this->PekerjaanModel->getAllData();
+  public function index($noruas, $periode, $awal, $akhir){
+    $return = $this->PenangananModel->getAllData($noruas, $periode, $awal, $akhir);
 		$this->wrapper(true,$return,'success get data',200);
   }
 
-  public function getCombo($code){
-    echo $this->PekerjaanModel->dataCombo($code);
+  public function getComboKm($periode, $noruas){
+    $filter = $this->input->get('q');
+    echo $this->PenangananModel->dataComboKm($filter, $periode, $noruas);
+  }
+
+  public function listDetail($hash){
+    $return = $this->PenangananModel->getListDetail($hash);
+    $this->wrapper(true,$return,'success get data',200);
   }
 
   public function setItem(){
-    $return = $this->PekerjaanModel->saving();
+    $return = $this->PenangananModel->saving();
 		if(!$return){
 				$this->wrapper(false, null ,'failed set',500);
 		}
@@ -28,15 +34,7 @@ class Pekerjaan extends MY_Controller {
   }
 
   public function getDetailItem($id){
-    $return = $this->PekerjaanModel->getDetailData($id);
-		if(!$return){
-				$this->wrapper(false, null ,'data not found',404);
-		}
-		$this->wrapper(true,$return,'success get data',200);
-  }
-
-  public function getDetailItemByJenis($id){
-    $return = $this->PekerjaanModel->getDataByJenis($id);
+    $return = $this->PenangananModel->getDetailData($id);
 		if(!$return){
 				$this->wrapper(false, null ,'data not found',404);
 		}
@@ -44,7 +42,7 @@ class Pekerjaan extends MY_Controller {
   }
 
   public function deleteItem($id){
-    $return = $this->PekerjaanModel->deleteData($id);
+    $return = $this->PenangananModel->deleteData($id);
 		if(!$return){
 				$this->wrapper(false, null ,'data not found',404);
 		}

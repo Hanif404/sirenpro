@@ -39,8 +39,8 @@ class JenisKerja extends MY_Controller {
 		$this->wrapper(true,$return,'success delete data',200);
   }
 
-  public function getCombo(){
+  public function getCombo($val){
     $filter = $this->input->get('q');
-    echo $this->JenisKerjaModel->dataCombo($filter);
+    echo $this->JenisKerjaModel->dataCombo($filter, $val);
   }
 }
