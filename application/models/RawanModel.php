@@ -78,7 +78,7 @@ class RawanModel extends CI_Model {
 	private function libBencana($type){
 		switch ($type) {
 			case '1':
-				return "Rawan Longsong";
+				return "Rawan Longsor";
 				break;
 			case '2':
 				return "Rawan Banjir";

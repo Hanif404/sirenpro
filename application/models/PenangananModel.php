@@ -107,6 +107,7 @@ class PenangananModel extends CI_Model {
     $this->db->from($this->ruas_det);
     $this->db->where('no_ruas', $noruas);
     $this->db->where('periode_id', $periode);
+    $this->db->where('posisi', "KANAN");
 		$this->db->where( "awal_km BETWEEN $awal AND $akhir", NULL, FALSE );
 		$this->db->order_by('awal_km', 'asc');
 		$list = $this->db->get();
@@ -155,43 +156,43 @@ class PenangananModel extends CI_Model {
 
 			$row = array();
 			$row['kondisi'] = 1;
-			$row['panjang'] = $panjang_1;
+			$row['panjang'] = $panjang_1/1000;
 			$row['luas'] = $luas_1;
 			$data[] = $row;
 
 			$row = array();
 			$row['kondisi'] = 2;
-			$row['panjang'] = $panjang_2;
+			$row['panjang'] = $panjang_2/1000;
 			$row['luas'] = $luas_2;
 			$data[] = $row;
 
 			$row = array();
 			$row['kondisi'] = 3;
-			$row['panjang'] = $panjang_3;
+			$row['panjang'] = $panjang_3/1000;
 			$row['luas'] = $luas_3;
 			$data[] = $row;
 
 			$row = array();
 			$row['kondisi'] = 4;
-			$row['panjang'] = $panjang_4;
+			$row['panjang'] = $panjang_4/1000;
 			$row['luas'] = $luas_4;
 			$data[] = $row;
 
 			$row = array();
 			$row['kondisi'] = 5;
-			$row['panjang'] = $panjang_5;
+			$row['panjang'] = $panjang_5/1000;
 			$row['luas'] = $luas_5;
 			$data[] = $row;
 
 			$row = array();
 			$row['kondisi'] = 6;
-			$row['panjang'] = $panjang_6;
+			$row['panjang'] = $panjang_6/1000;
 			$row['luas'] = $luas_6;
 			$data[] = $row;
 
 			$row = array();
 			$row['kondisi'] = 7;
-			$row['panjang'] = $panjang_7;
+			$row['panjang'] = $panjang_7/1000;
 			$row['luas'] = $luas_7;
 			$data[] = $row;
 
