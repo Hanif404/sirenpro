@@ -39,28 +39,69 @@
     margin-bottom: 20px;
   }
 </style>
-<div class="header">
-  <h5>REKAPITULASI KONDISI JALAN <span id="txt_total" style="display: none;">PROVINSI</span></h5> 
-  <h6>PADA UPTD PENGELOLAAN JALAN DAN JEMBATAN WILAYAH PELAYANAN IV</h6>
+<div id="viewRekap" style="display:none">
+  <div class="header">
+    <h5>REKAPITULASI KONDISI JALAN <span id="txt_total" style="display: none;">PROVINSI</span></h5>
+    <h6>PADA UPTD PENGELOLAAN JALAN DAN JEMBATAN WILAYAH PELAYANAN IV</h6>
+  </div>
+  <table class="table-style rekap1"></table>
+  <table class="table-style rekap2"></table>
+  <table width="100%">
+    <tr>
+      <td width="50%"></td>
+      <td width="50%">
+        <table width="100%" style="text-align: right;font-size: 8pt;margin-top: 10px;">
+          <tr>
+            <td width="15%">Mantap</td>
+            <td width="5%" id="km_mantap">00.00 Km</td>
+            <td width="5%" id="persentase_mantap">00.00 %</td>
+          </tr>
+          <tr>
+            <td>Tidak Mantap</td>
+            <td id="km_tmantap">00.00 Km</td>
+            <td id="persentase_tmantap">00.00 %</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </div>
-<table class="table-style rekap1"></table>
-<table class="table-style rekap2"></table>
-<table width="100%">
-  <tr>
-    <td width="50%"></td>
-    <td width="50%">
-      <table width="100%" style="text-align: right;font-size: 8pt;margin-top: 10px;">
-        <tr>
-          <td width="15%">Mantap</td>
-          <td width="5%" id="km_mantap">00.00 Km</td>
-          <td width="5%" id="persentase_mantap">00.00 %</td>
-        </tr>
-        <tr>
-          <td>Tidak Mantap</td>
-          <td id="km_tmantap">00.00 Km</td>
-          <td id="persentase_tmantap">00.00 %</td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-</table>
+<div id="viewPenanganan" style="display:none">
+  <div class="header">
+    <h5>RENCANA ANGGARAN BIAYA</h5>
+    <h6>PEKERJAAN <span id="txt_header"></span></h6>
+  </div>
+  <table width="100%">
+    <tr>
+      <td width="10%">No Ruas</td>
+      <td width="1%">:</td>
+      <td width="50%" id="col_no_ruas"></td>
+      <td width="17%">Panjang Penanganan Jalan</td>
+      <td width="1%">:</td>
+      <td width="50%" id="col_panjang_penanganan"></td>
+    </tr>
+    <tr>
+      <td>Nama Ruas</td>
+      <td>:</td>
+      <td id="col_nm_ruas"></td>
+      <td>Lokasi Penanganan</td>
+      <td>:</td>
+      <td id="col_lok_penanganan"></td>
+    </tr>
+    <tr>
+      <td>Panjang Jalan</td>
+      <td>:</td>
+      <td id="col_panjang_jalan"></td>
+      <td>Tahun Anggaran/Periode</td>
+      <td>:</td>
+      <td id="col_periode"></td>
+    </tr>
+  </table>
+  <table class="table-style rekap3" style="font-size: 12pt;text-align: center;margin-top:20px"></table>
+</div>
+<div id="viewAllPenanganan" style="display:none">
+  <div class="header">
+    <h5>REKAPITULASI</h5>
+    <h6>RENCANA ANGGARAN BIAYA</h6>
+  </div>
+</div>

@@ -20,6 +20,147 @@ class PenangananModel extends CI_Model {
 		$this->hash = $this->input->post('hash');
   }
 
+	public function dataRekap(){
+		$periode = $this->input->post('periode');
+		$noruas = $this->input->post('noruas');
+		$kmAwal = $this->input->post('kmAwal');
+		$kmAkhir = $this->input->post('kmAkhir');
+		$jns = $this->input->post('jns');
+
+		if($noruas != "" && $kmAwal != "" && $kmAkhir != "" && $jns != ""){
+			$isView = 1;
+			$str = "
+				SELECT pr.nama as nama_periode, rj.no_ruas, rj.nama_ruas, rj.panjang, rjd.kategori_id, sum(rjd.panjang) as pj_detail, sum(rjd.luas) as luas
+				FROM periode pr
+				JOIN ruas_jalan rj ON pr.id = rj.periode_id
+				join ruas_jalan_detail rjd ON rj.no_ruas = rjd.no_ruas and rj.periode_id = rjd.periode_id
+				WHERE rj.no_ruas = $noruas and rj.periode_id = $periode and rjd.posisi = \"KANAN\" AND rjd.awal_km BETWEEN $kmAwal and $kmAkhir
+				GROUP BY pr.nama, rj.no_ruas, rj.nama_ruas, rj. panjang, rjd.kategori_id
+			";
+		}else{
+			$isView = 2;
+			$str = "
+				SELECT pr.id, pr.nama, rj.no_ruas, rj.nama_ruas
+				FROM periode pr
+				JOIN ruas_jalan rj ON pr.id = rj.periode_id
+				WHERE rj.periode_id = $periode
+			";
+		}
+
+		$list = $this->db->query($str);
+		if($list->num_rows() > 0){
+			$arraylist = $list->result_array();
+			$data = array();
+
+			if($isView == 1){
+				$sum = $this->sumData($noruas, $periode, $kmAwal, $kmAkhir);
+				$data['no_ruas'] = $noruas;
+				$data['nama_ruas'] = $arraylist[0]['nama_ruas'];
+				$data['nama_periode'] = $arraylist[0]['nama_periode'];
+				$data['panjang_km'] = $arraylist[0]['panjang']. " Km";
+				$data['penanganan_nama'] = $this->getMaster("kategori", $jns);
+				$data['penanganan_range'] = "KM ".$kmAwal." s/d KM ".$kmAkhir;
+
+				if($sum != ''){
+					foreach ($arraylist as $ls) {
+						$penanganan_id = $this->kondisiPenanganan($ls['kategori_id']);
+						if($penanganan_id == $jns){
+							foreach ($sum as $key => $valsum) {
+								if($ls['kategori_id'] == $valsum['kondisi']){
+									$data['penanganan_km'] = $valsum['panjang'] ." Km";
+									$hash = base64_encode($noruas."~".$periode."~".$kmAwal."~".$kmAkhir."~".$ls['kategori_id']."~".$valsum['panjang']."~".$valsum['luas']);
+									$data['data_detail'] = $this->getListDetail($hash, $jns, 1);
+								}
+							}
+						}
+					}
+				}
+			}else if($isView == 2){ // All Penanganan
+				$i = 1;
+				foreach ($arraylist as $ls) {
+					$header = array();
+					$header['no'] = $i++;
+					$header['nama_ruas'] = $ls['nama_ruas'];
+
+					//loop jenis penanganan
+					$kgList = json_decode($this->dataCombo("kategori"), true);
+					$detail = array();
+					$total_panjang = 0;
+					$total_biaya = 0;
+					foreach ($kgList as $kgls) {
+						$dtdetail = $this->getListDetailByPenanganan($periode, $ls['no_ruas'], $kgls['id']);
+						$total_biaya = $total_biaya + $dtdetail['biaya_penanganan_num'];
+						$total_panjang = $total_panjang + $dtdetail['panjang_penanganan_num'];
+						$detail[] = $dtdetail;
+					}
+
+					$header['detail'] = $detail;
+					$header['total_panjang'] = number_format($total_panjang,2);
+					$header['total_biaya'] = $total_biaya;
+					$data[] = $header;
+				}
+			}
+			return $data;
+		}else{
+			return '';
+		}
+	}
+
+	private function getListDetailByPenanganan($periode, $noruas, $penanganan_id){
+		$total = 0;
+		$panjang = 0;
+		$lokasi = "";
+		$id = "";
+
+		$this->db->select('pkj.*, hrg.satuan_id, jns.name, jns.penanganan_id');
+    $this->db->from($this->penanganan. ' pkj');
+		$this->db->join($this->penangananHarga.' hrg', 'pkj.jenis_id = hrg.jenis_id');
+		$this->db->join($this->penangananJenis.' jns', 'hrg.jenis_id = jns.id');
+		$this->db->where('jns.penanganan_id', $penanganan_id);
+		$list = $this->db->get();
+    if($list->num_rows() > 0){
+      $arraylist = $list->result_array();
+			$data = array();
+			foreach ($arraylist as $ls) {
+				$hash_data = base64_decode($ls['hash']);
+				$lshash = explode("~", $hash_data);
+				$sum = $this->sumData($noruas, $periode, $lshash[2], $lshash[3]);
+
+				if($sum != ''){
+					if($lshash[0] == $noruas && $lshash[1] == $periode){
+						$id = $ls['penanganan_id'];
+						foreach ($sum as $key => $valsum) {
+							$penanganan_id = $this->kondisiPenanganan($valsum['kondisi']);
+							if($penanganan_id == $id){
+								$panjang = $panjang + $valsum['panjang'];
+							}
+						}
+						$lokasi = "KM ".$lshash[2]." s/d KM ".$lshash[3];
+						$biaya = $ls['harga']*$ls['volume'];
+						$total = $total + $biaya;
+					}
+				}
+			}
+
+			$data['jenis_penanganan'] = $this->getMaster("kategori", $id);
+			$data['panjang_penanganan'] = $panjang." Km";
+			$data['panjang_penanganan_num'] = $panjang;
+			$data['lokasi_penanganan'] = $lokasi;
+			$data['biaya_penanganan'] = $this->currency_format($total);
+			$data['biaya_penanganan_num'] = $total;
+			return $data;
+    }else{
+			$data = array();
+			$data['jenis_penanganan'] = $this->getMaster("kategori", $penanganan_id);
+			$data['panjang_penanganan'] = $panjang." Km";
+			$data['panjang_penanganan_num'] = $panjang;
+			$data['lokasi_penanganan'] = $lokasi;
+			$data['biaya_penanganan'] = $this->currency_format($total);
+			$data['biaya_penanganan_num'] = $total;
+			return $data;
+		}
+	}
+
 	public function dataComboKm($filter, $periode, $noruas){
 		$this->db->distinct();
 		$this->db->select('awal_km as id');
@@ -55,33 +196,57 @@ class PenangananModel extends CI_Model {
 		}
 	}
 
-	public function getListDetail($hash){
+	public function getListDetail($hash, $jns="", $flag=0){
 		$this->db->select('pkj.*, hrg.satuan_id, jns.name');
     $this->db->from($this->penanganan. ' pkj');
 		$this->db->join($this->penangananHarga.' hrg', 'pkj.jenis_id = hrg.jenis_id');
 		$this->db->join($this->penangananJenis.' jns', 'hrg.jenis_id = jns.id');
-		$this->db->where('hash', $hash);
+		if($jns != ""){
+			$this->db->where('jns.penanganan_id', $jns);
+		}else{
+			$this->db->where('hash', $hash);
+		}
 		$list = $this->db->get();
     if($list->num_rows() > 0){
       $arraylist = $list->result_array();
 			$data = array();
-			$hash_data = base64_decode($hash);
-			$lshash = explode("~", $hash_data);
+			$hash_data_1 = base64_decode($hash);
+			$lshash_1 = explode("~", $hash_data_1);
 
-			foreach ($arraylist as $ls) {
-					$row = array();
-    			$row[] = $ls['name'];
-    			$row[] = $lshash[5];
-					$row[] = $ls['volume'];
-    			$row[] = $this->currency_format($ls['harga']).'/'.$this->getMaster("satuan",$ls['satuan_id']);
-    			$row[] = $this->currency_format($ls['harga']*$ls['volume']);
-    			$row[] = $ls['id'];
-					$data[] = $row;
+			if($flag == 1){
+				$i = 1;
+				foreach ($arraylist as $ls) {
+					$hash_data_2 = base64_decode($ls['hash']);
+					$lshash_2 = explode("~", $hash_data_2);
+
+					if($lshash_1[0] == $lshash_2[0] && $lshash_1[1] == $lshash_2[1] && $lshash_1[2] == $lshash_2[2]  && $lshash_1[3] == $lshash_2[3]){
+						$row = array();
+						$row[] = $i++;
+						$row[] = $ls['name'];
+						$row[] = $ls['volume'];
+						$row[] = $this->getMaster("satuan",$ls['satuan_id']);
+						$row[] = $this->currency_format($ls['harga']);
+						$row[] = $this->currency_format($ls['harga']*$ls['volume']);
+						$row[] = $ls['is_valid'] == 1 ? "Ya" : "Tidak";
+						$data[] = $row;
+					}
+				}
+			}else{
+				foreach ($arraylist as $ls) {
+						$row = array();
+	    			$row[] = $ls['name'];
+	    			$row[] = $lshash[5];
+						$row[] = $ls['volume'];
+	    			$row[] = $this->currency_format($ls['harga']).'/'.$this->getMaster("satuan",$ls['satuan_id']);
+	    			$row[] = $this->currency_format($ls['harga']*$ls['volume']);
+	    			$row[] = $ls['id'];
+						$data[] = $row;
+				}
 			}
 
 			return $data;
     } else {
-      return '';
+      return array();
     }
 	}
 
@@ -115,6 +280,7 @@ class PenangananModel extends CI_Model {
       $arraylist = $list->result_array();
 			$data = array();
 
+			$panjang_total = 0;
 			$panjang_1 = 0;
 			$panjang_2 = 0;
 			$panjang_3 = 0;
@@ -122,6 +288,7 @@ class PenangananModel extends CI_Model {
 			$panjang_5 = 0;
 			$panjang_6 = 0;
 			$panjang_7 = 0;
+			$luas_total = 0;
 			$luas_1 = 0;
 			$luas_2 = 0;
 			$luas_3 = 0;
@@ -130,6 +297,9 @@ class PenangananModel extends CI_Model {
 			$luas_6 = 0;
 			$luas_7 = 0;
 			foreach ($arraylist as $ls) {
+					$panjang_total = $panjang_total + $ls['panjang'];
+					$luas_total = $luas_total + $ls['luas'];
+
 					if($ls['kategori_id'] == 1){
 						$panjang_1 = $panjang_1 + $ls['panjang'];
 						$luas_1 = $luas_1 + $ls['luas'];
@@ -153,46 +323,47 @@ class PenangananModel extends CI_Model {
 						$luas_7 = $luas_7 + $ls['luas'];
 					}
 			}
+			$panjang_total = $panjang_total/1000;
 
 			$row = array();
 			$row['kondisi'] = 1;
-			$row['panjang'] = $panjang_1/1000;
+			$row['panjang'] = number_format($luas_1/$luas_total*$panjang_total,2);
 			$row['luas'] = $luas_1;
 			$data[] = $row;
 
 			$row = array();
 			$row['kondisi'] = 2;
-			$row['panjang'] = $panjang_2/1000;
+			$row['panjang'] = number_format($luas_2/$luas_total*$panjang_total,2);
 			$row['luas'] = $luas_2;
 			$data[] = $row;
 
 			$row = array();
 			$row['kondisi'] = 3;
-			$row['panjang'] = $panjang_3/1000;
+			$row['panjang'] = number_format($luas_3/$luas_total*$panjang_total,2);
 			$row['luas'] = $luas_3;
 			$data[] = $row;
 
 			$row = array();
 			$row['kondisi'] = 4;
-			$row['panjang'] = $panjang_4/1000;
+			$row['panjang'] = number_format($luas_4/$luas_total*$panjang_total,2);
 			$row['luas'] = $luas_4;
 			$data[] = $row;
 
 			$row = array();
 			$row['kondisi'] = 5;
-			$row['panjang'] = $panjang_5/1000;
+			$row['panjang'] = number_format($luas_5/$luas_total*$panjang_total,2);
 			$row['luas'] = $luas_5;
 			$data[] = $row;
 
 			$row = array();
 			$row['kondisi'] = 6;
-			$row['panjang'] = $panjang_6/1000;
+			$row['panjang'] = number_format($luas_6/$luas_total*$panjang_total,2);
 			$row['luas'] = $luas_6;
 			$data[] = $row;
 
 			$row = array();
 			$row['kondisi'] = 7;
-			$row['panjang'] = $panjang_7/1000;
+			$row['panjang'] = number_format($luas_7/$luas_total*$panjang_total,2);
 			$row['luas'] = $luas_7;
 			$data[] = $row;
 
@@ -270,7 +441,7 @@ class PenangananModel extends CI_Model {
 					$row['jenis_id'] = $ls['jenis_id'];
 					$row['satuan_text'] = $this->getMaster("satuan",$ls['satuan_id']);
 					$row['satuan_id'] = $ls['satuan_id'];
-    			$row['harga_text'] = $this->currency_format($ls['harga']) ."/".$row['satuan_text'];
+    			$row['harga_text'] = $this->currency_format($ls['harga']) ." / ".$row['satuan_text'];
     			$row['harga'] = $ls['harga'];
     			$row['volume'] = $ls['volume'];
     			$row['total'] = $ls['harga']*$ls['volume'];

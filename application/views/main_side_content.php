@@ -16,20 +16,23 @@
     </div>
   </div>
   <div class="sidebar-wrapper" style="padding-bottom: 10px;">
-    <h5>Kemantapan Jalan</h5>
+    <h5>Skema Kemantapan Jalan</h5>
     <select class="periode select-2" name="periode" style="width:100%"></select>
     <div class="div-block"></div>
+    <select class="ruas select-2" name="ruas" style="width:100%"></select>
+    <div class="div-block"></div>
+    <br/>
+    <p style="margin-bottom: 0px;">Tabel Rekap Kemantapan</p>
     <select class="daerah select-2" name="daerah" style="width:100%">
-      <option value=""></option>
+      <option value="">Pilih Semua</option>
       <option value="garut">Garut</option>
       <option value="sumedang">Sumedang</option>
     </select>
     <div class="div-block"></div>
-    <select class="ksp select-2" name="ksp" style="width:100%"></select>
-    <div class="div-block"></div>
-    <select class="ruas select-2" name="ruas" style="width:100%"></select>
-    <div class="div-block"></div>
-    <button id="btnView" class="btn btn-block btn-primary disabled">Tampilkan Data</button>
+    <!-- <p style="margin-bottom: 0px;">Rekap berdasarkan KSP</p> -->
+    <!-- <select class="ksp select-2" name="ksp" style="width:100%"></select>
+    <div class="div-block"></div> -->
+    <!-- <button id="btnView" class="btn btn-block btn-primary disabled">Tampilkan Data</button> -->
     <button id="btnRekap" class="btn btn-block btn-success disabled">Rekap Data</button>
   </div>
 </div>
@@ -67,13 +70,14 @@
     });
 
     $('.btn-close-penangananDet').on('click', function(){
+      resetForm();
       $('#penangananDetModal').modal('hide');
       $('#penangananModal').modal('show');
     });
 
     function resetForm(){
       $('.form-penanganan')[0].reset();
-      $('.jns_pekerjaan').val(null).trigger('change');
+      $('#fieldJnsPekerjaan').val(null).trigger('change');
     }
 
     $('#btnSubmitPenangananDet').on('click', function(e){
@@ -118,7 +122,8 @@
   		}
   	});
 
-    $('#listPenangananDet tbody').on( 'click', '#btnEdit', function () {
+    $('#listPenangananDet tbody').on( 'click', '#btnEdit', function (e) {
+      e.stopImmediatePropagation();
   		var data = tablePenangananDet.row( $(this).parents('tr') ).data();
 
       //get data
@@ -130,13 +135,15 @@
           $('#viewHargaPekerjaan').val(data.data[0].harga_text);
           $('#fieldBiayaPenanganan').val(data.data[0].total.toMoney());
 
-          var newOption = new Option(data.data[0].jenis_text, data.data[0].jenis_id, false, false);
-          $('.jns_pekerjaan').append(newOption).trigger('change');
+          var newOption = new Option(data.data[0].jenis_text, data.data[0].jenis_id, true, true);
+          $('#fieldJnsPekerjaan').append(newOption).trigger('change');
         }
       }, 'json');
   	});
 
-    $('#listPenangananDet tbody').on( 'click', '#btnDelete', function () {
+    $('#listPenangananDet tbody').on( 'click', '#btnDelete', function (e) {
+      e.stopImmediatePropagation();
+
   		var data = tablePenangananDet.row( $(this).parents('tr') ).data();
       $.confirm({
           title: 'Confirm!',
@@ -204,6 +211,46 @@
           text: 'Field salah atau tidak boleh kosong'
         })
       }
+    });
+
+    $('#btnViewPdf').on('click', function(e){
+      $('#viewPenanganan').hide();
+      $('#viewAllPenanganan').hide();
+      
+      var periode = $('#fieldPeriode').select2("val");
+      var noruas = $('#fieldNoRuas').select2("val");
+      var kmAwal = $('#fieldAwalKm').select2("val");
+      var kmAkhir = $('#fieldAkhirKm').select2("val");
+      if(periode !== null && noruas !== null && kmAwal !== null && kmAkhir !== null){
+        $('#penangananModal').modal('hide');
+        $('#viewPenangananModal').modal('show');
+      }else if(periode !== null){
+        $('#viewAllPenanganan').show();
+        viewAllPenangananRekap(periode, noruas, kmAwal, kmAkhir, null);
+
+        $('#penangananModal').modal('hide');
+        $('#rekapModal').modal('show');
+      }
+    });
+
+    $('#btnReviewPdf').on('click', function(e){
+      var periode = $('#fieldPeriode').select2("val");
+      var noruas = $('#fieldNoRuas').select2("val");
+      var kmAwal = $('#fieldAwalKm').select2("val");
+      var kmAkhir = $('#fieldAkhirKm').select2("val");
+      var id = $('#aSelect').select2("val");
+      if(id !== null){
+        $('#viewRekap').hide();
+        $('#viewPenanganan').show();
+        $('.rekap3').empty();
+
+        viewPenangananRekap(periode, noruas, kmAwal, kmAkhir, id);
+        $('#viewPenangananModal').modal('hide');
+        $('#rekapModal').modal('show');
+      }else{
+        alert('jenis penanganan masih kosong');
+      }
+      $('.kategori').val(null).trigger('change');
     });
 
     $('#listPenanganan tbody').on( 'click', '#btnEdit', function () {
@@ -283,7 +330,8 @@
   		}
   	});
 
-    $('#listJenisKerja tbody').on( 'click', '#btnEdit', function () {
+    $('#listJenisKerja tbody').on( 'click', '#btnEdit', function (e) {
+      e.stopImmediatePropagation();
   		var data = tableJenisKerja.row( $(this).parents('tr') ).data();
 
       //get data
@@ -292,13 +340,15 @@
           $('input[name=id]').val(dataJson.data[0].id);
           $('input[name=name]').val(dataJson.data[0].name);
 
-          var newOption = new Option(dataJson.data[0].penanganan_text, dataJson.data[0].penanganan_id, false, false);
+          var newOption = new Option(dataJson.data[0].penanganan_text, dataJson.data[0].penanganan_id, true, true);
           $('.kategori').append(newOption).trigger('change');
         }
       }, 'json');
   	});
 
-    $('#listJenisKerja tbody').on( 'click', '#btnDelete', function () {
+    $('#listJenisKerja tbody').on( 'click', '#btnDelete', function (e) {
+      e.stopImmediatePropagation();
+
   		var data = tableJenisKerja.row( $(this).parents('tr') ).data();
       $.confirm({
           title: 'Confirm!',
@@ -882,18 +932,26 @@
   });
 
   $('#btnRekap').click(function(){
-    $('#rekapModal').modal('show');
     var periode = $(".periode option:selected").val();
+    var ruas = $(".ruas option:selected").val();
     var daerah = $(".daerah option:selected").val();
     var ksp = $(".ksp option:selected").val();
-    $('.rekap1').empty();
-    $('.rekap2').empty();
-    if(periode !== "" && (daerah == "" || daerah == undefined) && (ksp == "" || ksp == undefined)){
-      $('#txt_total').show();
-      viewRekap2(periode);
+
+    if(periode != undefined && ruas != undefined){
+      $('#rekapModal').modal('show');
+      $('#viewRekap').show();
+      $('#viewPenanganan').hide();
+      $('.rekap1').empty();
+      $('.rekap2').empty();
+      if(periode !== "" && (daerah == "" || daerah == undefined) && (ksp == "" || ksp == undefined)){
+        $('#txt_total').show();
+        viewRekap2(periode);
+      }else{
+        $('#txt_total').hide();
+        viewRekap1(periode, daerah, ksp);
+      }
     }else{
-      $('#txt_total').hide();
-      viewRekap1(periode, daerah, ksp);
+      alert("Periode dan No ruas masih kosong");
     }
   });
 
@@ -919,13 +977,13 @@
         var view_m2_5 = parseFloat(data[i].total_m2_5);
         var view_m2_6 = parseFloat(data[i].total_m2_6);
         var view_m2_7 = parseFloat(data[i].total_m2_7);
-        var view_km_1 = parseFloat(data[i].total_km_1);
-        var view_km_2 = parseFloat(data[i].total_km_2);
-        var view_km_3 = parseFloat(data[i].total_km_3);
-        var view_km_4 = parseFloat(data[i].total_km_4);
-        var view_km_5 = parseFloat(data[i].total_km_5);
-        var view_km_6 = parseFloat(data[i].total_km_6);
-        var view_km_7 = parseFloat(data[i].total_km_7);
+        var view_km_1 = parseFloat(data[i].total_km_1)/1000;
+        var view_km_2 = parseFloat(data[i].total_km_2)/1000;
+        var view_km_3 = parseFloat(data[i].total_km_3)/1000;
+        var view_km_4 = parseFloat(data[i].total_km_4)/1000;
+        var view_km_5 = parseFloat(data[i].total_km_5)/1000;
+        var view_km_6 = parseFloat(data[i].total_km_6)/1000;
+        var view_km_7 = parseFloat(data[i].total_km_7)/1000;
 
         var content = "<tr class=\"table-body\">";
         content += "<td>"+ urut +"</td>";
@@ -1033,14 +1091,14 @@
       for (var i = 0; i < area.length; i++) {
         for (var j = 0; j < data.length; j++) {
           if(area[i] === data[j].nama_kota){
-            var total_km = parseFloat(data[j].total_all);
-            var total_km_1 = parseFloat(data[j].total_1);
-            var total_km_2 = parseFloat(data[j].total_2);
-            var total_km_3 = parseFloat(data[j].total_3);
-            var total_km_4 = parseFloat(data[j].total_4);
-            var total_km_5 = parseFloat(data[j].total_5);
-            var total_km_6 = parseFloat(data[j].total_6);
-            var total_km_7 = parseFloat(data[j].total_7);
+            var total_km = parseFloat(data[j].total_all/1000);
+            var total_km_1 = parseFloat(data[j].total_1)/1000;
+            var total_km_2 = parseFloat(data[j].total_2)/1000;
+            var total_km_3 = parseFloat(data[j].total_3)/1000;
+            var total_km_4 = parseFloat(data[j].total_4)/1000;
+            var total_km_5 = parseFloat(data[j].total_5)/1000;
+            var total_km_6 = parseFloat(data[j].total_6)/1000;
+            var total_km_7 = parseFloat(data[j].total_7)/1000;
 
             var persentase_1 = (total_km_1/total_km) * 100;
             var persentase_2 = (total_km_2/total_km) * 100;
@@ -1125,6 +1183,57 @@
     },'json');
   }
 
+  function viewPenangananRekap(periode, noruas, kmAwal, kmAkhir, jns){
+    $.post("<?php echo base_url('penanganan/getDataRekap')?>", {periode:periode, noruas:noruas, kmAwal:kmAwal, kmAkhir:kmAkhir, jns:jns}, function(data){
+      $('#txt_header').text(data.data.penanganan_nama.toUpperCase());
+      $('#col_no_ruas').text(noruas);
+      $('#col_panjang_penanganan').text(data.data.penanganan_km);
+      $('#col_nm_ruas').text(data.data.nama_ruas);
+      $('#col_lok_penanganan').text(data.data.penanganan_range);
+      $('#col_panjang_jalan').text(data.data.panjang_km);
+      $('#col_periode').text(data.data.nama_periode);
+
+      var header = "<tr> <th>No.</th> <th>Jenis Pekerjaan</th> <th>Volume</th> <th>Satuan</th> <th>Harga Satuan</th> <th>Total</th> <th>Validasi</th> </tr>";
+      $('.rekap3').append(header);
+
+      for (var i = 0; i < data.data.data_detail.length; i++) {
+        var detail = data.data.data_detail[i];
+        var content = "<tr class=\"table-body\">";
+        content += "<td>"+ detail[0] +"</td>";
+        content += "<td>"+ detail[1] +"</td>";
+        content += "<td>"+ detail[2] +"</td>";
+        content += "<td>"+ detail[3] +"</td>";
+        content += "<td>"+ detail[4] +"</td>";
+        content += "<td>"+ detail[5] +"</td>";
+        content += "<td>"+ detail[6] +"</td>";
+        content += "</tr>";
+        $('.rekap3').append(content);
+      }
+    },'json');
+  }
+
+  function viewAllPenangananRekap(periode, noruas, kmAwal, kmAkhir, jns){
+    $.post("<?php echo base_url('penanganan/getDataRekap')?>", {periode:periode, noruas:noruas, kmAwal:kmAwal, kmAkhir:kmAkhir, jns:jns}, function(data){
+console.log(data);
+      // var header = "<tr> <th>No.</th> <th>Jenis Pekerjaan</th> <th>Volume</th> <th>Satuan</th> <th>Harga Satuan</th> <th>Total</th> <th>Validasi</th> </tr>";
+      // $('.rekap3').append(header);
+      //
+      // for (var i = 0; i < data.data.data_detail.length; i++) {
+      //   var detail = data.data.data_detail[i];
+      //   var content = "<tr class=\"table-body\">";
+      //   content += "<td>"+ detail[0] +"</td>";
+      //   content += "<td>"+ detail[1] +"</td>";
+      //   content += "<td>"+ detail[2] +"</td>";
+      //   content += "<td>"+ detail[3] +"</td>";
+      //   content += "<td>"+ detail[4] +"</td>";
+      //   content += "<td>"+ detail[5] +"</td>";
+      //   content += "<td>"+ detail[6] +"</td>";
+      //   content += "</tr>";
+      //   $('.rekap3').append(content);
+      // }
+    },'json');
+  }
+
   function resetView(){
     $('#contentData').hide();
     $('.sidemenu-legenda').css("bottom", "0px");
@@ -1199,7 +1308,7 @@
 
   function loadDropdown(){
     $('.kategori').select2({
-      placeholder: "Pilih Kategori",
+      placeholder: "Pilih Jenis Penanganan",
       allowClear: false,
       minimumResultsForSearch: Infinity,
       ajax: {
@@ -1224,7 +1333,7 @@
     });
 
     $('.satuan').select2({
-      placeholder: "Pilih Kategori",
+      placeholder: "Pilih Satuan",
       allowClear: false,
       minimumResultsForSearch: Infinity,
       ajax: {
@@ -1265,12 +1374,12 @@
     });
 
     $('.daerah').select2({
-      placeholder: "Pilih Kabupaten/Kota",
-      allowClear: true,
+      // placeholder: "Pilih Kabupaten/Kota",
+      // allowClear: true,
       minimumResultsForSearch: Infinity
     }).on('select2:select', function(e) {
       var id = e.params.data.id;
-      loadKsp(id);
+      // loadKsp(id);
     });
     loadKsp("");
 
@@ -1393,10 +1502,7 @@
             },
             cache: true
           }
-      }).on('select2:select', function(e) {
-        var id = e.params.data.id;
-        console.log(id);
-      });
+      })
     }
 
     $('.periode').select2({

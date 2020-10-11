@@ -39,6 +39,7 @@
           <div class="row">
             <div class="col-lg-12">
               <button id="btnViewPenanganan" class="btn btn-primary" style="margin-top: 10px;">Tampilkan Data</button>
+              <button id="btnViewPdf" class="btn btn-success" style="margin-top: 10px;">PDF</button>
             </div>
           </div>
         </div>
@@ -556,6 +557,25 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" id="btnPdf">PDF</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="viewPenangananModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="viewPenangananModalTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Jenis Penanganan</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <select class="kategori" id="aSelect" style="width:100%"></select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="btnReviewPdf">Tampilkan Data</button>
       </div>
     </div>
   </div>

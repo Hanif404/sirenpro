@@ -15,6 +15,12 @@ class Penanganan extends MY_Controller {
 		$this->wrapper(true,$return,'success get data',200);
   }
 
+  public function getDataRekap(){
+    $this->verifySession();
+    $return = $this->PenangananModel->dataRekap();
+    $this->wrapper(true,$return,'success get data',200);
+  }
+
   public function getComboKm($periode, $noruas){
     $filter = $this->input->get('q');
     echo $this->PenangananModel->dataComboKm($filter, $periode, $noruas);
