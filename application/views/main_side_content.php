@@ -216,7 +216,7 @@
     $('#btnViewPdf').on('click', function(e){
       $('#viewPenanganan').hide();
       $('#viewAllPenanganan').hide();
-      
+
       var periode = $('#fieldPeriode').select2("val");
       var noruas = $('#fieldNoRuas').select2("val");
       var kmAwal = $('#fieldAwalKm').select2("val");
@@ -940,6 +940,8 @@
     if(periode != undefined && ruas != undefined){
       $('#rekapModal').modal('show');
       $('#viewRekap').show();
+      $('#viewPenanganan').hide();
+      $('#viewAllPenanganan').hide();
       $('#viewPenanganan').hide();
       $('.rekap1').empty();
       $('.rekap2').empty();
