@@ -224,12 +224,25 @@
       if(periode !== null && noruas !== null && kmAwal !== null && kmAkhir !== null){
         $('#penangananModal').modal('hide');
         $('#viewPenangananModal').modal('show');
-      }else if(periode !== null){
+      }else if(periode !== null && noruas == null && kmAwal == null && kmAkhir == null){
         $('#viewAllPenanganan').show();
+        $('.rekap4').empty();
         viewAllPenangananRekap(periode, noruas, kmAwal, kmAkhir, null);
 
         $('#penangananModal').modal('hide');
         $('#rekapModal').modal('show');
+      }else if(periode == null && noruas == null && kmAwal == null && kmAkhir == null){
+        Swal.fire({
+          icon: 'error',
+          title: 'View Data',
+          text: 'Field periode tidak boleh kosong untuk menampilkan rekapitulasi'
+        })
+      }else{
+        Swal.fire({
+          icon: 'error',
+          title: 'View Data',
+          text: 'Semua field tidak boleh kosong untuk menampilkan laporan per jenis penanganan'
+        })
       }
     });
 
@@ -1216,24 +1229,67 @@
 
   function viewAllPenangananRekap(periode, noruas, kmAwal, kmAkhir, jns){
     $.post("<?php echo base_url('penanganan/getDataRekap')?>", {periode:periode, noruas:noruas, kmAwal:kmAwal, kmAkhir:kmAkhir, jns:jns}, function(data){
-console.log(data);
-      // var header = "<tr> <th>No.</th> <th>Jenis Pekerjaan</th> <th>Volume</th> <th>Satuan</th> <th>Harga Satuan</th> <th>Total</th> <th>Validasi</th> </tr>";
-      // $('.rekap3').append(header);
-      //
-      // for (var i = 0; i < data.data.data_detail.length; i++) {
-      //   var detail = data.data.data_detail[i];
-      //   var content = "<tr class=\"table-body\">";
-      //   content += "<td>"+ detail[0] +"</td>";
-      //   content += "<td>"+ detail[1] +"</td>";
-      //   content += "<td>"+ detail[2] +"</td>";
-      //   content += "<td>"+ detail[3] +"</td>";
-      //   content += "<td>"+ detail[4] +"</td>";
-      //   content += "<td>"+ detail[5] +"</td>";
-      //   content += "<td>"+ detail[6] +"</td>";
-      //   content += "</tr>";
-      //   $('.rekap3').append(content);
-      // }
+
+      var header = "<tr> <th>No.</th> <th>Ruas Jalan</th> <th>Panjang Ruas Jalan (Km)</th> <th>Jenis Penanganan</th> <th>Panjang Penanganan Jalan (Km)</th> <th>Lokasi Penanganan (Km Awal – KM Akhir)</th> <th>Biaya Penanganan Jalan (Rp)</th> </tr>";
+      $('.rekap4').append(header);
+
+      var total_biaya = 0;
+      for (var i = 0; i < data.data.length; i++) {
+        var header = data.data[i];
+        var detail = data.data[i].detail;
+        total_biaya = total_biaya + header.total_biaya;
+        for (var dt = 0; dt < detail.length; dt++) {
+          if(dt == 0){
+            var content = "<tr class=\"table-body\">";
+              content += "<td>"+ header.no +"</td>";
+              content += "<td>"+ header.nama_ruas +"</td>";
+              content += "<td>"+ header.total_panjang +"</td>";
+              content += "<td>"+ detail[dt].jenis_penanganan +"</td>";
+              content += "<td>"+ detail[dt].panjang_penanganan_num +"</td>";
+              content += "<td>"+ detail[dt].lokasi_penanganan +"</td>";
+              content += "<td style=\"text-align: right;padding-right: 10px;\">"+ detail[dt].biaya_penanganan +"</td>";
+              content += "</tr>";
+            $('.rekap4').append(content);
+          }else{
+            var content = "<tr class=\"table-body\">";
+              content += "<td>&nbsp;</td>";
+              content += "<td>&nbsp;</td>";
+              content += "<td>&nbsp;</td>";
+              content += "<td>"+ detail[dt].jenis_penanganan +"</td>";
+              content += "<td>"+ detail[dt].panjang_penanganan_num +"</td>";
+              content += "<td>"+ detail[dt].lokasi_penanganan +"</td>";
+              content += "<td style=\"text-align: right;padding-right: 10px;\">"+ detail[dt].biaya_penanganan +"</td>";
+              content += "</tr>";
+            $('.rekap4').append(content);
+          }
+        }
+
+        var content = "<tr class=\"table-body\">";
+          content += "<td>&nbsp;</td>";
+          content += "<td>&nbsp;</td>";
+          content += "<td>&nbsp;</td>";
+          content += "<td>&nbsp;</td>";
+          content += "<td>&nbsp;</td>";
+          content += "<td style=\"font-weight: bold;\">TOTAL</td>";
+          content += "<td style=\"text-align: right;padding-right: 10px;\">"+ addPeriod(total_biaya) +"</td>";
+          content += "</tr>";
+        $('.rekap4').append(content);
+
+      }
     },'json');
+  }
+
+  function addPeriod(nStr)
+  {
+      nStr += '';
+      x = nStr.split('.');
+      x1 = x[0];
+      x2 = x.length > 1 ? '.' + x[1] : '';
+      var rgx = /(\d+)(\d{3})/;
+      while (rgx.test(x1)) {
+          x1 = x1.replace(rgx, '$1' + '.' + '$2');
+      }
+      return x1 + x2;
   }
 
   function resetView(){
@@ -1450,6 +1506,7 @@ console.log(data);
         }
     }).on('select2:select', function(e) {
       var id = e.params.data.id;
+      $('#txtbtnpdf_penanganan').text("Laporan Rekapitulasi");
 
       $('#fieldNoRuas').select2({
         placeholder: "Pilih Ruas",
@@ -1478,6 +1535,10 @@ console.log(data);
         var noruas = e.params.data.id;
         $('#viewNameRuas').text(name);
         comboKm(id, noruas);
+
+        $('#txtbtnpdf_penanganan').text("Laporan Per Jenis Penanganan");
+      }).on('select2:clear', function(e) {
+        $('#txtbtnpdf_penanganan').text("Laporan Rekapitulasi");
       });
     });
 
@@ -1504,7 +1565,9 @@ console.log(data);
             },
             cache: true
           }
-      })
+      }).on('select2:clear', function(e) {
+        $('#txtbtnpdf_penanganan').text("Laporan Rekapitulasi");
+      });
     }
 
     $('.periode').select2({

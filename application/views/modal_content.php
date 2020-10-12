@@ -39,7 +39,7 @@
           <div class="row">
             <div class="col-lg-12">
               <button id="btnViewPenanganan" class="btn btn-primary" style="margin-top: 10px;">Tampilkan Data</button>
-              <button id="btnViewPdf" class="btn btn-success" style="margin-top: 10px;">PDF</button>
+              <button id="btnViewPdf" class="btn btn-success" style="margin-top: 10px;"><span id="txtbtnpdf_penanganan">Laporan Rekapitulasi</span></button>
             </div>
           </div>
         </div>

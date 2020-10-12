@@ -104,4 +104,5 @@
     <h5>REKAPITULASI</h5>
     <h6>RENCANA ANGGARAN BIAYA</h6>
   </div>
+  <table class="table-style rekap4" style="font-size: 10pt;text-align: center;margin-top:20px"></table>
 </div>

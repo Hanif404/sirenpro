@@ -107,9 +107,9 @@ class PenangananModel extends CI_Model {
 	}
 
 	private function getListDetailByPenanganan($periode, $noruas, $penanganan_id){
-		$total = 0;
-		$panjang = 0;
-		$lokasi = "";
+		$total = 0.0;
+		$panjang = 0.0;
+		$lokasi = "-";
 		$id = "";
 
 		$this->db->select('pkj.*, hrg.satuan_id, jns.name, jns.penanganan_id');
@@ -143,19 +143,19 @@ class PenangananModel extends CI_Model {
 			}
 
 			$data['jenis_penanganan'] = $this->getMaster("kategori", $id);
-			$data['panjang_penanganan'] = $panjang." Km";
-			$data['panjang_penanganan_num'] = $panjang;
+			$data['panjang_penanganan'] = number_format($panjang,2)." Km";
+			$data['panjang_penanganan_num'] = number_format($panjang,2);
 			$data['lokasi_penanganan'] = $lokasi;
-			$data['biaya_penanganan'] = $this->currency_format($total);
+			$data['biaya_penanganan'] = $this->currency_format($total,false);
 			$data['biaya_penanganan_num'] = $total;
 			return $data;
     }else{
 			$data = array();
 			$data['jenis_penanganan'] = $this->getMaster("kategori", $penanganan_id);
-			$data['panjang_penanganan'] = $panjang." Km";
-			$data['panjang_penanganan_num'] = $panjang;
+			$data['panjang_penanganan'] = number_format($panjang,2)." Km";
+			$data['panjang_penanganan_num'] = number_format($panjang,2);
 			$data['lokasi_penanganan'] = $lokasi;
-			$data['biaya_penanganan'] = $this->currency_format($total);
+			$data['biaya_penanganan'] = $this->currency_format($total,false);
 			$data['biaya_penanganan_num'] = $total;
 			return $data;
 		}
@@ -235,7 +235,7 @@ class PenangananModel extends CI_Model {
 				foreach ($arraylist as $ls) {
 						$row = array();
 	    			$row[] = $ls['name'];
-	    			$row[] = $lshash[5];
+	    			$row[] = $lshash_1[5];
 						$row[] = $ls['volume'];
 	    			$row[] = $this->currency_format($ls['harga']).'/'.$this->getMaster("satuan",$ls['satuan_id']);
 	    			$row[] = $this->currency_format($ls['harga']*$ls['volume']);
@@ -457,8 +457,13 @@ class PenangananModel extends CI_Model {
     return $this->db->delete($this->penanganan);
   }
 
-	function currency_format($angka){
-  	$hasil_rupiah = "Rp. " . number_format($angka,0,',','.');
+	function currency_format($angka, $rp_text = true){
+		if($rp_text){
+			$rp = "Rp. ";
+		}else{
+			$rp = "";
+		}
+  	$hasil_rupiah =  $rp . number_format($angka,0,',','.');
   	return $hasil_rupiah;
   }
 }
