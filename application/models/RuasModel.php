@@ -4,6 +4,7 @@ class RuasModel extends CI_Model {
 	var $ruas = "ruas_jalan";
 	var $ruas_detail = "ruas_jalan_detail";
 	var $ruas_koordinat = "ruas_jalan_koordinat";
+	var $ruas_center = "ruas_jalan_center";
 	var $kategori = "kategori";
 	var $view_sum = "view_sum_kategori";
 
@@ -81,6 +82,94 @@ class RuasModel extends CI_Model {
       return array();
     }
   }
+
+	// Center
+	public function drawCenterKoordinat($id){
+		$this->db->select('rd.*, kg.name');
+		$this->db->from($this->ruas_detail.' rd');
+		$this->db->where('no_ruas', $id);
+		$list = $this->db->get();
+		if($list->num_rows() > 0){
+			$arraylist = $list->result_array();
+      $data = array();
+
+      foreach ($arraylist as $ls) {
+        $koordinat = $this->listCenterKoordinat($ls['hash_center']);
+
+        if(count($koordinat) > 0){
+          $feature = new stdClass();
+          $properties = new stdClass();
+          $geometry = new stdClass();
+
+          $properties->color = $this->getWarna("kategori", $this->kondisiPenanganan($ls['kategori_id']));
+          $geometry->type = "LineString";
+          $geometry->coordinates = $koordinat;
+
+          $feature->type = "Feature";
+          $feature->properties = $properties;
+          $feature->geometry = $geometry;
+
+          $data[]=$feature;
+        }
+      }
+
+			return json_encode($data);
+		} else {
+			return json_encode([]);
+		}
+	}
+
+  private function listCenterKoordinat($value){
+    $this->db->select('*');
+    $this->db->from($this->ruas_center);
+    $this->db->where('hash_data', $value);
+    $list = $this->db->get();
+    if($list->num_rows() > 0){
+			$arraylist = $list->result_array();
+      $data = array();
+
+      foreach ($arraylist as $ls) {
+        $row = array();
+
+        $row[0] = $ls['longtitude'];
+        $row[1] = $ls['latitude'];
+
+        $data[]=$row;
+      }
+
+      return $data;
+    }else{
+      return array();
+    }
+  }
+
+	private function kondisiPenanganan($value){
+		switch ($value) {
+			case '1':
+				return '1';
+				break;
+			case '2':
+				return '2';
+				break;
+			case '3':
+				return '3';
+				break;
+			default:
+				return '4';
+				break;
+		}
+	}
+
+	private function getWarna($code, $key){
+		$content = file_get_contents(base_url().'assets/master.json');
+		$data = json_decode($content, true);
+		foreach ($data[$code] as $ls) {
+			if($ls['id'] == $key){
+				return $ls['warna'];
+			}
+		}
+	}
+
 
   public function saving(){
     $this->setData();

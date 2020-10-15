@@ -141,6 +141,17 @@
 				}
 			}).addTo(mymap);
 		});
+
+		$.get('<?= base_url("ruas/getCenterKoordinat/");?>' + id, function(data) {
+			ruasLayer = L.geoJSON(JSON.parse(data), {
+				style: function(feature) {
+					return {
+						color: feature.properties.color,
+						weight: 3
+					};
+				}
+			}).addTo(mymap);
+		});
 	}
 
 	function clearLine(){

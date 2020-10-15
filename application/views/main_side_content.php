@@ -5,9 +5,11 @@
     <h5>Input Data</h5>
     <div class="list-group list-group-flush">
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#penangananModal">Program Penanganan</a>
+      <?php if($_SESSION['is_admin'] == "1" || $_SESSION['is_admin'] == "2" ):?>
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#pekerjaanModal">Harga Satuan Pekerjaan</a>
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#jenisKerjaModal">Jenis Pekerjaan</a>
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#rawanModal">Rawan Bencana</a>
+      <?php endif;?>
       <?php if($_SESSION['is_admin'] == "1"):?>
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#kategoriModal">Warna Garis</a>
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#koordinatModal">Import Koordinat Jalan</a>
@@ -40,6 +42,7 @@
   var tableKemantapan, tablePekerjaan, tablePengguna, tableKategori, tableRawan, tableJenisKerja, tablePenanganan, tablePenangananDet;
   var isShowTable = false;
   var selectDaerah = "";
+  var isAdmin = "<?= $_SESSION['is_admin'] ?>";
   $(document).ready(function() {
     loadDropdown();
     // loadPenangananDetForm();
@@ -59,13 +62,19 @@
   }
 
   function loadPenangananDetForm(hash){
+    var aksiField = "";
+    if(isAdmin == 2){
+      $('.form-penanganan').show();
+      aksiField = '<button id="btnEdit" class="btn btn-sm btn-primary btn-margin-bottom"><i class="fa fa-edit" ></i> Edit</button> <button id="btnDelete" class="btn btn-sm btn-danger btn-margin-bottom"><i class="far fa-trash-alt"></i> Delete</button>';
+    }
+
     $('#listPenangananDet').DataTable().clear().destroy();
     tablePenangananDet = $('#listPenangananDet').DataTable({
       "ajax": '<?= base_url("penanganan/listDetail/");?>'+hash,
       "columnDefs": [{
         "targets": -1,
         "data": null,
-        "defaultContent": '<button id="btnEdit" class="btn btn-sm btn-primary btn-margin-bottom"><i class="fa fa-edit" ></i> Edit</button> <button id="btnDelete" class="btn btn-sm btn-danger btn-margin-bottom"><i class="far fa-trash-alt"></i> Delete</button>'
+        "defaultContent": aksiField
       }]
     });
 
@@ -603,7 +612,7 @@
       var data = tablePengguna.row( $(this).parents('tr') ).data();
 
       //get data
-      $.get('<?= base_url("pengguna/getDetailItem/");?>' + data[4], function(dataJson) {
+      $.get('<?= base_url("pengguna/getDetailItem/");?>' + data[5], function(dataJson) {
         if(dataJson.code === 200){
           $('input[name=id]').val(dataJson.data[0].id);
           $('input[name=nama]').val(dataJson.data[0].nama);
@@ -626,7 +635,7 @@
           content: 'Yakin akan menghapus data ini?',
           buttons: {
               Ya: function () {
-                $.get('<?= base_url("pengguna/deleteItem/");?>' + data[4], function(dataJson) {
+                $.get('<?= base_url("pengguna/deleteItem/");?>' + data[5], function(dataJson) {
                   if(dataJson.code === 200){
                     Swal.fire({
                       icon: 'success',
@@ -746,70 +755,89 @@
   function loadKoordinatForm(){
     $('#btnSubmitKoordinat').on('click', function(e){
       e.stopImmediatePropagation();
-      blockShow();
+      var posisi = $('#inputCenter').val();
+      if(posisi != ""){
+        blockShow();
 
-      var filecsv = $("input[name=file_csv]")[0].files[0];
-      var ext = $("input[name=file_csv]").val().split(".").pop().toLowerCase();
-      if($.inArray(ext, ["csv"]) == -1) {
-        alert('Upload CSV');
-        return false;
-      }
-      if (filecsv != undefined) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            var arr = [];
-            var lines = e.target.result.split('\r\n');
-            var dataSplit = lines[1].split(";");
+        var filecsv = $("input[name=file_csv]")[0].files[0];
+        var ext = $("input[name=file_csv]").val().split(".").pop().toLowerCase();
+        if($.inArray(ext, ["csv"]) == -1) {
+          blockHide();
+          Swal.fire({
+            icon: 'error',
+            title: 'Submit Data',
+            text: 'Anda belum mengupload file csv'
+          })
+          return false;
+        }
+        if (filecsv != undefined) {
+          var reader = new FileReader();
+          reader.onload = function(e) {
+              var arr = [];
+              var lines = e.target.result.split('\r\n');
+              var dataSplit = lines[1].split(";");
 
-            var main = {};
-            main["no_ruas"] = dataSplit[0];
-            for (i = 0; i < lines.length-1; ++i)
-            {
-              //no get header
-              if(i>0){
+              var main = {};
+              main["no_ruas"] = dataSplit[0];
+              for (i = 0; i < lines.length-1; ++i)
+              {
+                //no get header
+                if(i>0){
 
-                arr.push(createJSON(lines[i]));
+                  arr.push(createJSON(lines[i], posisi));
+                }
               }
-            }
-            main["data"] = arr;
+              main["data"] = arr;
 
-            var postdata = JSON.stringify(main);
-            var $form = $('.form-koordinat');
-            $.post($form.attr('action'), {body:postdata}, function(data){
-              blockHide();
-              if(data.code === 200){
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Submit Data',
-                  text: 'Data berhasil tersimpan'
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    location.reload();
-                  }
-                });
-              }else{
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Submit Data',
-                  text: 'Gagal menyimpan data'
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    $("input[name=file_csv]").val('');
-                  }
-                });
-              }
-            }, 'json');
-        };
-        reader.readAsText(filecsv);
+              var postdata = JSON.stringify(main);
+              var $form = $('.form-koordinat');
+              $.post($form.attr('action'), {body:postdata, posisi:posisi}, function(data){
+                blockHide();
+                if(data.code === 200){
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Submit Data',
+                    text: 'Data berhasil tersimpan'
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      location.reload();
+                    }
+                  });
+                }else{
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Submit Data',
+                    text: 'Gagal menyimpan data'
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      $("input[name=file_csv]").val('');
+                    }
+                  });
+                }
+              }, 'json');
+          };
+          reader.readAsText(filecsv);
+        }
+      }else{
+        Swal.fire({
+          icon: 'error',
+          title: 'Submit Data',
+          text: 'Anda belum memilih posisi'
+        })
       }
+
       return false;
     });
 
-    function createJSON(data) {
+    function createJSON(data, posisi) {
       var dataSplit = data.split(";");
 
       item = {}
-      item["hash"] = $.md5(dataSplit[0]+dataSplit[2]+dataSplit[3]);
+      if(posisi === 1){
+        item["hash"] = $.md5(dataSplit[0]+dataSplit[2]);
+      }else{
+        item["hash"] = $.md5(dataSplit[0]+dataSplit[2]+dataSplit[3]);
+      }
       item["lat_data"] = dataSplit[4];
       item["long_data"] = dataSplit[5];
       return item;

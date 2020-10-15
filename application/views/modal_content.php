@@ -104,7 +104,7 @@
             </div>
           </div>
         </div>
-        <form class="form-penanganan" method="post" action="<?= base_url('penanganan/setItem');?>">
+        <form class="form-penanganan" method="post" action="<?= base_url('penanganan/setItem');?>" style="display:none;">
           <input type="hidden" name="id" />
           <input type="hidden" id="fieldKodeJalan" name="hash" >
           <div class="container">
@@ -419,13 +419,27 @@
                 <input type="file" class="form-control" name="file_image" >
               </div>
               <div class="col-lg-6">
-                <div class="form-group">
-                  <label for="input3">Active</label>
-                  <select class="is-active" name="is_active" style="width:100%">
-                    <option value="1">Ya</option>
-                    <option value="0">Tidak</option>
-                  </select>
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="input3">Role</label>
+                      <select class="is-active" name="is_admin" style="width:100%">
+                        <option value="2">Operator</option>
+                        <option value="3">Viewer</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="input3">Active</label>
+                      <select class="is-active" name="is_active" style="width:100%">
+                        <option value="1">Ya</option>
+                        <option value="0">Tidak</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
+
               </div>
             </div>
             <div class="row">
@@ -444,6 +458,7 @@
     											<th>NIP</th>
     											<th>Nama</th>
     											<th>Email</th>
+    											<th>Role</th>
     											<th>Active</th>
     											<th>&nbsp;</th>
     									</tr>
@@ -523,6 +538,18 @@
       <div class="modal-body">
         <form class="form-koordinat" method="post" action="<?= base_url('koordinat/setItem');?>">
           <div class="container">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="form-group">
+                  <label for="input2">Posisi Koordinat</label>
+                  <select class="daerah select-2" id="inputCenter" name="is_center" style="width:100%">
+                    <option value="">Pilih Posisi</option>
+                    <option value="0">Non Center</option>
+                    <option value="1">Center</option>
+                  </select>
+                </div>
+              </div>
+            </div>
             <div class="row">
               <div class="col-lg-12">
                 <div class="form-group">

@@ -21,7 +21,7 @@ class PenggunaModel extends CI_Model {
 	public function getAllData(){
 		$this->db->select('*');
     $this->db->from($this->pengguna);
-		$this->db->where('is_admin', 0);
+		$this->db->where('is_admin > 1', null, false);
 		$list = $this->db->get();
     if($list->num_rows() > 0){
       $arraylist = $list->result_array();
@@ -32,6 +32,7 @@ class PenggunaModel extends CI_Model {
     			$row[] = $ls['nip'];
     			$row[] = $ls['nama'];
     			$row[] = $ls['email'];
+    			$row[] = $ls['is_admin'] == "2" ? "Operator" : "Viewer";
 					if($ls['is_active'] == 1){
 						$row[] = 'Ya';
 					}else{
@@ -56,6 +57,7 @@ class PenggunaModel extends CI_Model {
       $this->db->set('nama', $this->nama);
       $this->db->set('nip', $this->nip);
       $this->db->set('email', $this->email);
+			$this->db->set('is_admin', $this->is_admin);
       $this->db->set('is_active', $this->is_active);
 			if($this->password != ""){
 				$this->db->set('password', $this->password);
@@ -69,10 +71,11 @@ class PenggunaModel extends CI_Model {
 			$this->db->set('nama', $this->nama);
 			$this->db->set('nip', $this->nip);
       $this->db->set('email', $this->email);
+      $this->db->set('is_admin', $this->is_admin);
       $this->db->set('is_active', $this->is_active);
       $this->db->set('password', $this->password);
 			$this->db->set('photo', $filename);
-      return $this->db->insert($this->pengguna);
+      $this->db->insert($this->pengguna);
     }
   }
 

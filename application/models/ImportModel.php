@@ -68,7 +68,7 @@ class ImportModel extends CI_Model {
 				// echo $this->db->last_query();exit;
 
 				$hash = md5($value['no'].number_format($detRuas['awal_km'], 3, '.', '').strtoupper($detRuas['posisi']));
-				$hash_center = md5($value['no'].number_format($detRuas['awal_km'], 3, '.', '')));
+				$hash_center = md5($value['no'].number_format($detRuas['awal_km'], 3, '.', ''));
 				$idKategori = 0;
 
 				foreach ($kg as $key => $kgData) {
