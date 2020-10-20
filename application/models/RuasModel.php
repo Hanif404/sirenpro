@@ -32,7 +32,7 @@ class RuasModel extends CI_Model {
 		if($list->num_rows() > 0){
 			$arraylist = $list->result_array();
       $data = array();
-
+			$total = 0;
       foreach ($arraylist as $ls) {
         $koordinat = $this->listKoordinat($ls['hash_data']);
 
@@ -42,6 +42,18 @@ class RuasModel extends CI_Model {
           $geometry = new stdClass();
 
           $properties->color = $ls['warna'];
+					if($ls['posisi'] == "KANAN"){
+						$total = $total + $ls['panjang'];
+						if($total == 1000){
+							$total = 0;
+							$properties->text = "KM ".$ls['awal_km'];
+						}else{
+							$properties->text = "";
+						}
+					}else{
+						$properties->text = "";
+					}
+
           $geometry->type = "LineString";
           $geometry->coordinates = $koordinat;
 
@@ -288,7 +300,14 @@ class RuasModel extends CI_Model {
     $this->db->select('*');
     $this->db->from($this->kategori);
 		$this->db->order_by('id', 'asc');
-    return json_encode($this->db->get()->result());
+		$return[] = $this->db->get()->result();
+		$return[] = $this->getMaster('kategori')['kategori'];
+    return json_encode($return);
+	}
+
+	private function getMaster($code){
+		$content = file_get_contents(base_url().'assets/master.json');
+		return json_decode($content, true);
 	}
 
 	public function dataRekap(){

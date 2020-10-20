@@ -24,6 +24,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.11/jquery.csv.min.js" integrity="sha512-Y8iWYJDo6HiTo5xtml1g4QqHtl/PO1w+dmUpQfQSOTqKNsMhExfyPN2ncNAe9JuJUSKzwK/b6oaNPop4MXzkwg==" crossorigin="anonymous"></script>
 	<script src="<?= base_url('assets/js/jquery.md5.js')?>"></script>
 	<script src="<?= base_url('assets/js/jquery.loading.block.js')?>"></script>
+	<script src="<?= base_url('assets/js/leaflet.textpath.js') ?>"></script>
 </head>
 <body>
 	<?php $this->load->view('main_right_content'); ?>
@@ -133,6 +134,9 @@
 
 		$.get('<?= base_url("ruas/getKoordinat/");?>' + id, function(data) {
 			ruasLayer = L.geoJSON(JSON.parse(data), {
+				onEachFeature: function (feature, layer) {
+						layer.setText(feature.properties.text, {offset: -5});
+				},
 				style: function(feature) {
 					return {
 						color: feature.properties.color,
@@ -160,20 +164,25 @@
 	}
 
 	$.get('<?= base_url("ruas/getLegenda");?>', function(data) {
-		var obj = jQuery.parseJSON(data);
+		// var obj = jQuery.parseJSON();
 		var content = '';
 		content += '<ul>';
 		content += '<li><h6>Legenda :</h6></li>';
 
-		$.each(obj, function(key, value) {
+		$.each(data[0], function(key, value) {
 			content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + value['name'] + '</li>';
 		});
+		content += '<hr style="margin-top:3px;margin-bottom:3px"/>';
+		$.each(data[1], function(key, value) {
+			content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + value['name'] + '</li>';
+		});
+		content += '<hr style="margin-top:3px;margin-bottom:3px"/>';
 		content += '<li><img src="<?php echo base_url('assets/image/rawan_longsor.png')?>"> Lokasi Rawan Longsor</li>';
 		content += '<li style="padding-top:5px"><img src="<?php echo base_url('assets/image/rawan_banjir.png')?>"> Lokasi Rawan Banjir</li>';
 		content += '<li style="padding-top:5px"><img src="<?php echo base_url('assets/image/rawan_kecelakaan.png')?>"> Lokasi Rawan Kecelakaan</li>';
 		content += '</ul>';
 		$('.sidemenu-legenda').html(content);
-	});
+	},'json');
 
 	$.get('<?= base_url("auth/getProfile");?>', function(data) {
 		var result = JSON.parse(data);
