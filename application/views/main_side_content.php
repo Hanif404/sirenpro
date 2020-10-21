@@ -63,7 +63,7 @@
 
   function loadPenangananDetForm(hash){
     var aksiField = "";
-    if(isAdmin == 2){
+    if(isAdmin == 2 || isAdmin == 1){
       $('.form-penanganan').show();
       aksiField = '<button id="btnEdit" class="btn btn-sm btn-primary btn-margin-bottom"><i class="fa fa-edit" ></i> Edit</button> <button id="btnDelete" class="btn btn-sm btn-danger btn-margin-bottom"><i class="far fa-trash-alt"></i> Delete</button>';
     }
@@ -833,7 +833,7 @@
       var dataSplit = data.split(";");
 
       item = {}
-      if(posisi === 1){
+      if(posisi == "1"){
         item["hash"] = $.md5(dataSplit[0]+dataSplit[2]);
       }else{
         item["hash"] = $.md5(dataSplit[0]+dataSplit[2]+dataSplit[3]);
@@ -1501,7 +1501,12 @@
     });
 
     $('.combokm').select2({
-      placeholder: "Pilih Km",
+      placeholder: "Pilih awal KM",
+      allowClear: true,
+    });
+
+    $('.comboakhirkm').select2({
+      placeholder: "Pilih akhir KM",
       allowClear: true,
     });
 
@@ -1572,10 +1577,36 @@
 
     function comboKm(periode_id, noruas){
       $('.combokm').select2({
-        placeholder: "Pilih Km",
+        placeholder: "Pilih awal KM",
         allowClear: true,
         ajax: {
-            url: "<?= base_url('penanganan/getComboKm/') ?>"+periode_id+"/"+noruas,
+            url: "<?= base_url('penanganan/getComboKm/') ?>"+periode_id+"/"+noruas+"/0",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+              return {
+                q: params.term, // search term
+                page: params.page
+              };
+            },
+            processResults: function (data, page) {
+              return {
+                results: $.map(data, function(obj) {
+                    return { id: obj.id, text: obj.id };
+                })
+              };
+            },
+            cache: true
+          }
+      }).on('select2:clear', function(e) {
+        $('#txtbtnpdf_penanganan').text("Laporan Rekapitulasi");
+      });
+
+      $('.comboakhirkm').select2({
+        placeholder: "Pilih akhir KM",
+        allowClear: true,
+        ajax: {
+            url: "<?= base_url('penanganan/getComboKm/') ?>"+periode_id+"/"+noruas+"/1",
             dataType: 'json',
             delay: 250,
             data: function (params) {

@@ -31,7 +31,7 @@
                   <select class="form-control combokm" id="fieldAwalKm" style="width:100%"></select>
                 </div>
                 <div class="col-md-6">
-                  <select class="form-control combokm" id="fieldAkhirKm" style="width:100%"></select>
+                  <select class="form-control comboakhirkm" id="fieldAkhirKm" style="width:100%"></select>
                 </div>
               </div>
             </div>

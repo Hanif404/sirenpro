@@ -161,16 +161,27 @@ class PenangananModel extends CI_Model {
 		}
 	}
 
-	public function dataComboKm($filter, $periode, $noruas){
+	public function dataComboKm($filter, $periode, $noruas, $is_pos){
 		$this->db->distinct();
-		$this->db->select('awal_km as id');
+		if($is_pos == '1'){
+			$this->db->select('akhir_km as id');
+		}else{
+			$this->db->select('awal_km as id');
+		}
 		$this->db->from($this->ruas_det);
 		$this->db->where('periode_id', $periode);
 		$this->db->where('no_ruas', $noruas);
-		if(strlen($filter) > 0){
-			$this->db->like('awal_km', $filter);
+		if($is_pos == '1'){
+			if(strlen($filter) > 0){
+				$this->db->like('akhir_km', $filter);
+			}
+			$this->db->order_by('akhir_km', 'desc');
+		}else{
+			if(strlen($filter) > 0){
+				$this->db->like('awal_km', $filter);
+			}
+			$this->db->order_by('awal_km', 'asc');
 		}
-		$this->db->order_by('awal_km', 'asc');
 		$list = $this->db->get();
 		if($list->num_rows() > 0){
 			$arraylist = $list->result_array();

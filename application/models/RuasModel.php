@@ -46,7 +46,7 @@ class RuasModel extends CI_Model {
 						$total = $total + $ls['panjang'];
 						if($total == 1000){
 							$total = 0;
-							$properties->text = "KM ".$ls['awal_km'];
+							$properties->text = "KM ".$ls['akhir_km'];
 						}else{
 							$properties->text = "";
 						}
@@ -97,7 +97,7 @@ class RuasModel extends CI_Model {
 
 	// Center
 	public function drawCenterKoordinat($id){
-		$this->db->select('rd.*, kg.name');
+		$this->db->select('rd.*');
 		$this->db->from($this->ruas_detail.' rd');
 		$this->db->where('no_ruas', $id);
 		$list = $this->db->get();

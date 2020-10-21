@@ -21,9 +21,9 @@ class Penanganan extends MY_Controller {
     $this->wrapper(true,$return,'success get data',200);
   }
 
-  public function getComboKm($periode, $noruas){
+  public function getComboKm($periode, $noruas, $is_pos = "0"){
     $filter = $this->input->get('q');
-    echo $this->PenangananModel->dataComboKm($filter, $periode, $noruas);
+    echo $this->PenangananModel->dataComboKm($filter, $periode, $noruas, $is_pos);
   }
 
   public function listDetail($hash){
