@@ -29,12 +29,13 @@ class PenangananModel extends CI_Model {
 
 		if($noruas != "" && $kmAwal != "" && $kmAkhir != "" && $jns != ""){
 			$isView = 1;
+			// rjd.awal_km BETWEEN $kmAwal and $kmAkhir
 			$str = "
 				SELECT pr.nama as nama_periode, rj.no_ruas, rj.nama_ruas, rj.panjang, rjd.kategori_id, sum(rjd.panjang) as pj_detail, sum(rjd.luas) as luas
 				FROM periode pr
 				JOIN ruas_jalan rj ON pr.id = rj.periode_id
 				join ruas_jalan_detail rjd ON rj.no_ruas = rjd.no_ruas and rj.periode_id = rjd.periode_id
-				WHERE rj.no_ruas = $noruas and rj.periode_id = $periode and rjd.posisi = \"KANAN\" AND rjd.awal_km BETWEEN $kmAwal and $kmAkhir
+				WHERE rj.no_ruas = $noruas and rj.periode_id = $periode and rjd.posisi = \"KANAN\" AND rjd.awal_km >= $kmAwal AND rjd.akhir_km <= $kmAkhir
 				GROUP BY pr.nama, rj.no_ruas, rj.nama_ruas, rj. panjang, rjd.kategori_id
 			";
 		}else{
@@ -284,7 +285,9 @@ class PenangananModel extends CI_Model {
     $this->db->where('no_ruas', $noruas);
     $this->db->where('periode_id', $periode);
     $this->db->where('posisi', "KANAN");
-		$this->db->where( "awal_km BETWEEN $awal AND $akhir", NULL, FALSE );
+		// $this->db->where( "awal_km BETWEEN $awal AND $akhir", NULL, FALSE );
+		$this->db->where( "awal_km >= $awal", NULL, FALSE );
+		$this->db->where( "akhir_km <= $akhir", NULL, FALSE );
 		$this->db->order_by('awal_km', 'asc');
 		$list = $this->db->get();
     if($list->num_rows() > 0){
