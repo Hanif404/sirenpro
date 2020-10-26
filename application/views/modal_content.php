@@ -580,6 +580,17 @@
         </button>
       </div>
       <div class="modal-body" id="rekapBody">
+        <style>
+        .table-style{border-collapse:collapse;width:100%;font-size:8pt;}
+        .table-style th{border:1px solid black;}
+        .table-style td{border:1px solid black;}
+        .table-header{text-transform:uppercase;text-align:center;}
+        .table-body td{padding-left:5px;}
+        .table-footer{text-transform:uppercase;font-weight:bold;}
+        .table-footer td{padding-left:5px;}
+        .column-sm{float:left;width:5%;}
+        .header{text-align:center;margin-bottom:20px;}
+        </style>
         <?php $this->load->view('rekap_view');?>
       </div>
       <div class="modal-footer">
