@@ -1360,6 +1360,11 @@
 	}
 
   function loadDropdownJenisKerja(id){
+    $("#fieldHargaPekerjaan").val(0);
+    $("#viewHargaPekerjaan").val("");
+    $("#viewInputHarga").val(0);
+    hitungBiaya(0);
+    
     $('.jns_pekerjaan').select2({
       placeholder: "Pilih Jenis Pekerjaan",
       allowClear: false,
@@ -1384,6 +1389,10 @@
         }
     }).on('select2:select', function(e) {
       var id = e.params.data.id;
+      $("#fieldHargaPekerjaan").val(0);
+      $("#viewHargaPekerjaan").val("");
+      $("#viewInputHarga").val(0);
+      hitungBiaya(0);
 
       $.get('<?= base_url("pekerjaan/getDetailItemByJenis/");?>'+id, function(data) {
         $("#fieldHargaPekerjaan").val(data.data.harga);

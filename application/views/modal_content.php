@@ -127,7 +127,7 @@
               <div class="col-lg-6">
                 <div class="form-group">
                   <label for="input2">Volume</label>
-                  <input type="number" min="0" value="0" class="form-control" placeholder="Volume" oninput="hitungBiaya(this.value)" name="volume" />
+                  <input type="number" min="0" value="0" id="viewInputHarga" class="form-control" placeholder="Volume" oninput="hitungBiaya(this.value)" name="volume" />
                 </div>
               </div>
               <div class="col-lg-6">
