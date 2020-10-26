@@ -25,7 +25,7 @@
     <div class="div-block"></div>
     <br/>
     <p style="margin-bottom: 0px;">Tabel Rekap Kemantapan</p>
-    <select class="daerah select-2" name="daerah" style="width:100%">
+    <select class="daerah select-2" name="daerah" id="cbDaerah" style="width:100%">
       <option value="">Pilih Semua</option>
       <option value="garut">Garut</option>
       <option value="sumedang">Sumedang</option>
@@ -709,6 +709,9 @@
   			},
   			warna : {
   				required: true
+  			},
+  			jenis : {
+  				required: true
   			}
   		}
   	});
@@ -717,11 +720,12 @@
   		var data = tableKategori.row( $(this).parents('tr') ).data();
 
       //get data
-      $.get('<?= base_url("kategori/getDetailItem/");?>' + data[2], function(dataJson) {
+      $.get('<?= base_url("kategori/getDetailItem/");?>' + data[3], function(dataJson) {
         if(dataJson.code === 200){
           $('input[name=id]').val(dataJson.data[0].id);
           $('input[name=name]').val(dataJson.data[0].name);
           $('input[name=warna]').val(dataJson.data[0].warna);
+          $('#fieldJenisKategori').val(dataJson.data[0].jenis).trigger('change');
         }
       }, 'json');
   	});
@@ -733,7 +737,7 @@
           content: 'Yakin akan menghapus data ini?',
           buttons: {
               Ya: function () {
-                $.get('<?= base_url("kategori/deleteItem/");?>' + data[2], function(dataJson) {
+                $.get('<?= base_url("kategori/deleteItem/");?>' + data[3], function(dataJson) {
                   if(dataJson.code === 200){
                     Swal.fire({
                       icon: 'success',
@@ -966,7 +970,7 @@
     var styleEmbed = "<style> .table-style{border-collapse:collapse;width:100%;font-size:8pt;} .table-style th{border:1px solid black;} .table-style td{border:1px solid black;} .table-header{text-transform:uppercase;text-align:center;} .table-body td{padding-left:5px;} .table-footer{text-transform:uppercase;font-weight:bold;} .table-footer td{padding-left:5px;} .column-sm{float:left;width:5%;} .header{text-align:center;margin-bottom:20px;}</style>";
     htmlTag = styleEmbed + htmlTag;
     $.post('<?= base_url("ruas/download");?>',{html:htmlTag}, function(data) {
-      var win = window.open('<?php echo base_url("assets/file/rekap.pdf")?>', '_blank');
+      var win = window.open('<?php echo base_url("assets/file/rekap.pdf")?>', '_blank', 'location=yes', 'clearcache=yes');
       if (win) {
           win.focus();
       } else {
@@ -979,7 +983,7 @@
   $('#btnRekap').click(function(){
     var periode = $(".periode option:selected").val();
     var ruas = $(".ruas option:selected").val();
-    var daerah = $(".daerah option:selected").val();
+    var daerah = $("#cbDaerah").val();
     var ksp = $(".ksp option:selected").val();
 
     if(periode != undefined && ruas != undefined){
@@ -991,7 +995,7 @@
 
       $('.rekap1').empty();
       $('.rekap2').empty();
-      if(periode !== "" && (daerah == "" || daerah == undefined) && (ksp == "" || ksp == undefined)){
+      if(periode !== "" && daerah != ""){
         $('#txt_total').show();
         viewRekap2(periode);
       }else{
@@ -1312,8 +1316,7 @@
     },'json');
   }
 
-  function addPeriod(nStr)
-  {
+  function addPeriod(nStr){
       nStr += '';
       x = nStr.split('.');
       x1 = x[0];
@@ -1412,7 +1415,7 @@
       allowClear: false,
       minimumResultsForSearch: Infinity,
       ajax: {
-          url: "<?= base_url('pekerjaan/getCombo/kategori') ?>",
+          url: "<?= base_url('Kategori/getCombo/2') ?>",
           dataType: 'json',
           delay: 250,
           data: function (params) {
@@ -1469,6 +1472,12 @@
 
     $('.is-active').select2({
       placeholder: "Pilih Active",
+      allowClear: false,
+      minimumResultsForSearch: Infinity
+    });
+
+    $('.jenis_kategori').select2({
+      placeholder: "Pilih Jenis",
       allowClear: false,
       minimumResultsForSearch: Infinity
     });

@@ -300,14 +300,8 @@ class RuasModel extends CI_Model {
     $this->db->select('*');
     $this->db->from($this->kategori);
 		$this->db->order_by('id', 'asc');
-		$return[] = $this->db->get()->result();
-		$return[] = $this->getMaster('kategori')['kategori'];
+		$return = $this->db->get()->result();
     return json_encode($return);
-	}
-
-	private function getMaster($code){
-		$content = file_get_contents(base_url().'assets/master.json');
-		return json_decode($content, true);
 	}
 
 	public function dataRekap(){

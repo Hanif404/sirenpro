@@ -1,4 +1,3 @@
 {
-  "kategori":[{"id":1,"name":"Pemeliharaan Rutin", "warna":"#fdd965"},{"id":2,"name":"Pemeliharaan Berkala", "warna":"#f4b083"},{"id":3,"name":"Rehabilitasi", "warna":"#c55a1f"},{"id":4,"name":"Rekonstruksi", "warna":"#e83f25"}],
   "satuan":[{"id":1,"name":"KM"},{"id":2,"name":"M2"},{"id":3,"name":"M3"},{"id":4,"name":"M"}]
 }

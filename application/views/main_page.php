@@ -168,13 +168,14 @@
 		var content = '';
 		content += '<ul>';
 		content += '<li><h6>Legenda :</h6></li>';
-
-		$.each(data[0], function(key, value) {
-			content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + value['name'] + '</li>';
-		});
-		content += '<hr style="margin-top:3px;margin-bottom:3px"/>';
-		$.each(data[1], function(key, value) {
-			content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + value['name'] + '</li>';
+		
+		$.each(data, function(key, value) {
+			if(value['id'] === "8"){
+				content += '<hr style="margin-top:3px;margin-bottom:3px"/>';
+				content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + value['name'] + '</li>';
+			}else{
+				content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + value['name'] + '</li>';
+			}
 		});
 		content += '<hr style="margin-top:3px;margin-bottom:3px"/>';
 		content += '<li><img src="<?php echo base_url('assets/image/rawan_longsor.png')?>"> Lokasi Rawan Longsor</li>';

@@ -2,6 +2,7 @@
 class PekerjaanModel extends CI_Model {
 	var $pekerjaan = "pekerjaan_harga";
 	var $jenisKerja = "pekerjaan_jenis";
+	var $kategori = "kategori";
 
 	public function __construct()
     {
@@ -54,9 +55,10 @@ class PekerjaanModel extends CI_Model {
 	}
 
   public function getAllData(){
-		$this->db->select('pkj.*, jpk.name, jpk.penanganan_id');
+		$this->db->select('pkj.*, jpk.name, jpk.penanganan_id, kg.name as penanganan_text');
     $this->db->from($this->pekerjaan.' pkj');
     $this->db->join($this->jenisKerja.' jpk', 'pkj.jenis_id = jpk.id');
+		$this->db->join($this->kategori.' kg', 'jpk.penanganan_id = kg.id and kg.jenis = 2');
 		$list = $this->db->get();
     if($list->num_rows() > 0){
       $arraylist = $list->result_array();
@@ -64,7 +66,7 @@ class PekerjaanModel extends CI_Model {
 
 			foreach ($arraylist as $ls) {
 				$row = array();
-    			$row[] = $this->getMaster("kategori", $ls['penanganan_id']);
+    			$row[] = $ls['penanganan_text'];
     			$row[] = $ls['name'];
     			$row[] = $ls['harga'];
 					$row[] = $this->getMaster("satuan", $ls['satuan_id']);
@@ -95,9 +97,10 @@ class PekerjaanModel extends CI_Model {
   }
 
   public function getDetailData($id){
-		$this->db->select('pkj.*, jpk.name, jpk.penanganan_id');
+		$this->db->select('pkj.*, jpk.name, jpk.penanganan_id, kg.name as penanganan_text');
     $this->db->from($this->pekerjaan.' pkj');
     $this->db->join($this->jenisKerja.' jpk', 'pkj.jenis_id = jpk.id');
+		$this->db->join($this->kategori.' kg', 'jpk.penanganan_id = kg.id and kg.jenis = 2');
     $this->db->where('pkj.id', $id);
 		$list = $this->db->get();
 		if($list->num_rows() > 0){
@@ -108,7 +111,7 @@ class PekerjaanModel extends CI_Model {
 				$row = array();
 					$row['satuan_text'] = $this->getMaster("satuan",$ls['satuan_id']);
 					$row['satuan_id'] = $ls['satuan_id'];
-    			$row['penanganan_text'] = $this->getMaster("kategori",$ls['penanganan_id']);
+    			$row['penanganan_text'] = $ls['penanganan_text'];
     			$row['penanganan_id'] = $ls['penanganan_id'];
 					$row['jenis_text'] = $ls['name'];
 					$row['jenis_id'] = $ls['jenis_id'];

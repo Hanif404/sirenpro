@@ -39,8 +39,8 @@ class Kategori extends MY_Controller {
 		$this->wrapper(true,$return,'success delete data',200);
   }
 
-  public function getCombo(){
+  public function getCombo($type){
     $filter = $this->input->get('q');
-    echo $this->KategoriModel->dataCombo($filter);
+    echo $this->KategoriModel->dataCombo($filter, $type);
   }
 }

@@ -59,7 +59,7 @@ class PenangananModel extends CI_Model {
 				$data['nama_ruas'] = $arraylist[0]['nama_ruas'];
 				$data['nama_periode'] = $arraylist[0]['nama_periode'];
 				$data['panjang_km'] = $arraylist[0]['panjang']. " Km";
-				$data['penanganan_nama'] = $this->getMaster("kategori", $jns);
+				$data['penanganan_nama'] = $this->getKgPenanganan($jns);
 				$data['penanganan_range'] = "KM ".$kmAwal." s/d KM ".$kmAkhir;
 
 				if($sum != ''){
@@ -143,7 +143,7 @@ class PenangananModel extends CI_Model {
 				}
 			}
 
-			$data['jenis_penanganan'] = $this->getMaster("kategori", $id);
+			$data['jenis_penanganan'] = $this->getKgPenanganan($id);
 			$data['panjang_penanganan'] = number_format($panjang,2)." Km";
 			$data['panjang_penanganan_num'] = number_format($panjang,2);
 			$data['lokasi_penanganan'] = $lokasi;
@@ -152,7 +152,7 @@ class PenangananModel extends CI_Model {
 			return $data;
     }else{
 			$data = array();
-			$data['jenis_penanganan'] = $this->getMaster("kategori", $penanganan_id);
+			$data['jenis_penanganan'] = $this->getKgPenanganan($penanganan_id);
 			$data['panjang_penanganan'] = number_format($panjang,2)." Km";
 			$data['panjang_penanganan_num'] = number_format($panjang,2);
 			$data['lokasi_penanganan'] = $lokasi;
@@ -265,16 +265,16 @@ class PenangananModel extends CI_Model {
 	private function kondisiPenanganan($value){
 		switch ($value) {
 			case '1':
-				return '1';
+				return '8';
 				break;
 			case '2':
-				return '2';
+				return '9';
 				break;
 			case '3':
-				return '3';
+				return '10';
 				break;
 			default:
-				return '4';
+				return '11';
 				break;
 		}
 	}
@@ -390,6 +390,7 @@ class PenangananModel extends CI_Model {
 	public function getAllData($noruas, $periode, $awal, $akhir){
 		$this->db->select('*');
     $this->db->from($this->kategori);
+		$this->db->where('jenis', '1');
 		$this->db->order_by('id', 'asc');
 		$list = $this->db->get();
     if($list->num_rows() > 0){
@@ -404,7 +405,7 @@ class PenangananModel extends CI_Model {
 							$row = array();
 							$penanganan_id = $this->kondisiPenanganan($valsum['kondisi']);
 							$row[] = $ls['name'];
-							$row[] = $this->getMaster("kategori", $penanganan_id);
+							$row[] = $this->getKgPenanganan($penanganan_id);
 							$row[] = $valsum['panjang'];
 							$row[] = $valsum['luas'];
 							$row[] = base64_encode($noruas."~".$periode."~".$awal."~".$akhir."~".$ls['id']."~".$valsum['panjang']."~".$valsum['luas']);
@@ -418,6 +419,21 @@ class PenangananModel extends CI_Model {
     } else {
       return '';
     }
+	}
+
+	public function getKgPenanganan($id){
+		$this->db->select('*');
+    $this->db->from($this->kategori);
+		$this->db->where('id', $id);
+		$this->db->where('jenis', '2');
+		$this->db->order_by('id', 'asc');
+		$list = $this->db->get();
+    if($list->num_rows() > 0){
+      $arraylist = $list->result_array();
+			return $arraylist[0]['name'];
+		}else{
+			return "";
+		}
 	}
 
   public function saving(){

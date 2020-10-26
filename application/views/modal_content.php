@@ -493,9 +493,22 @@
                 </div>
               </div>
               <div class="col-lg-6">
-                <div class="form-group">
-                  <label for="input3">Warna</label>
-                  <input type="text" class="form-control" placeholder="Warna"  name="warna" >
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="input3">Warna</label>
+                      <input type="text" class="form-control" placeholder="Warna"  name="warna" >
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label for="input3">Jenis</label>
+                      <select class="jenis_kategori" id="fieldJenisKategori" name="jenis" style="width:100%">
+                        <option value="1">Ruas Jalan</option>
+                        <option value="2">Penanganan</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -514,6 +527,7 @@
     									<tr>
     											<th>Nama</th>
     											<th>Warna</th>
+    											<th>Jenis</th>
     											<th>&nbsp;</th>
     									</tr>
     							</thead>
