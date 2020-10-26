@@ -72,6 +72,7 @@ class Ruas extends MY_Controller {
 
   public function download(){
       $view = $this->input->post('html');
+      @unlink('.assets/file/rekap.pdf');
 
       $this->load->library('pdf');
       $this->pdf->setPaper('A4', 'landscape');
