@@ -995,7 +995,7 @@
 
       $('.rekap1').empty();
       $('.rekap2').empty();
-      if(periode !== "" && daerah != ""){
+      if(periode !== "" && daerah == ""){
         $('#txt_total').show();
         viewRekap2(periode);
       }else{
