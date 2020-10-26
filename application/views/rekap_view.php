@@ -24,7 +24,7 @@
   .table-footer{
     text-transform: uppercase;
     font-weight: bold;
-  }
+  } 
 
   .table-footer td{
     padding-left: 5px;
