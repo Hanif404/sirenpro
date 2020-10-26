@@ -223,6 +223,7 @@
     });
 
     $('#btnViewPdf').on('click', function(e){
+      $('#viewRekap').hide();
       $('#viewPenanganan').hide();
       $('#viewAllPenanganan').hide();
 
@@ -961,6 +962,7 @@
 
   $('#btnPdf').click(function(){
     var htmlTag = $("#rekapBody").html();
+    console.log(htmlTag);
     $.post('<?= base_url("ruas/download");?>',{html:htmlTag}, function(data) {
       var win = window.open('<?php echo base_url("assets/file/rekap.pdf")?>', '_blank');
       if (win) {
@@ -981,9 +983,10 @@
     if(periode != undefined && ruas != undefined){
       $('#rekapModal').modal('show');
       $('#viewRekap').show();
+
       $('#viewPenanganan').hide();
       $('#viewAllPenanganan').hide();
-      $('#viewPenanganan').hide();
+
       $('.rekap1').empty();
       $('.rekap2').empty();
       if(periode !== "" && (daerah == "" || daerah == undefined) && (ksp == "" || ksp == undefined)){
@@ -1364,7 +1367,7 @@
     $("#viewHargaPekerjaan").val("");
     $("#viewInputHarga").val(0);
     hitungBiaya(0);
-    
+
     $('.jns_pekerjaan').select2({
       placeholder: "Pilih Jenis Pekerjaan",
       allowClear: false,
