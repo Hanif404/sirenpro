@@ -962,7 +962,6 @@
 
   $('#btnPdf').click(function(){
     var htmlTag = $("#rekapBody").html();
-    console.log(htmlTag);
     $.post('<?= base_url("ruas/download");?>',{html:htmlTag}, function(data) {
       var win = window.open('<?php echo base_url("assets/file/rekap.pdf")?>', '_blank');
       if (win) {
