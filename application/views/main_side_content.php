@@ -23,8 +23,10 @@
     <div class="div-block"></div>
     <select class="ruas select-2" name="ruas" style="width:100%"></select>
     <div class="div-block"></div>
-    <br/>
-    <p style="margin-bottom: 0px;">Tabel Rekap Kemantapan</p>
+    <div class="div-block"></div>
+    <h5>Tabel Rekap Kemantapan</h5>
+    <select class="periode select-2" id="periodeRekap" style="width:100%"></select>
+    <div class="div-block"></div>
     <select class="daerah select-2" name="daerah" id="cbDaerah" style="width:100%">
       <option value="">Pilih Semua</option>
       <option value="garut">Garut</option>
@@ -760,8 +762,6 @@
   function loadKoordinatForm(){
     $('#btnSubmitKoordinat').on('click', function(e){
       e.stopImmediatePropagation();
-      var posisi = $('#inputCenter').val();
-      if(posisi != ""){
         blockShow();
 
         var filecsv = $("input[name=file_csv]")[0].files[0];
@@ -789,14 +789,14 @@
                 //no get header
                 if(i>0){
 
-                  arr.push(createJSON(lines[i], posisi));
+                  arr.push(createJSON(lines[i]));
                 }
               }
               main["data"] = arr;
 
               var postdata = JSON.stringify(main);
               var $form = $('.form-koordinat');
-              $.post($form.attr('action'), {body:postdata, posisi:posisi}, function(data){
+              $.post($form.attr('action'), {body:postdata}, function(data){
                 blockHide();
                 if(data.code === 200){
                   Swal.fire({
@@ -823,22 +823,16 @@
           };
           reader.readAsText(filecsv);
         }
-      }else{
-        Swal.fire({
-          icon: 'error',
-          title: 'Submit Data',
-          text: 'Anda belum memilih posisi'
-        })
-      }
 
       return false;
     });
 
-    function createJSON(data, posisi) {
+    function createJSON(data) {
       var dataSplit = data.split(";");
 
       item = {}
-      if(posisi == "1"){
+      item["posisi"] = (dataSplit[3] === "CENTER") ? 1 : 0;
+      if(item["posisi"] == 1){
         item["hash"] = $.md5(dataSplit[0]+dataSplit[2]);
       }else{
         item["hash"] = $.md5(dataSplit[0]+dataSplit[2]+dataSplit[3]);
@@ -981,12 +975,10 @@
   });
 
   $('#btnRekap').click(function(){
-    var periode = $(".periode option:selected").val();
-    var ruas = $(".ruas option:selected").val();
+    var periode = $("#periodeRekap option:selected").val();
     var daerah = $("#cbDaerah").val();
-    var ksp = $(".ksp option:selected").val();
 
-    if(periode != undefined && ruas != undefined){
+    if(periode != undefined){
       $('#rekapModal').modal('show');
       $('#viewRekap').show();
 
@@ -1000,7 +992,7 @@
         viewRekap2(periode);
       }else{
         $('#txt_total').hide();
-        viewRekap1(periode, daerah, ksp);
+        viewRekap1(periode, daerah, "");
       }
     }else{
       alert("Periode dan No ruas masih kosong");

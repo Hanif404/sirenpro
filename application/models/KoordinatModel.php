@@ -9,10 +9,10 @@ class KoordinatModel extends CI_Model {
 	}
 
   public function saving(){
-		$posisi = $this->input->post('posisi');
 		$data = json_decode($this->input->post('body'), true);
 
 		if(count($data)>0){
+			$posisi = $data['data'][0]['posisi'];
 			if($posisi == 1){
 				$this->deleteDataCenter($data['no_ruas']);
 			}else{

@@ -23,6 +23,21 @@ class RuasModel extends CI_Model {
 		$this->akhir_km = $this->input->post('akhir_km');
   }
 
+	public function getKgPenanganan($id){
+		$this->db->select('*');
+		$this->db->from($this->kategori);
+		$this->db->where('id', $id);
+		$this->db->where('jenis', '2');
+		$this->db->order_by('id', 'asc');
+		$list = $this->db->get();
+		if($list->num_rows() > 0){
+			$arraylist = $list->result_array();
+			return $arraylist[0]['warna'];
+		}else{
+			return "";
+		}
+	}
+
   public function drawKoordinat($id){
 		$this->db->select('rd.*, kg.name, kg.warna');
 		$this->db->from($this->ruas_detail.' rd');
@@ -113,7 +128,7 @@ class RuasModel extends CI_Model {
           $properties = new stdClass();
           $geometry = new stdClass();
 
-          $properties->color = $this->getWarna("kategori", $this->kondisiPenanganan($ls['kategori_id']));
+          $properties->color = $this->getKgPenanganan($this->kondisiPenanganan($ls['kategori_id']));
           $geometry->type = "LineString";
           $geometry->coordinates = $koordinat;
 
@@ -158,16 +173,16 @@ class RuasModel extends CI_Model {
 	private function kondisiPenanganan($value){
 		switch ($value) {
 			case '1':
-				return '1';
+				return '8';
 				break;
 			case '2':
-				return '2';
+				return '9';
 				break;
 			case '3':
-				return '3';
+				return '10';
 				break;
 			default:
-				return '4';
+				return '11';
 				break;
 		}
 	}
@@ -334,6 +349,7 @@ class RuasModel extends CI_Model {
 			$this->db->where('rj.periode_id', $periode);
 		}
 		$this->db->group_by('rj.nama_kota');
-		return json_encode($this->db->get()->result_array());
+		$return = $this->db->get();
+		return json_encode($return->result_array());
 	}
 }

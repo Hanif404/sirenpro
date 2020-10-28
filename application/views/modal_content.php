@@ -555,18 +555,6 @@
             <div class="row">
               <div class="col-lg-12">
                 <div class="form-group">
-                  <label for="input2">Posisi Koordinat</label>
-                  <select class="daerah select-2" id="inputCenter" name="is_center" style="width:100%">
-                    <option value="">Pilih Posisi</option>
-                    <option value="0">Non Center</option>
-                    <option value="1">Center</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-lg-12">
-                <div class="form-group">
                   <label for="input2">File CSV</label>
                   <input type="file" class="form-control"  name="file_csv" accept=".csv">
                 </div>
