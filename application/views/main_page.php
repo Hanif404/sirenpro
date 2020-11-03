@@ -95,7 +95,7 @@
 			    iconUrl: '<?= base_url("assets/image/rawan_longsor.png")?>',
 			    className: 'blinking'
 			  })
-			}).bindPopup("KM "+data[i].lokasi).addTo(mymap);
+			}).bindPopup("KM "+data[i].location).addTo(mymap);
 		}
 	}, 'json');
 
@@ -107,7 +107,7 @@
 					iconUrl: '<?= base_url("assets/image/rawan_banjir.png")?>',
 					className: 'blinking'
 				})
-			}).bindPopup("KM "+data[i].lokasi).addTo(mymap);
+			}).bindPopup("KM "+data[i].location).addTo(mymap);
 		}
 	}, 'json');
 
@@ -119,7 +119,7 @@
 					iconUrl: '<?= base_url("assets/image/rawan_kecelakaan.png")?>',
 					className: 'blinking'
 				})
-			}).bindPopup("KM "+data[i].lokasi).addTo(mymap);
+			}).bindPopup("KM "+data[i].location).addTo(mymap);
 		}
 	}, 'json');
 
@@ -168,7 +168,7 @@
 		var content = '';
 		content += '<ul>';
 		content += '<li><h6>Legenda :</h6></li>';
-		
+
 		$.each(data, function(key, value) {
 			if(value['id'] === "8"){
 				content += '<hr style="margin-top:3px;margin-bottom:3px"/>';

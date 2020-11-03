@@ -43,6 +43,7 @@ class RuasModel extends CI_Model {
 		$this->db->from($this->ruas_detail.' rd');
 		$this->db->join($this->kategori.' kg', 'rd.kategori_id=kg.id');
 		$this->db->where('no_ruas', $id);
+		$this->db->order_by('awal_km', 'asc');
 		$list = $this->db->get();
 		if($list->num_rows() > 0){
 			$arraylist = $list->result_array();
@@ -62,6 +63,8 @@ class RuasModel extends CI_Model {
 						if($total == 1000){
 							$total = 0;
 							$properties->text = "KM ".$ls['akhir_km'];
+						}else if($total == 50){
+							$properties->text = "KM ".$ls['awal_km'];
 						}else{
 							$properties->text = "";
 						}

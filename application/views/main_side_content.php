@@ -94,27 +94,37 @@
     $('#btnSubmitPenangananDet').on('click', function(e){
       e.stopImmediatePropagation();
       blockShow();
+      var hrg = $('#fieldHargaPekerjaan').val();
 
       var $form = $('.form-penanganan');
       if ($form.valid()){
-        $.post($form.attr('action'), $form.serialize(), function(data){
+        if(hrg > 0){
+          $.post($form.attr('action'), $form.serialize(), function(data){
+            blockHide();
+            if(data.code === 200){
+              Swal.fire({
+                icon: 'success',
+                title: 'Submit Data',
+                text: 'Data berhasil tersimpan'
+              })
+              resetForm();
+              tablePenangananDet.ajax.reload();
+            }else{
+              Swal.fire({
+                icon: 'error',
+                title: 'Submit Data',
+                text: 'Gagal menyimpan data'
+              })
+            }
+          }, 'json');
+        }else{
           blockHide();
-          if(data.code === 200){
-            Swal.fire({
-              icon: 'success',
-              title: 'Submit Data',
-              text: 'Data berhasil tersimpan'
-            })
-            resetForm();
-            tablePenangananDet.ajax.reload();
-          }else{
-            Swal.fire({
-              icon: 'error',
-              title: 'Submit Data',
-              text: 'Gagal menyimpan data'
-            })
-          }
-        }, 'json');
+          Swal.fire({
+            icon: 'error',
+            title: 'Submit Data',
+            text: 'Harga masih kosong'
+          })
+        }
       }else{
         blockHide();
       }
@@ -1237,7 +1247,7 @@
       $('#col_panjang_jalan').text(data.data.panjang_km);
       $('#col_periode').text(data.data.nama_periode);
 
-      var header = "<tr> <th>No.</th> <th>Jenis Pekerjaan</th> <th>Volume</th> <th>Satuan</th> <th>Harga Satuan</th> <th>Total</th> <th>Validasi</th> </tr>";
+      var header = "<tr> <th>No.</th> <th>Jenis Pekerjaan</th> <th>Volume</th> <th>Satuan</th> <th>Harga Satuan</th> <th>Total</th></tr>";
       $('.rekap3').append(header);
 
       for (var i = 0; i < data.data.data_detail.length; i++) {
@@ -1247,9 +1257,8 @@
         content += "<td>"+ detail[1] +"</td>";
         content += "<td>"+ detail[2] +"</td>";
         content += "<td>"+ detail[3] +"</td>";
-        content += "<td>"+ detail[4] +"</td>";
-        content += "<td>"+ detail[5] +"</td>";
-        content += "<td>"+ detail[6] +"</td>";
+        content += "<td style=\"text-align:right;padding-right: 10px;\">"+ detail[4] +"</td>";
+        content += "<td style=\"text-align:right;padding-right: 10px;\">"+ detail[5] +"</td>";
         content += "</tr>";
         $('.rekap3').append(content);
       }
