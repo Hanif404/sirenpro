@@ -7,6 +7,8 @@ class RuasModel extends CI_Model {
 	var $ruas_center = "ruas_jalan_center";
 	var $kategori = "kategori";
 	var $view_sum = "view_sum_kategori";
+	var $kerja_ruas = "pekerjaan_ruas";
+	var $kerja_jenis = "pekerjaan_jenis";
 
 	public function __construct()
     {
@@ -114,46 +116,117 @@ class RuasModel extends CI_Model {
   }
 
 	// Center
-	public function drawCenterKoordinat($id){
-		$this->db->select('rd.*');
-		$this->db->from($this->ruas_detail.' rd');
-		$this->db->where('no_ruas', $id);
+	public function drawCenterKoordinat($periode, $noruas){
+		$noruasHash = base64_encode($noruas."~".$periode."~");
+		$this->db->select('rd.*, jns.penanganan_id');
+		$this->db->from($this->kerja_ruas.' rd');
+		$this->db->join($this->kerja_jenis.' jns', 'rd.jenis_id = jns.id');
+		$this->db->like('hash', $noruasHash, 'after');
+		$this->db->order_by('hash', 'desc');
 		$list = $this->db->get();
 		if($list->num_rows() > 0){
 			$arraylist = $list->result_array();
-      $data = array();
+      $dataProses = array();
+      $content = array();
 
-      foreach ($arraylist as $ls) {
-        $koordinat = $this->listCenterKoordinat($ls['hash_center']);
+			//Loop area
+			foreach ($arraylist as $lsarea) {
+				$data = explode("~", base64_decode($lsarea['hash']));
+				$dataarea = $data[2].'-'.$data[3];
 
-        if(count($koordinat) > 0){
-          $feature = new stdClass();
-          $properties = new stdClass();
-          $geometry = new stdClass();
+				if(count($content) > 0){
+					if(!in_array($dataarea, $content, true)){
+						$dataProses[] = $this->loopDominan($arraylist, $dataarea);
+						$content[] = $dataarea;
+					}
+				}else{
+					$dataProses[] = $this->loopDominan($arraylist, $dataarea);
+					$content[] = $dataarea;
+				}
+			}
 
-          $properties->color = $this->getKgPenanganan($this->kondisiPenanganan($ls['kategori_id']));
-          $geometry->type = "LineString";
-          $geometry->coordinates = $koordinat;
+			$dataLine = array();
+			foreach ($dataProses as $ls) {
+				$data = explode("~", $ls);
 
-          $feature->type = "Feature";
-          $feature->properties = $properties;
-          $feature->geometry = $geometry;
+				$koordinat = $this->listCenterKoordinat($noruas, $periode, $data[0], $data[1]);
+				if(count($koordinat) > 0){
+					$feature = new stdClass();
+					$properties = new stdClass();
+					$geometry = new stdClass();
 
-          $data[]=$feature;
-        }
-      }
+					$properties->color = $this->getKgPenanganan($data[2]);
+					$geometry->type = "LineString";
+					$geometry->coordinates = $koordinat;
 
-			return json_encode($data);
+					$feature->type = "Feature";
+					$feature->properties = $properties;
+					$feature->geometry = $geometry;
+
+					$dataLine[]=$feature;
+				}
+			}
+			return json_encode($dataLine);
 		} else {
 			return json_encode([]);
 		}
 	}
 
-  private function listCenterKoordinat($value){
-    $this->db->select('*');
-    $this->db->from($this->ruas_center);
-    $this->db->where('hash_data', $value);
-    $list = $this->db->get();
+	private function loopDominan($arraylist, $dataarea){
+		$area = "";
+		$dominan = "";
+		foreach ($arraylist as $ls) {
+			$luas = 0;
+			$luasDominan = 0;
+			$data = explode("~", base64_decode($ls['hash']));
+			$tempArea = $data[2].'-'.$data[3];
+			if($dataarea == $tempArea){
+				// echo $tempArea.' / '.$ls['penanganan_id'] .' ';
+				if($ls['penanganan_id'] == 11){
+					$luas11 = 0;
+					$luasLast = 0;
+					foreach ($arraylist as $ls11) {
+						$data11 = explode("~", base64_decode($ls11['hash']));
+						$tempArea11 = $data11[2].'-'.$data11[3];
+						if($dataarea == $tempArea11 && $ls11['penanganan_id'] == 11){
+							if($luasLast != $data11[6]){
+								$luas11 = $luas11 + $data11[6];
+								$luasLast = $data11[6];
+							}
+						}
+					}
+					if($luas11 > $luas){
+						$luas = $luas11;
+					}
+					//get dominan
+					if($luas > $luasDominan){
+						$luasDominan = $luas;
+						$dominan = $data[2] .'~'. $data[3] .'~'. $ls['penanganan_id'];
+					}
+				}else{
+					if($data[6] > $luas){
+						$luas = $data[6];
+					}
+					//get dominan
+					if($luas > $luasDominan){
+						$luasDominan = $luas;
+						$dominan = $data[2] .'~'. $data[3] .'~'. $ls['penanganan_id'];
+					}
+				}
+			}
+		}
+		return $dominan;
+	}
+
+
+  private function listCenterKoordinat($noruas, $periode, $awal, $akhir){
+		$str = "
+			SELECT rjc.latitude, rjc.longtitude
+			FROM ruas_jalan_detail rjd
+			JOIN ruas_jalan_center rjc on rjd.hash_center = rjc.hash_data
+			WHERE rjd.no_ruas = 351 and rjd.periode_id = 1 and rjd.posisi = \"KANAN\" AND rjd.awal_km >= $awal AND rjd.akhir_km <= $akhir
+		";
+    $list = $this->db->query($str);
     if($list->num_rows() > 0){
 			$arraylist = $list->result_array();
       $data = array();

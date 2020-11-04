@@ -1676,14 +1676,14 @@
           cache: true
         }
     }).on('select2:select', function(e) {
-      var id = e.params.data.id;
+      var periode = e.params.data.id;
       $('#btnRekap').removeClass('disabled');
 
       $('.ruas').select2({
         placeholder: "Pilih Ruas",
         allowClear: true,
         ajax: {
-            url: "<?= base_url('ruas/getCombo/') ?>"+id,
+            url: "<?= base_url('ruas/getCombo/') ?>"+periode,
             dataType: 'json',
             delay: 250,
             data: function (params) {
@@ -1705,7 +1705,7 @@
         var id = e.params.data.id;
 
         $('#btnView').removeClass('disabled');
-        showLine(id);
+        showLine(periode, id);
       }).on('select2:clear', function(e) {
         clearLine();
         $('#btnView').addClass('disabled');

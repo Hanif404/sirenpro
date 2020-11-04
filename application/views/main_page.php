@@ -123,7 +123,7 @@
 		}
 	}, 'json');
 
-	function showLine(id) {
+	function showLine(periode, id) {
 		resetView();
 
 		$.get('<?= base_url("ruas/getData/");?>' + id, function(data) {
@@ -146,7 +146,7 @@
 			}).addTo(mymap);
 		});
 
-		$.get('<?= base_url("ruas/getCenterKoordinat/");?>' + id, function(data) {
+		$.get('<?= base_url("ruas/getCenterKoordinat/");?>'+periode+'/'+id, function(data) {
 			ruasLayer = L.geoJSON(JSON.parse(data), {
 				style: function(feature) {
 					return {
