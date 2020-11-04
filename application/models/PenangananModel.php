@@ -70,7 +70,7 @@ class PenangananModel extends CI_Model {
 								if($ls['kategori_id'] == $valsum['kondisi']){
 									$data['penanganan_km'] = $valsum['panjang'] ." Km";
 									$hash = base64_encode($noruas."~".$periode."~".$kmAwal."~".$kmAkhir."~".$ls['kategori_id']."~".$valsum['panjang']."~".$valsum['luas']);
-									$detail = $this->getListDetail($hash, $jns, 1);
+									$detail = $this->getListDetailRekap($hash, $jns, 1);
 									$data['data_detail'] = $detail['data'];
 									$data['total'] = $this->currency_format($detail['total']);
 								}
@@ -263,7 +263,66 @@ class PenangananModel extends CI_Model {
 				}
 			}
 
-			return array("data"=>$data, "total"=>$total);
+			return $data;
+    } else {
+      return array();
+    }
+	}
+
+	public function getListDetailRekap($hash, $jns="", $flag=0){
+		$this->db->select('pkj.*, hrg.satuan_id, jns.name');
+    $this->db->from($this->penanganan. ' pkj');
+		$this->db->join($this->penangananHarga.' hrg', 'pkj.jenis_id = hrg.jenis_id');
+		$this->db->join($this->penangananJenis.' jns', 'hrg.jenis_id = jns.id');
+		if($jns != ""){
+			$this->db->where('jns.penanganan_id', $jns);
+		}else{
+			$this->db->where('hash', $hash);
+		}
+		$list = $this->db->get();
+    if($list->num_rows() > 0){
+      $arraylist = $list->result_array();
+			$data = array();
+			$hash_data_1 = base64_decode($hash);
+			$lshash_1 = explode("~", $hash_data_1);
+			$total = 0;
+
+			if($flag == 1){
+				$i = 1;
+				foreach ($arraylist as $ls) {
+					$hash_data_2 = base64_decode($ls['hash']);
+					$lshash_2 = explode("~", $hash_data_2);
+
+					if($lshash_1[0] == $lshash_2[0] && $lshash_1[1] == $lshash_2[1] && $lshash_1[2] == $lshash_2[2]  && $lshash_1[3] == $lshash_2[3]){
+						$row = array();
+						$row[] = $i++;
+						$row[] = $ls['name'];
+						$row[] = $ls['volume'];
+						$row[] = $this->getMaster("satuan",$ls['satuan_id']);
+						$row[] = $this->currency_format($ls['harga']);
+						$row[] = $this->currency_format($ls['harga']*$ls['volume']);
+						$row[] = $ls['is_valid'] == 1 ? "Ya" : "Tidak";
+
+						$total = $total + ($ls['harga']*$ls['volume']);
+						$data[] = $row;
+					}
+				}
+			}else{
+				foreach ($arraylist as $ls) {
+						$row = array();
+	    			$row[] = $ls['name'];
+	    			$row[] = $lshash_1[5];
+						$row[] = $ls['volume'];
+	    			$row[] = $this->currency_format($ls['harga']).'/'.$this->getMaster("satuan",$ls['satuan_id']);
+	    			$row[] = $this->currency_format($ls['harga']*$ls['volume']);
+	    			$row[] = $ls['id'];
+
+						$total = $total + ($ls['harga']*$ls['volume']);
+						$data[] = $row;
+				}
+			}
+
+			return array("data" => $data, "total" => $total);
     } else {
       return array();
     }
