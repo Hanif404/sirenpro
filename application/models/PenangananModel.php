@@ -70,7 +70,9 @@ class PenangananModel extends CI_Model {
 								if($ls['kategori_id'] == $valsum['kondisi']){
 									$data['penanganan_km'] = $valsum['panjang'] ." Km";
 									$hash = base64_encode($noruas."~".$periode."~".$kmAwal."~".$kmAkhir."~".$ls['kategori_id']."~".$valsum['panjang']."~".$valsum['luas']);
-									$data['data_detail'] = $this->getListDetail($hash, $jns, 1);
+									$detail = $this->getListDetail($hash, $jns, 1);
+									$data['data_detail'] = $detail['data'];
+									$data['total'] = $this->currency_format($detail['total']);
 								}
 							}
 						}
@@ -224,6 +226,7 @@ class PenangananModel extends CI_Model {
 			$data = array();
 			$hash_data_1 = base64_decode($hash);
 			$lshash_1 = explode("~", $hash_data_1);
+			$total = 0;
 
 			if($flag == 1){
 				$i = 1;
@@ -240,6 +243,8 @@ class PenangananModel extends CI_Model {
 						$row[] = $this->currency_format($ls['harga']);
 						$row[] = $this->currency_format($ls['harga']*$ls['volume']);
 						$row[] = $ls['is_valid'] == 1 ? "Ya" : "Tidak";
+
+						$total = $total + ($ls['harga']*$ls['volume']);
 						$data[] = $row;
 					}
 				}
@@ -252,11 +257,13 @@ class PenangananModel extends CI_Model {
 	    			$row[] = $this->currency_format($ls['harga']).'/'.$this->getMaster("satuan",$ls['satuan_id']);
 	    			$row[] = $this->currency_format($ls['harga']*$ls['volume']);
 	    			$row[] = $ls['id'];
+
+						$total = $total + ($ls['harga']*$ls['volume']);
 						$data[] = $row;
 				}
 			}
 
-			return $data;
+			return array("data"=>$data, "total"=>$total);
     } else {
       return array();
     }

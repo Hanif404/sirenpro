@@ -1262,6 +1262,12 @@
         content += "</tr>";
         $('.rekap3').append(content);
       }
+
+      var content = "<tr class=\"table-body\">";
+      content += "<td colspan=\"5\" style=\"text-align:right;padding-right: 10px;font-weight: bold;\">Jumlah</td>";
+      content += "<td style=\"text-align:right;padding-right: 10px;\">"+ data.data.total +"</td>";
+      content += "</tr>";
+      $('.rekap3').append(content);
     },'json');
   }
 
