@@ -68,8 +68,8 @@ class PekerjaanModel extends CI_Model {
 				$row = array();
     			$row[] = $ls['penanganan_text'];
     			$row[] = $ls['name'];
-    			$row[] = $ls['harga'];
 					$row[] = $this->getMaster("satuan", $ls['satuan_id']);
+    			$row[] = $ls['harga'];
     			$row[] = $ls['id'];
 					$data[] = $row;
 			}
