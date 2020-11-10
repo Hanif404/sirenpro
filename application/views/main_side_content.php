@@ -148,7 +148,7 @@
   		var data = tablePenangananDet.row( $(this).parents('tr') ).data();
 
       //get data
-      $.get('<?= base_url("penanganan/getDetailItem/");?>' + data[5], function(data) {
+      $.get('<?= base_url("penanganan/getDetailItem/");?>' + data[4], function(data) {
         if(data.code === 200){
           $('input[name=id]').val(data.data[0].id);
           $('input[name=volume]').val(data.data[0].volume);
@@ -171,7 +171,7 @@
           content: 'Yakin akan menghapus data ini?',
           buttons: {
               Ya: function () {
-                $.get('<?= base_url("penanganan/deleteItem/");?>' + data[5], function(dataJson) {
+                $.get('<?= base_url("penanganan/deleteItem/");?>' + data[4], function(dataJson) {
                   if(dataJson.code === 200){
                     Swal.fire({
                       icon: 'success',
@@ -290,14 +290,15 @@
 
     $('#listPenanganan tbody').on( 'click', '#btnEdit', function () {
   		var data = tablePenanganan.row( $(this).parents('tr') ).data();
+
       $('#penangananModal').modal('hide');
       $('#viewNamePenanganan').text(data[1]);
-      $('#viewPanjang').text(data[2]+" Km");
-      $('#viewLuas').text(data[3]+" m2");
-      $('#fieldKodeJalan').val(data[4]);
+      $('#viewPanjang').text(data[5]);
+      $('#viewLuas').text(data[2]+" m2");
+      $('#fieldKodeJalan').val(data[3]);
 
-      loadPenangananDetForm(data[4]);
-      loadDropdownJenisKerja(data[5]);
+      loadPenangananDetForm(data[3]);
+      loadDropdownJenisKerja(data[4]);
       $('#penangananDetModal').modal('show');
   	});
   }
@@ -1254,7 +1255,7 @@
         var detail = data.data.data_detail[i];
         var content = "<tr class=\"table-body\">";
         content += "<td>"+ detail[0] +"</td>";
-        content += "<td>"+ detail[1] +"</td>";
+        content += "<td style=\"text-align:left;padding-left: 10px;\">"+ detail[1] +"</td>";
         content += "<td>"+ detail[2] +"</td>";
         content += "<td>"+ detail[3] +"</td>";
         content += "<td style=\"text-align:right;padding-right: 10px;\">"+ detail[4] +"</td>";

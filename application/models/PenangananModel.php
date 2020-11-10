@@ -69,7 +69,7 @@ class PenangananModel extends CI_Model {
 							foreach ($sum as $key => $valsum) {
 								if($ls['kategori_id'] == $valsum['kondisi']){
 									$data['penanganan_km'] = $valsum['panjang'] ." Km";
-									$hash = base64_encode($noruas."~".$periode."~".$kmAwal."~".$kmAkhir."~".$ls['kategori_id']."~".$valsum['panjang']."~".$valsum['luas']);
+									$hash = base64_encode($noruas."~".$periode."~".$kmAwal."~".$kmAkhir."~".$ls['kategori_id']."~0~".$valsum['luas']);
 									$detail = $this->getListDetailRekap($hash, $jns, 1);
 									$data['data_detail'] = $detail['data'];
 									$data['total'] = $this->currency_format($detail['total']);
@@ -132,12 +132,12 @@ class PenangananModel extends CI_Model {
 				if($sum != ''){
 					if($lshash[0] == $noruas && $lshash[1] == $periode){
 						$id = $ls['penanganan_id'];
-						foreach ($sum as $key => $valsum) {
-							$penanganan_id = $this->kondisiPenanganan($valsum['kondisi']);
-							if($penanganan_id == $id){
-								$panjang = $panjang + $valsum['panjang'];
-							}
-						}
+						// foreach ($sum as $key => $valsum) {
+						// 	$penanganan_id = $this->kondisiPenanganan($valsum['kondisi']);
+						// 	if($penanganan_id == $id){
+						// 		$panjang = $panjang + $valsum['panjang'];
+						// 	}
+						// }
 						$lokasi = "KM ".$lshash[2]." s/d KM ".$lshash[3];
 						$biaya = $ls['harga']*$ls['volume'];
 						$total = $total + $biaya;
@@ -146,8 +146,8 @@ class PenangananModel extends CI_Model {
 			}
 
 			$data['jenis_penanganan'] = $this->getKgPenanganan($id);
-			$data['panjang_penanganan'] = number_format($panjang,2)." Km";
-			$data['panjang_penanganan_num'] = number_format($panjang,2);
+			// $data['panjang_penanganan'] = number_format($panjang,2)." Km";
+			// $data['panjang_penanganan_num'] = number_format($panjang,2);
 			$data['lokasi_penanganan'] = $lokasi;
 			$data['biaya_penanganan'] = $this->currency_format($total,false);
 			$data['biaya_penanganan_num'] = $total;
@@ -252,7 +252,7 @@ class PenangananModel extends CI_Model {
 				foreach ($arraylist as $ls) {
 						$row = array();
 	    			$row[] = $ls['name'];
-	    			$row[] = $lshash_1[5];
+	    			// $row[] = $lshash_1[5];
 						$row[] = $ls['volume'];
 	    			$row[] = $this->currency_format($ls['harga']).'/'.$this->getMaster("satuan",$ls['satuan_id']);
 	    			$row[] = $this->currency_format($ls['harga']*$ls['volume']);
@@ -472,10 +472,11 @@ class PenangananModel extends CI_Model {
 							$penanganan_id = $this->kondisiPenanganan($valsum['kondisi']);
 							$row[] = $ls['name'];
 							$row[] = $this->getKgPenanganan($penanganan_id);
-							$row[] = $valsum['panjang'];
+							// $row[] = $valsum['panjang'];
 							$row[] = $valsum['luas'];
-							$row[] = base64_encode($noruas."~".$periode."~".$awal."~".$akhir."~".$ls['id']."~".$valsum['panjang']."~".$valsum['luas']);
+							$row[] = base64_encode($noruas."~".$periode."~".$awal."~".$akhir."~".$ls['id']."~0~".$valsum['luas']);
 							$row[] = $penanganan_id;
+							$row[] = "KM ". $awal." s/d KM ".$akhir;
 							$data[] = $row;
 						}
 					}

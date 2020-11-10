@@ -51,7 +51,7 @@
     									<tr>
     											<th>Kondisi</th>
     											<th>Penanganan</th>
-                          <th>Panjang (KM)</th>
+                          <!-- <th>Panjang (KM)</th> -->
                           <th>Volume (M2)</th>
     											<th>&nbsp;</th>
     									</tr>
@@ -151,7 +151,7 @@
     							<thead>
     									<tr>
     											<th>Jenis Pekerjaan</th>
-    											<th>Panjang (KM)</th>
+    											<!-- <th>Panjang (KM)</th> -->
     											<th>Volume</th>
     											<th>Harga (Rp)</th>
     											<th>Total Biaya</th>

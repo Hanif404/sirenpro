@@ -41,30 +41,33 @@
     <h5>RENCANA ANGGARAN BIAYA</h5>
     <h6>PEKERJAAN <span id="txt_header"></span></h6>
   </div>
-  <table width="100%">
+  <table width="100%" border="0">
     <tr>
       <td width="10%">No Ruas</td>
       <td width="1%">:</td>
       <td width="50%" id="col_no_ruas"></td>
-      <td width="17%">Panjang Penanganan Jalan</td>
+      <td width="17%">Lokasi Penanganan</td>
       <td width="1%">:</td>
-      <td width="50%" id="col_panjang_penanganan"></td>
+      <td width="50%" id="col_lok_penanganan"></td>
+      <!-- <td width="17%">Panjang Penanganan Jalan</td> -->
+      <!-- <td width="1%">:</td>
+      <td width="50%" id="col_panjang_penanganan"></td> -->
     </tr>
     <tr>
       <td>Nama Ruas</td>
       <td>:</td>
       <td id="col_nm_ruas"></td>
-      <td>Lokasi Penanganan</td>
+      <td>Periode Survey</td>
       <td>:</td>
-      <td id="col_lok_penanganan"></td>
+      <td id="col_periode"></td>
     </tr>
     <tr>
       <td>Panjang Jalan</td>
       <td>:</td>
       <td id="col_panjang_jalan"></td>
-      <td>Tahun Anggaran/Periode</td>
-      <td>:</td>
-      <td id="col_periode"></td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
     </tr>
   </table>
   <table class="table-style rekap3" style="font-size: 12pt;text-align: center;margin-top:20px"></table>
