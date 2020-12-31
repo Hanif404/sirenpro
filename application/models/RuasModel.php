@@ -50,30 +50,16 @@ class RuasModel extends CI_Model {
 		if($list->num_rows() > 0){
 			$arraylist = $list->result_array();
       $data = array();
-			$total = 0;
       foreach ($arraylist as $ls) {
         $koordinat = $this->listKoordinat($ls['hash_data']);
 
         if(count($koordinat) > 0){
+          $label = new stdClass();
           $feature = new stdClass();
           $properties = new stdClass();
           $geometry = new stdClass();
 
           $properties->color = $ls['warna'];
-					if($ls['posisi'] == "KANAN"){
-						$total = $total + $ls['panjang'];
-						if($total == 1000){
-							$total = 0;
-							$properties->text = "KM ".$ls['akhir_km'];
-						}else if($total == 50){
-							$properties->text = "KM ".$ls['awal_km'];
-						}else{
-							$properties->text = "";
-						}
-					}else{
-						$properties->text = "";
-					}
-
           $geometry->type = "LineString";
           $geometry->coordinates = $koordinat;
 
@@ -83,6 +69,78 @@ class RuasModel extends CI_Model {
 
           $data[]=$feature;
         }
+      }
+
+			return json_encode($data);
+		} else {
+			return json_encode([]);
+		}
+	}
+
+	public function drawLabelKoordinat($id){
+		$this->db->select('*');
+		$this->db->from($this->ruas_detail);
+		$this->db->where('no_ruas', $id);
+		$this->db->where('posisi', 'KANAN');
+		$this->db->order_by('awal_km', 'asc');
+		$list = $this->db->get();
+		if($list->num_rows() > 0){
+			$arraylist = $list->result_array();
+      $data = array();
+			$total = 0;
+			$i = 0;
+			$akhir = 1000;
+			$step = 1000;
+			$countAkhir = 1;
+			$label = "";
+			$koor = array();
+      foreach ($arraylist as $ls) {
+				$feature = new stdClass();
+				$properties = new stdClass();
+				$geometry = new stdClass();
+
+				$koor[] = $ls['hash_data'];
+				if($i == 0){
+					$label = "KM ".$ls['awal_km'];
+				}
+				if($total == 0){
+					$koordinat = $this->listManyKoordinat($koor);
+	        if(count($koordinat) > 0){
+						$properties->color = "#FF000000";
+						$properties->text = $label;
+
+						$geometry->type = "LineString";
+						$geometry->coordinates = $koordinat;
+
+						$feature->type = "Feature";
+						$feature->properties = $properties;
+						$feature->geometry = $geometry;
+
+						$data[]=$feature;
+						$koor = array();
+					}
+				}else if($total == $akhir){
+					$koordinat = $this->listManyKoordinat($koor);
+					if(count($koordinat) > 0){
+						$properties->color = "#FF000000";
+						$properties->text = "KM ".$ls['akhir_km'];
+
+						$geometry->type = "LineString";
+						$geometry->coordinates = $koordinat;
+
+						$feature->type = "Feature";
+						$feature->properties = $properties;
+						$feature->geometry = $geometry;
+
+						$data[]=$feature;
+						$koor = array();
+						$countAkhir++;
+						$akhir = $step * $countAkhir;
+						$koor = array();
+					}
+				}
+				$i++;
+				$total = $total + 50;
       }
 
 			return json_encode($data);
@@ -114,6 +172,30 @@ class RuasModel extends CI_Model {
       return array();
     }
   }
+
+	private function listManyKoordinat($value){
+		$this->db->select('*');
+		$this->db->from($this->ruas_koordinat);
+		$this->db->where_in('hash_data', $value);
+		$list = $this->db->get();
+		if($list->num_rows() > 0){
+			$arraylist = $list->result_array();
+			$data = array();
+
+			foreach ($arraylist as $ls) {
+				$row = array();
+
+				$row[0] = $ls['longtitude'];
+				$row[1] = $ls['latitude'];
+
+				$data[]=$row;
+			}
+
+			return $data;
+		}else{
+			return array();
+		}
+	}
 
 	// Center
 	public function drawCenterKoordinat($periode, $noruas){

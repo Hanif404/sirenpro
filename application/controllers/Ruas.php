@@ -38,6 +38,11 @@ class Ruas extends MY_Controller {
     echo $this->RuasModel->drawKoordinat($id);
   }
 
+  public function getLabelKoordinat($id){
+    $this->verifySession();
+    echo $this->RuasModel->drawLabelKoordinat($id);
+  }
+
   public function getCenterKoordinat($periode, $noruas){
     $this->verifySession();
     echo $this->RuasModel->drawCenterKoordinat($periode, $noruas);
