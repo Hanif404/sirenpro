@@ -799,7 +799,6 @@
               {
                 //no get header
                 if(i>0){
-
                   arr.push(createJSON(lines[i]));
                 }
               }
@@ -850,6 +849,7 @@
       }
       item["lat_data"] = dataSplit[4];
       item["long_data"] = dataSplit[5];
+      item["label_data"] = (dataSplit[6].toLowerCase() === "ya") ? 1 : 0;
       return item;
     }
   }

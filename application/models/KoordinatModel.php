@@ -30,6 +30,7 @@ class KoordinatModel extends CI_Model {
 					$this->db->set('hash_data', $value["hash"]);
 		      $this->db->set('latitude', $value["lat_data"]);
 		      $this->db->set('longtitude', $value["long_data"]);
+					$this->db->set('is_label', $value["label_data"]);
 		    	$this->db->insert($this->koordinat);
 				}
 			}

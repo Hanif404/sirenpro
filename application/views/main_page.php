@@ -4,8 +4,9 @@
 	<meta charset="utf-8">
 	<title>SIRENPRO</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="<?= base_url('assets/libs/Leaflet.iconlabel/src/Icon.Label.css')?>"/>
 	<link rel="stylesheet" href="<?= base_url('assets/css/index.css')?>"/>
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.21/datatables.min.css"/>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
@@ -13,7 +14,7 @@
 
   <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 	<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.21/datatables.min.js"></script>
@@ -22,9 +23,12 @@
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.11/jquery.csv.min.js" integrity="sha512-Y8iWYJDo6HiTo5xtml1g4QqHtl/PO1w+dmUpQfQSOTqKNsMhExfyPN2ncNAe9JuJUSKzwK/b6oaNPop4MXzkwg==" crossorigin="anonymous"></script>
+
 	<script src="<?= base_url('assets/js/jquery.md5.js')?>"></script>
 	<script src="<?= base_url('assets/js/jquery.loading.block.js')?>"></script>
 	<script src="<?= base_url('assets/js/leaflet.textpath.js') ?>"></script>
+	<script src="<?= base_url('assets/libs/Leaflet.iconlabel/src/Icon.Label.js') ?>"></script>
+	<script src="<?= base_url('assets/libs/Leaflet.iconlabel/src/Icon.Label.Default.js') ?>"></script>
 </head>
 <body>
 	<?php $this->load->view('main_right_content'); ?>
@@ -62,7 +66,20 @@
 	});
 
 	var ruasLayer;
-	var ruasLabelLayer;
+	var ruasCenterLayer;
+	var markers = new L.FeatureGroup();
+	var SweetIcon = L.Icon.Label.extend({
+		options: {
+			iconUrl: '<?= base_url("assets/image/bitmap.png");?>',
+			shadowUrl: null,
+			iconSize: new L.Point(24, 24),
+			iconAnchor: new L.Point(0, 0),
+			labelAnchor: new L.Point(26, 0),
+			wrapperAnchor: new L.Point(15, 25),
+			labelClassName: 'sweet-deal-label'
+		}
+	});
+
 	var mymap = L.map('mapid').setView([-7.232236136, 107.90085746], 10);
 	L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
 		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -144,22 +161,17 @@
 			}).addTo(mymap);
 		});
 
-		$.get('<?= base_url("ruas/getLabelKoordinat/");?>' + id, function(data) {
-			ruasLabelLayer = L.geoJSON(JSON.parse(data), {
-				onEachFeature: function (feature, layer) {
-						layer.setText(feature.properties.text, {offset: -5});
-				},
-				style: function(feature) {
-					return {
-						color: feature.properties.color,
-						weight: 0
-					};
-				}
-			}).addTo(mymap);
-		});
+		$.get('<?= base_url("ruas/getLabelKoordinat/");?>' + id + '/'+ periode, function(data) {
+			for (var i = 0; i < data.length; i++) {
+				markers.addLayer(
+					new L.Marker(new L.LatLng(data[i].latitude, data[i].longtitude), { icon: new SweetIcon({ labelText: data[i].label })})
+				);
+			}
+			mymap.addLayer(markers);
+		},'json');
 
 		$.get('<?= base_url("ruas/getCenterKoordinat/");?>'+periode+'/'+id, function(data) {
-			ruasLayer = L.geoJSON(JSON.parse(data), {
+			ruasCenterLayer = L.geoJSON(JSON.parse(data), {
 				style: function(feature) {
 					return {
 						color: feature.properties.color,
@@ -173,7 +185,8 @@
 	function clearLine(){
 		mymap.setZoom(10);
 		mymap.removeLayer(ruasLayer);
-		mymap.removeLayer(ruasLabelLayer);
+		mymap.removeLayer(ruasCenterLayer);
+		mymap.removeLayer(markers);
 	}
 
 	$.get('<?= base_url("ruas/getLegenda");?>', function(data) {
