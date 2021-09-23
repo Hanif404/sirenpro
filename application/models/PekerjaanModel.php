@@ -14,6 +14,7 @@ class PekerjaanModel extends CI_Model {
 		$this->jenis_id = $this->input->post('jenis_id');
 		$this->harga = $this->input->post('harga');
 		$this->satuan_id = $this->input->post('satuan_id');
+		$this->type = $this->input->post('type');
   }
 
 	public function getDataByJenis($id){
@@ -54,11 +55,13 @@ class PekerjaanModel extends CI_Model {
 		}
 	}
 
-  public function getAllData(){
+  public function getAllData($type){
+	  $kg = $type + 1;
 		$this->db->select('pkj.*, jpk.name, jpk.penanganan_id, kg.name as penanganan_text');
     $this->db->from($this->pekerjaan.' pkj');
     $this->db->join($this->jenisKerja.' jpk', 'pkj.jenis_id = jpk.id');
-		$this->db->join($this->kategori.' kg', 'jpk.penanganan_id = kg.id and kg.jenis = 2');
+		$this->db->join($this->kategori.' kg', 'jpk.penanganan_id = kg.id and kg.jenis = '.$kg);
+		$this->db->where('pkj.type', $type);
 		$list = $this->db->get();
     if($list->num_rows() > 0){
       $arraylist = $list->result_array();
@@ -83,24 +86,26 @@ class PekerjaanModel extends CI_Model {
   public function saving(){
     $this->setData();
     if($this->id != ""){
-      $this->db->set('jenis_id', $this->jenis_id);
-      $this->db->set('harga', $this->harga);
-      $this->db->set('satuan_id', $this->satuan_id);
-      $this->db->where('id', $this->id);
-      return $this->db->update($this->pekerjaan);
+		$this->db->set('harga', $this->harga);
+		$this->db->set('satuan_id', $this->satuan_id);
+		$this->db->set('type', $this->type);
+		$this->db->where('id', $this->id);
+		return $this->db->update($this->pekerjaan);
     }else{
-			$this->db->set('jenis_id', $this->jenis_id);
-			$this->db->set('harga', $this->harga);
-			$this->db->set('satuan_id', $this->satuan_id);
-      return $this->db->insert($this->pekerjaan);
+		$this->db->set('jenis_id', $this->jenis_id);
+		$this->db->set('harga', $this->harga);
+		$this->db->set('satuan_id', $this->satuan_id);
+		$this->db->set('type', $this->type);
+      	return $this->db->insert($this->pekerjaan);
     }
   }
 
-  public function getDetailData($id){
+  public function getDetailData($id, $type){
+	$kg = $type + 1;
 		$this->db->select('pkj.*, jpk.name, jpk.penanganan_id, kg.name as penanganan_text');
     $this->db->from($this->pekerjaan.' pkj');
     $this->db->join($this->jenisKerja.' jpk', 'pkj.jenis_id = jpk.id');
-		$this->db->join($this->kategori.' kg', 'jpk.penanganan_id = kg.id and kg.jenis = 2');
+		$this->db->join($this->kategori.' kg', 'jpk.penanganan_id = kg.id and kg.jenis = '.$kg);
     $this->db->where('pkj.id', $id);
 		$list = $this->db->get();
 		if($list->num_rows() > 0){

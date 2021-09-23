@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>SIRENPRO</title>
+	<title>SIMPJANTAN</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
@@ -26,6 +26,7 @@
 
 	<script src="<?= base_url('assets/js/jquery.md5.js')?>"></script>
 	<script src="<?= base_url('assets/js/jquery.loading.block.js')?>"></script>
+	<script src="<?= base_url('assets/js/clear.form.js')?>"></script>
 	<script src="<?= base_url('assets/js/leaflet.textpath.js') ?>"></script>
 	<script src="<?= base_url('assets/libs/Leaflet.iconlabel/src/Icon.Label.js') ?>"></script>
 	<script src="<?= base_url('assets/libs/Leaflet.iconlabel/src/Icon.Label.Default.js') ?>"></script>
@@ -61,13 +62,7 @@
     </div>
   </div>
 	<script>
-	$(document).ready(function() {
-
-	});
-
-	var ruasLayer;
-	var ruasCenterLayer;
-	var markers = new L.FeatureGroup();
+	
 	var SweetIcon = L.Icon.Label.extend({
 		options: {
 			iconUrl: '<?= base_url("assets/image/bitmap.png");?>',
@@ -81,13 +76,16 @@
 	});
 
 	var mymap = L.map('mapid').setView([-7.232236136, 107.90085746], 10);
-	L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-		maxZoom: 18,
-		id: 'mapbox/streets-v11',
-		tileSize: 512,
-		zoomOffset: -1,
-		accessToken: 'pk.eyJ1IjoiaGFuaWZrNDA0IiwiYSI6ImNrZWY1enl6cTE4ZnUyc3J2eGZobXo1cXUifQ.88_Q6x8ktPdlE-FtCUZT-g'
+	//Group Layer
+	var layerRawanLongsor = L.layerGroup().addTo(mymap);
+	var layerRawanBanjir = L.layerGroup().addTo(mymap);
+	var layerRawanKecalakaan = L.layerGroup().addTo(mymap);
+	var layerRuasJalan = L.layerGroup().addTo(mymap);
+	var layerRuasJalanCenter = L.layerGroup().addTo(mymap);
+	var layerRuasJalanMarker = L.layerGroup().addTo(mymap);
+
+	L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 	}).addTo(mymap);
 
 	$.getJSON('<?= base_url("assets/map/wilayah_kerja_uptd4.geojson");?>', function(data){
@@ -113,7 +111,7 @@
 			    iconUrl: '<?= base_url("assets/image/rawan_longsor.png")?>',
 			    className: 'blinking'
 			  })
-			}).bindPopup("KM "+data[i].location).addTo(mymap);
+			}).bindPopup("KM "+data[i].location).addTo(layerRawanLongsor);
 		}
 	}, 'json');
 
@@ -125,7 +123,7 @@
 					iconUrl: '<?= base_url("assets/image/rawan_banjir.png")?>',
 					className: 'blinking'
 				})
-			}).bindPopup("KM "+data[i].location).addTo(mymap);
+			}).bindPopup("KM "+data[i].location).addTo(layerRawanBanjir);
 		}
 	}, 'json');
 
@@ -137,7 +135,7 @@
 					iconUrl: '<?= base_url("assets/image/rawan_kecelakaan.png")?>',
 					className: 'blinking'
 				})
-			}).bindPopup("KM "+data[i].location).addTo(mymap);
+			}).bindPopup("KM "+data[i].location).addTo(layerRawanKecalakaan);
 		}
 	}, 'json');
 
@@ -151,42 +149,39 @@
 		});
 
 		$.get('<?= base_url("ruas/getKoordinat/");?>' + id, function(data) {
-			ruasLayer = L.geoJSON(JSON.parse(data), {
+			L.geoJSON(JSON.parse(data), {
 				style: function(feature) {
 					return {
 						color: feature.properties.color,
 						weight: 3
 					};
 				}
-			}).addTo(mymap);
+			}).addTo(layerRuasJalan);
 		});
 
 		$.get('<?= base_url("ruas/getLabelKoordinat/");?>' + id + '/'+ periode, function(data) {
 			for (var i = 0; i < data.length; i++) {
-				markers.addLayer(
-					new L.Marker(new L.LatLng(data[i].latitude, data[i].longtitude), { icon: new SweetIcon({ labelText: data[i].label })})
-				);
+				L.marker([data[i].latitude, data[i].longtitude], { icon: new SweetIcon({ labelText: data[i].label })}).addTo(layerRuasJalanMarker);
 			}
-			mymap.addLayer(markers);
 		},'json');
 
 		$.get('<?= base_url("ruas/getCenterKoordinat/");?>'+periode+'/'+id, function(data) {
-			ruasCenterLayer = L.geoJSON(JSON.parse(data), {
+			L.geoJSON(JSON.parse(data), {
 				style: function(feature) {
 					return {
 						color: feature.properties.color,
 						weight: 3
 					};
 				}
-			}).addTo(mymap);
+			}).addTo(layerRuasJalanCenter);
 		});
 	}
 
 	function clearLine(){
 		mymap.setZoom(10);
-		mymap.removeLayer(ruasLayer);
-		mymap.removeLayer(ruasCenterLayer);
-		mymap.removeLayer(markers);
+		layerRuasJalanCenter.clearLayers();
+		layerRuasJalan.clearLayers();
+		layerRuasJalanMarker.clearLayers();
 	}
 
 	$.get('<?= base_url("ruas/getLegenda");?>', function(data) {
@@ -196,9 +191,17 @@
 		content += '<li><h6>Legenda :</h6></li>';
 
 		$.each(data, function(key, value) {
-			if(value['id'] === "8"){
-				content += '<hr style="margin-top:3px;margin-bottom:3px"/>';
+			if(value['jenis'] === "2"){
+				if(value['id'] === "8"){
+					content += '<hr style="margin-top:3px;margin-bottom:3px"/>';
+				}
 				content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + value['name'] + '</li>';
+			}else if(value['jenis'] === "3"){
+				if(value['nilai_kondisi'] === "1"){
+					content += '<hr style="margin-top:3px;margin-bottom:3px"/>';
+				}
+				var title = value['nilai_kondisi'] == 1 ? 'NK0-NK1' : 'NK'+value['nilai_kondisi'];
+				content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + title + '</li>';
 			}else{
 				content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + value['name'] + '</li>';
 			}

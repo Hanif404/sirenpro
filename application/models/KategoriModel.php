@@ -43,7 +43,7 @@ class KategoriModel extends CI_Model {
 				$row = array();
     			$row[] = $ls['name'];
     			$row[] = $ls['warna'];
-    			$row[] = $ls['jenis'] == 1 ? "Ruas Jalan" : "Penanganan";
+    			$row[] = $this->chooseJenis($ls['jenis']);
     			$row[] = $ls['id'];
 					$data[] = $row;
 			}
@@ -52,6 +52,25 @@ class KategoriModel extends CI_Model {
     } else {
       return '';
     }
+	}
+
+	private function chooseJenis($value){
+		$jenis = '';
+		switch ($value) {
+			case 1:
+				$jenis = 'Ruas Jalan';
+				break;
+			case 2:
+				$jenis = 'Penanganan';
+				break;
+			case 3:
+				$jenis = 'Jembatan';
+				break;
+			default:
+				$jenis = 'Ruas Jalan';
+				break;
+		}
+		return $jenis;
 	}
 
   public function saving(){

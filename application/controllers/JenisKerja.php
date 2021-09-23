@@ -10,8 +10,8 @@ class JenisKerja extends MY_Controller {
 		$this->load->model('JenisKerjaModel');
 	}
 
-  public function index(){
-    $return = $this->JenisKerjaModel->getAllData();
+  public function index($type = 1){
+    $return = $this->JenisKerjaModel->getAllData($type);
 		$this->wrapper(true,$return,'success get data',200);
   }
 
@@ -23,8 +23,8 @@ class JenisKerja extends MY_Controller {
 		$this->wrapper(true,null,'success set',200);
   }
 
-  public function getDetailItem($id){
-    $return = $this->JenisKerjaModel->getDetailData($id);
+  public function getDetailItem($id, $type = 1){
+    $return = $this->JenisKerjaModel->getDetailData($id, $type);
 		if(!$return){
 				$this->wrapper(false, null ,'data not found',404);
 		}

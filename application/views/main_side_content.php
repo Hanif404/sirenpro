@@ -4,7 +4,8 @@
   <div class="sidebar-wrapper">
     <h5>Input Data</h5>
     <div class="list-group list-group-flush">
-      <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#penangananModal">Program Penanganan</a>
+      <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#penangananModal">Program Penanganan Jalan</a>
+      <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#penangananJembatanModal">Program Penanganan Jembatan</a>
       <?php if($_SESSION['is_admin'] == "1" || $_SESSION['is_admin'] == "2" ):?>
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#pekerjaanModal">Harga Satuan Pekerjaan</a>
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#jenisKerjaModal">Jenis Pekerjaan</a>
@@ -13,6 +14,7 @@
       <?php if($_SESSION['is_admin'] == "1"):?>
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#kategoriModal">Warna Garis</a>
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#koordinatModal">Import Koordinat Jalan</a>
+      <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#importJembatanModal">Import Jembatan</a>
       <a href="#" class="list-group-item list-group-item-action bg-light" data-toggle="modal" data-target="#penggunaModal">Pengguna</a>
       <?php endif;?>
     </div>
@@ -24,7 +26,15 @@
     <select class="ruas select-2" name="ruas" style="width:100%"></select>
     <div class="div-block"></div>
     <div class="div-block"></div>
-    <h5>Tabel Rekap Kemantapan</h5>
+    <h5>Skema Kemantapan Jembatan</h5>
+    <select class="select-2" id="cbViewJembatan" style="width:100%">
+      <option value="">Pilih Kota</option>
+      <option value="garut">Garut</option>
+      <option value="sumedang">Sumedang</option>
+    </select>
+    <div class="div-block"></div>
+    <hr/>
+    <h6>Tabel Rekap Kemantapan Jalan</h6>
     <select class="periode select-2" id="periodeRekap" style="width:100%"></select>
     <div class="div-block"></div>
     <select class="daerah select-2" name="daerah" id="cbDaerah" style="width:100%">
@@ -38,10 +48,21 @@
     <div class="div-block"></div> -->
     <!-- <button id="btnView" class="btn btn-block btn-primary disabled">Tampilkan Data</button> -->
     <button id="btnRekap" class="btn btn-block btn-success disabled">Rekap Data</button>
+    <hr/>
+    <h6>Tabel Rekap Kemantapan Jembatan</h6>
+    <select class="periode select-2" id="periodeRekapJembatan" style="width:100%"></select>
+    <div class="div-block"></div>
+    <select class="daerah select-2" name="daerah" id="cbDaerahJembatan" style="width:100%">
+      <option value="">Pilih Semua</option>
+      <option value="garut">Garut</option>
+      <option value="sumedang">Sumedang</option>
+    </select>
+    <div class="div-block"></div>
+    <button id="btnRekapJembatan" class="btn btn-block btn-success disabled">Rekap Data</button>
   </div>
 </div>
 <script>
-  var tableKemantapan, tablePekerjaan, tablePengguna, tableKategori, tableRawan, tableJenisKerja, tablePenanganan, tablePenangananDet;
+  var tableKemantapan, tablePengguna, tableKategori, tableRawan, tablePenanganan, tablePenangananDet, layerJembatan;
   var isShowTable = false;
   var selectDaerah = "";
   var isAdmin = "<?= $_SESSION['is_admin'] ?>";
@@ -49,12 +70,12 @@
     loadDropdown();
     // loadPenangananDetForm();
     loadPenangananForm();
-    loadPekerjaanForm();
-    loadJenisKerjaForm();
     loadPenggunaForm();
     loadKategoriForm();
     loadKoordinatForm();
     loadRawanForm();
+
+    layerJembatan = L.layerGroup().addTo(mymap);
   });
 
   function hitungBiaya(val){
@@ -67,6 +88,7 @@
     var aksiField = "";
     if(isAdmin == 2 || isAdmin == 1){
       $('.form-penanganan').show();
+      $('.form-penanganan-jbt').show();
       aksiField = '<button id="btnEdit" class="btn btn-sm btn-primary btn-margin-bottom"><i class="fa fa-edit" ></i> Edit</button> <button id="btnDelete" class="btn btn-sm btn-danger btn-margin-bottom"><i class="far fa-trash-alt"></i> Delete</button>';
     }
 
@@ -303,235 +325,6 @@
   	});
   }
 
-  function loadJenisKerjaForm(){
-    tableJenisKerja = $('#listJenisKerja').DataTable({
-      "ajax": '<?= base_url("jenisKerja");?>',
-      "columnDefs": [{
-        "targets": -1,
-        "data": null,
-        "defaultContent": '<button id="btnEdit" class="btn btn-sm btn-primary btn-margin-bottom"><i class="fa fa-edit" ></i> Edit</button> <button id="btnDelete" class="btn btn-sm btn-danger btn-margin-bottom"><i class="far fa-trash-alt"></i> Delete</button>'
-      }]
-    });
-
-    $('.btn-close-jenisKerja').on('click', function(){
-      resetForm();
-      $('#jenisKerjaModal').modal('hide');
-    });
-
-    function resetForm(){
-      $('.form-jenisKerja')[0].reset();
-      $('.kategori').val(null).trigger('change');
-    }
-
-    $('#btnSubmitJenisKerja').on('click', function(e){
-      e.stopImmediatePropagation();
-      blockShow();
-
-      var $form = $('.form-jenisKerja');
-      if ($form.valid()){
-        $.post($form.attr('action'), $form.serialize(), function(data){
-          blockHide();
-          if(data.code === 200){
-            Swal.fire({
-              icon: 'success',
-              title: 'Submit Data',
-              text: 'Data berhasil tersimpan'
-            })
-            resetForm();
-            tableJenisKerja.ajax.reload();
-          }else{
-            Swal.fire({
-              icon: 'error',
-              title: 'Submit Data',
-              text: 'Gagal menyimpan data'
-            })
-          }
-        }, 'json');
-      }else{
-        $('#kategori_id-error').addClass('invalid-feedback');
-        blockHide();
-      }
-      return false;
-    });
-
-    $('.form-jenisKerja').validate({
-  		ignore: 'input[type=hidden]',
-  		rules: {
-  			kategori_id : {
-  				required: true
-  			},
-  			name : {
-  				required: true
-  			}
-  		}
-  	});
-
-    $('#listJenisKerja tbody').on( 'click', '#btnEdit', function (e) {
-      e.stopImmediatePropagation();
-  		var data = tableJenisKerja.row( $(this).parents('tr') ).data();
-
-      //get data
-      $.get('<?= base_url("jenisKerja/getDetailItem/");?>' + data[2], function(dataJson) {
-        if(dataJson.code === 200){
-          $('input[name=id]').val(dataJson.data[0].id);
-          $('input[name=name]').val(dataJson.data[0].name);
-
-          var newOption = new Option(dataJson.data[0].penanganan_text, dataJson.data[0].penanganan_id, true, true);
-          $('.kategori').append(newOption).trigger('change');
-        }
-      }, 'json');
-  	});
-
-    $('#listJenisKerja tbody').on( 'click', '#btnDelete', function (e) {
-      e.stopImmediatePropagation();
-
-  		var data = tableJenisKerja.row( $(this).parents('tr') ).data();
-      $.confirm({
-          title: 'Confirm!',
-          content: 'Yakin akan menghapus data ini?',
-          buttons: {
-              Ya: function () {
-                $.get('<?= base_url("jenisKerja/deleteItem/");?>' + data[2], function(dataJson) {
-                  if(dataJson.code === 200){
-                    Swal.fire({
-                      icon: 'success',
-                      title: 'Submit Data',
-                      text: 'Data berhasil tersimpan'
-                    })
-                    resetForm();
-                    tableJenisKerja.ajax.reload();
-                  }
-                }, 'json');
-              },
-              Tidak: function () {
-
-              }
-          }
-      });
-  	});
-  }
-
-  function loadPekerjaanForm(){
-    tablePekerjaan = $('#listPekerjaan').DataTable({
-      "ajax": '<?= base_url("pekerjaan");?>',
-      "columnDefs": [{
-        "targets": -1,
-        "data": null,
-        "defaultContent": '<button id="btnEdit" class="btn btn-sm btn-primary btn-margin-bottom"><i class="fa fa-edit" ></i> Edit</button> <button id="btnDelete" class="btn btn-sm btn-danger btn-margin-bottom"><i class="far fa-trash-alt"></i> Delete</button>'
-      }]
-    });
-
-    $('.btn-close-pekerjaan').on('click', function(){
-      resetForm();
-      $('#pekerjaanModal').modal('hide');
-    });
-
-    function resetForm(){
-      $('.form-pekerjaan')[0].reset();
-
-      $('.kategori').val(null).trigger('change');
-      $('.satuan').val(null).trigger('change');
-      $('.jns_pekerjaan').val(null).trigger('change');
-    }
-
-    $('#btnSubmitPekerjaan').on('click', function(e){
-      e.stopImmediatePropagation();
-      blockShow();
-
-      var $form = $('.form-pekerjaan');
-      if ($form.valid()){
-        $.post($form.attr('action'), $form.serialize(), function(data){
-          blockHide();
-          if(data.code === 200){
-            Swal.fire({
-              icon: 'success',
-              title: 'Submit Data',
-              text: 'Data berhasil tersimpan'
-            })
-            resetForm();
-            tablePekerjaan.ajax.reload();
-          }else{
-            Swal.fire({
-              icon: 'error',
-              title: 'Submit Data',
-              text: 'Gagal menyimpan data'
-            })
-          }
-        }, 'json');
-      }else{
-        blockHide();
-      }
-      return false;
-    });
-
-    $('.form-pekerjaan').validate({
-  		ignore: 'input[type=hidden]',
-  		rules: {
-  			jenis_id : {
-  				required: true
-  			},
-  			harga : {
-  				required: true
-  			},
-  			satuan_id : {
-  				required: true
-  			},
-  			kategori_id : {
-  				required: true
-  			}
-  		}
-  	});
-
-    $('#listPekerjaan tbody').on( 'click', '#btnEdit', function () {
-  		var data = tablePekerjaan.row( $(this).parents('tr') ).data();
-
-      //get data
-      $.get('<?= base_url("pekerjaan/getDetailItem/");?>' + data[4], function(dataJson) {
-        if(dataJson.code === 200){
-          var satuanOps = new Option(dataJson.data[0].satuan_text, dataJson.data[0].satuan_id, false, false);
-          $('.satuan').append(satuanOps).trigger('change');
-
-          var kategoriOps = new Option(dataJson.data[0].penanganan_text, dataJson.data[0].penanganan_id, false, false);
-          $('.kategori').append(kategoriOps).trigger('change');
-
-          var jenisOps = new Option(dataJson.data[0].jenis_text, dataJson.data[0].jenis_id, false, false);
-          $('.jns_pekerjaan').append(jenisOps).trigger('change');
-
-          $('input[name=id_pekerjaan]').val(dataJson.data[0].id);
-          $('input[name=harga]').val(dataJson.data[0].harga);
-
-          loadDropdownJenisKerja(dataJson.data[0].penanganan_id);
-        }
-      }, 'json');
-  	});
-
-    $('#listPekerjaan tbody').on( 'click', '#btnDelete', function () {
-  		var data = tablePekerjaan.row( $(this).parents('tr') ).data();
-      $.confirm({
-          title: 'Confirm!',
-          content: 'Yakin akan menghapus data ini?',
-          buttons: {
-              Ya: function () {
-                $.get('<?= base_url("pekerjaan/deleteItem/");?>' + data[4], function(dataJson) {
-                  if(dataJson.code === 200){
-                    Swal.fire({
-                      icon: 'success',
-                      title: 'Submit Data',
-                      text: 'Data berhasil tersimpan'
-                    })
-                    resetForm();
-                    tablePekerjaan.ajax.reload();
-                  }
-                }, 'json');
-              },
-              Tidak: function () {
-
-              }
-          }
-      });
-  	});
-  }
-
   function loadPenggunaForm(){
     tablePengguna = $('#listPengguna').DataTable({
       "ajax": '<?= base_url("pengguna");?>',
@@ -681,7 +474,13 @@
 
     $('.btn-close-kategori').on('click', function(){
       $('.form-kategori')[0].reset();
+      $('input[name=id]').val('');
       $('#kategoriModal').modal('hide');
+    });
+
+    $('#btnResetKategori').on('click', function(){
+      $('.form-kategori')[0].reset();
+      $('input[name=id]').val('');
     });
 
     $('#btnSubmitKategori').on('click', function(e){
@@ -1381,6 +1180,7 @@
     $("#viewInputHarga").val(0);
     hitungBiaya(0);
 
+    $('.jns_pekerjaan').val(null).trigger('change');
     $('.jns_pekerjaan').select2({
       placeholder: "Pilih Jenis Pekerjaan",
       allowClear: false,
@@ -1441,6 +1241,37 @@
           },
           cache: true
         }
+    }).on('select2:select', function (e) {
+      var id = e.params.data.id;
+      loadDropdownJenisKerja(id);
+    });
+
+    $('.kategori-jembatan').select2({
+      placeholder: "Pilih Jenis Penanganan",
+      allowClear: false,
+      minimumResultsForSearch: Infinity,
+      ajax: {
+          url: "<?= base_url('Kategori/getCombo/3') ?>",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            return {
+              q: params.term, // search term
+              page: params.page
+            };
+          },
+          processResults: function (data, page) {
+            return {
+              results: $.map(data, function(obj) {
+                  return { id: obj.id, text: obj.name };
+              })
+            };
+          },
+          cache: true
+        }
+    }).on('select2:select', function (e) {
+      var id = e.params.data.id;
+      loadDropdownJenisKerja(id);
     });
 
     $('.satuan').select2({
@@ -1471,11 +1302,6 @@
     $('.jns_pekerjaan').select2({
       placeholder: "Pilih Jenis Pekerjaan",
       allowClear: false
-    });
-
-    $('.kategori').on('select2:select', function (e) {
-      var id = e.params.data.id;
-      loadDropdownJenisKerja(id);
     });
 
     $('.is-active').select2({
@@ -1524,6 +1350,76 @@
             cache: false
           }
       });
+    }
+
+    $('#cbViewJembatan').select2({
+      placeholder: "Pilih Kota",
+      minimumResultsForSearch: Infinity
+    }).on('select2:select', function(e) {
+      var id = e.params.data.id;
+      layerJembatan.clearLayers();
+
+      $.get('<?= base_url("jembatan/getDataByKab/");?>' + id, function(dataJson) {
+        if(dataJson.code === 200){
+          var content = dataJson.data;
+          for (let i = 0; i < content.length; i++) {
+            const element = content[i];
+            const color = element.warna.replace("#", '');
+            //set marker
+            var icon = new L.Icon({
+              iconUrl: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|'+color+'&chf=a,s,ee00FFFF',
+              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              shadowSize: [41, 41]
+            });
+            
+            L.marker([element.latitude, element.longtitude], {icon, id: element.id}).addTo(layerJembatan).on('click', clickJembatanMarker);
+          }
+        }
+      }, 'json');
+    });
+
+    function clickJembatanMarker() {
+      var id = this.options.id;
+
+      //TODO :get detail jembatan
+      $.get('<?= base_url("jembatan/getDataById/");?>' + id, function(dataJson) {
+        if(dataJson.code === 200){
+          var content = dataJson.data;
+          $('#viewNoJbt').text(content[0].no);
+          $('#viewNmJbt').text(content[0].nama);
+          $('#viewRuasJbt').text(content[0].ruas_jalan);
+          $('#viewTahunJbt').text(content[0].thn);
+          $('#viewKotaJbt').text(content[0].nama_kota);
+          $('#viewLokasiJbt').text(content[0].lokasi);
+          $('#viewDateJbt').text(content[0].tgl_inspeksi);
+          $('#viewPengelolaJbt').text(content[0].pengelola);
+
+          $('#viewPnjJbt').text(content[0].panjang);
+          $('#viewLbrJbt').text(content[0].lebar);
+          $('#viewBaJbt').text(content[0].ba);
+          $('#viewBbJbt').text(content[0].bb);
+          $('#viewPdsJbt').text(content[0].pondasi);
+          $('#viewLntJbt').text(content[0].lantai);
+          $('#viewlokasiJbt').text(content[0].lokasi);
+        }
+      }, 'json');
+
+      $.get('<?= base_url("jembatan/getData/");?>'+id, function(dataJson) {
+        if(dataJson.code === 200){
+          content = dataJson.data;
+          if(content.length > 0){
+            for (var j = 0; j < content.length; j++) {
+              var image = document.getElementById('file_view_'+content[j].type);
+              image.src = '<?= base_url(); ?>'+content[j].name;
+            }
+          }
+        }
+      },'json');
+
+      $('#markerJembatanModal').modal('show');
     }
 
     $('.ruas').select2({
@@ -1722,4 +1618,5 @@
       });
     });
   }
+  
 </script>

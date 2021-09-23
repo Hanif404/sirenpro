@@ -167,6 +167,7 @@
   </div>
 </div>
 
+<!-- start jenis pekerjaan modal -->
 <div class="modal fade" id="jenisKerjaModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="jenisKerjaModalTitle" aria-hidden="true">
   <div class="modal-dialog" role="document" style="max-width: 80%;" >
     <div class="modal-content">
@@ -177,50 +178,27 @@
         </button>
       </div>
       <div class="modal-body">
-        <form class="form-jenisKerja" method="post" action="<?= base_url('jenisKerja/setItem');?>">
-          <input type="hidden" name="id" />
-          <div class="container">
-            <div class="row">
-              <div class="col-lg-6">
-                <div class="form-group">
-                  <label for="input1">Kategori</label>
-                  <select class="form-control kategori" name="kategori_id" style="width:100%"></select>
-                </div>
-              </div>
-              <div class="col-lg-6">
-                <div class="form-group">
-                  <label for="input2">Nama Pekerjaan</label>
-                  <input type="text" class="form-control" placeholder="Nama Pekerjaan"  name="name" >
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-lg-12">
-                <button id="btnSubmitJenisKerja" class="btn btn-primary">Submit</button>
-              </div>
-            </div>
+        <nav>
+          <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-link active" id="nav-jenis-jalan-tab" data-toggle="tab" href="#nav-jenis-jalan" role="tab" aria-controls="nav-jalan" aria-selected="true" onclick="clearFormJPekerjaan();">Jalan</a>
+            <a class="nav-link" id="nav-jenis-jembatan-tab" data-toggle="tab" href="#nav-jenis-jembatan" role="tab" aria-controls="nav-jembatan" aria-selected="false" onclick="clearFormJPekerjaan();">Jembatan</a>
           </div>
-        </form>
-        <div class="container" style="margin-top:20px">
-          <div class="row">
-            <div class="col-lg-12">
-              <table id="listJenisKerja" class="table table-striped table-bordered" style="width:100%">
-    							<thead>
-    									<tr>
-    											<th>Kategori</th>
-    											<th>Nama Pekerjaan</th>
-    											<th>&nbsp;</th>
-    									</tr>
-    							</thead>
-    					</table>
-            </div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+          <div class="tab-pane fade show active" id="nav-jenis-jalan" role="tabpanel" aria-labelledby="nav-jenis-jalan-tab" style="padding-top:10px">
+            <?php $this->load->view('jalan/jenis_kerja')?>
+          </div>
+          <div class="tab-pane fade" id="nav-jenis-jembatan" role="tabpanel" aria-labelledby="nav-jenis-jembatan-tab" style="padding-top:10px">
+            <?php $this->load->view('jembatan/jenis_kerja')?>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+<!-- end jenis pekerjaan modal -->
 
+<!-- start rawan modal -->
 <div class="modal fade" id="rawanModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="rawanModalTitle" aria-hidden="true">
   <div class="modal-dialog" role="document" style="max-width: 80%;" >
     <div class="modal-content">
@@ -299,7 +277,9 @@
     </div>
   </div>
 </div>
+<!-- end rawan modal -->
 
+<!-- start harga pekerjaan modal -->
 <div class="modal fade" id="pekerjaanModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="pekerjaanModalTitle" aria-hidden="true">
   <div class="modal-dialog" role="document" style="max-width: 80%;" >
     <div class="modal-content">
@@ -310,66 +290,27 @@
         </button>
       </div>
       <div class="modal-body">
-        <form class="form-pekerjaan" method="post" action="<?= base_url('pekerjaan/setItem');?>">
-          <input type="hidden" name="id_pekerjaan" />
-          <div class="container">
-            <div class="row">
-              <div class="col-lg-6">
-                <div class="form-group">
-                  <label for="input2">Jenis Penanganan</label>
-                  <select class="form-control kategori" name="kategori_id" style="width:100%"></select>
-                </div>
-              </div>
-              <div class="col-lg-6">
-                <div class="form-group">
-                  <label for="input3">Satuan</label>
-                  <select class="form-control satuan" name="satuan_id" style="width:100%"></select>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-lg-6">
-                <div class="form-group">
-                  <label for="input3">Jenis Pekerjaan</label>
-                  <select class="form-control jns_pekerjaan" name="jenis_id" style="width:100%"></select>
-                </div>
-              </div>
-              <div class="col-lg-6">
-                <div class="form-group">
-                  <label for="input2">Harga</label>
-                  <input type="text" class="form-control" placeholder="Harga"  name="harga" >
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-lg-12">
-                <button id="btnSubmitPekerjaan" class="btn btn-primary">Submit</button>
-              </div>
-            </div>
+        <nav>
+          <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-link active" id="nav-jalan-tab" data-toggle="tab" href="#nav-jalan" role="tab" aria-controls="nav-jalan" aria-selected="true" onclick="clearFormHPekerjaan();">Jalan</a>
+            <a class="nav-link" id="nav-jembatan-tab" data-toggle="tab" href="#nav-jembatan" role="tab" aria-controls="nav-jembatan" aria-selected="false" onclick="clearFormHPekerjaan();">Jembatan</a>
           </div>
-        </form>
-        <div class="container" style="margin-top:20px">
-          <div class="row">
-            <div class="col-lg-12">
-              <table id="listPekerjaan" class="table table-striped table-bordered" style="width:100%">
-    							<thead>
-    									<tr>
-    											<th>Jenis Penanganan</th>
-    											<th>Jenis Pekerjaan</th>
-                          <th>Satuan</th>
-    											<th>Harga</th>
-    											<th>&nbsp;</th>
-    									</tr>
-    							</thead>
-    					</table>
-            </div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+          <div class="tab-pane fade show active" id="nav-jalan" role="tabpanel" aria-labelledby="nav-jalan-tab" style="padding-top:10px">
+            <?php $this->load->view('jalan/harga_kerja')?>
+          </div>
+          <div class="tab-pane fade" id="nav-jembatan" role="tabpanel" aria-labelledby="nav-jembatan-tab" style="padding-top:10px">
+            <?php $this->load->view('jembatan/harga_kerja')?>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+<!-- end harga pekerjaan modal -->
 
+<!-- start pengguna modal -->
 <div class="modal fade" id="penggunaModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="penggunaModalTitle" aria-hidden="true">
   <div class="modal-dialog" role="document" style="max-width: 80%;" >
     <div class="modal-content">
@@ -471,6 +412,7 @@
     </div>
   </div>
 </div>
+<!-- end pengguna modal -->
 
 <div class="modal fade" id="kategoriModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="kategoriModalTitle" aria-hidden="true">
   <div class="modal-dialog" role="document" style="max-width: 80%;" >
@@ -506,6 +448,7 @@
                       <select class="jenis_kategori" id="fieldJenisKategori" name="jenis" style="width:100%">
                         <option value="1">Ruas Jalan</option>
                         <option value="2">Penanganan</option>
+                        <option value="3">Jembatan</option>
                       </select>
                     </div>
                   </div>
@@ -515,6 +458,7 @@
             <div class="row">
               <div class="col-lg-12">
                 <button id="btnSubmitKategori" class="btn btn-primary">Submit</button>
+                <button id="btnResetKategori" class="btn btn-default">Reset</button>
               </div>
             </div>
           </div>

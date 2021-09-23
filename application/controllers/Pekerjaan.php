@@ -10,8 +10,8 @@ class Pekerjaan extends MY_Controller {
 		$this->load->model('PekerjaanModel');
 	}
 
-  public function index(){
-    $return = $this->PekerjaanModel->getAllData();
+  public function index($type = 1){
+    	$return = $this->PekerjaanModel->getAllData($type);
 		$this->wrapper(true,$return,'success get data',200);
   }
 
@@ -27,8 +27,8 @@ class Pekerjaan extends MY_Controller {
 		$this->wrapper(true,null,'success set',200);
   }
 
-  public function getDetailItem($id){
-    $return = $this->PekerjaanModel->getDetailData($id);
+  public function getDetailItem($id, $type = 1){
+    $return = $this->PekerjaanModel->getDetailData($id, $type);
 		if(!$return){
 				$this->wrapper(false, null ,'data not found',404);
 		}

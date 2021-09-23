@@ -11,13 +11,16 @@ class JenisKerjaModel extends CI_Model {
 	private function setData(){
     $this->id = $this->input->post('id');
 		$this->name = $this->input->post('name');
+		$this->type = $this->input->post('type');
 		$this->penanganan_id = $this->input->post('kategori_id');
   }
 
-  public function getAllData(){
+  public function getAllData($type){ 
+	$kg = $type == 1 ? 2 : 3;
 		$this->db->select('jn.*, kg.name as jnsName');
     $this->db->from($this->jenisKerja.' jn');
-    $this->db->join($this->kategori.' kg', 'jn.penanganan_id = kg.id and kg.jenis = 2');
+    $this->db->join($this->kategori.' kg', 'jn.penanganan_id = kg.id and kg.jenis = '.$kg);
+	$this->db->where('jn.type', $type);
 		$list = $this->db->get();
     if($list->num_rows() > 0){
       $arraylist = $list->result_array();
@@ -42,19 +45,22 @@ class JenisKerjaModel extends CI_Model {
     if($this->id != ""){
       $this->db->set('penanganan_id', $this->penanganan_id);
       $this->db->set('name', $this->name);
+      $this->db->set('type', $this->type);
       $this->db->where('id', $this->id);
       return $this->db->update($this->jenisKerja);
     }else{
 			$this->db->set('penanganan_id', $this->penanganan_id);
       $this->db->set('name', $this->name);
+	  $this->db->set('type', $this->type);
       return $this->db->insert($this->jenisKerja);
     }
   }
 
-  public function getDetailData($id){
-		$this->db->select('jn.*, kg.name as penanganan_text');
+  public function getDetailData($id, $type){
+	$kg = $type == 1 ? 2 : 3;
+	$this->db->select('jn.*, kg.name as penanganan_text');
     $this->db->from($this->jenisKerja.' jn');
-    $this->db->join($this->kategori.' kg', 'jn.penanganan_id = kg.id and kg.jenis = 2');
+    $this->db->join($this->kategori.' kg', 'jn.penanganan_id = kg.id and kg.jenis = '.$kg);
     $this->db->where('jn.id', $id);
 		$list = $this->db->get();
 		if($list->num_rows() > 0){

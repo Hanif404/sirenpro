@@ -20,3 +20,4 @@
 </div>
 <div class="sidemenu-legenda"></div>
 <?php $this->load->view('modal_content');?>
+<?php $this->load->view('modal_content_jembatan');?>
