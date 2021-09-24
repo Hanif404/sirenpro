@@ -72,8 +72,7 @@ var loadFile = function(event, field) {
 var loadFormJembatanImage = function(){
   $('.form-image-jembatan')[0].reset();
 
-  id = $('input[name=jembatan_id]').val();
-  $.get('<?= base_url("jembatan/getData/");?>'+id, function(dataJson) {
+  $.get('<?= base_url("jembatan/getData/");?>'+idJembatanImage, function(dataJson) {
     if(dataJson.code === 200){
       content = dataJson.data;
       if(content.length > 0){
@@ -131,8 +130,21 @@ $('#btnImageJembatan').on('click', function(e){
                 icon: 'success',
                 title: 'Submit Data',
                 text: 'Data berhasil tersimpan'
-              })
+              });
               resetFormJembatanImage();
+
+              $('input[name=jembatan_id]').val(idJembatanImage);
+              $.get('<?= base_url("jembatan/getData/");?>'+idJembatanImage, function(dataJson) {
+                if(dataJson.code === 200){
+                  content = dataJson.data;
+                  if(content.length > 0){
+                    for (var j = 0; j < content.length; j++) {
+                      var image = document.getElementById('file_'+content[j].type);
+                      image.src = '<?= base_url(); ?>'+content[j].name;
+                    }
+                  }
+                }
+              },'json');
             }else{
               Swal.fire({
                 icon: 'error',

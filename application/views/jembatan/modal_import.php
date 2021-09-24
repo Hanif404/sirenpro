@@ -52,7 +52,7 @@
     </div>
 </div>
 <script>
-var tableDataJembatan;
+var tableDataJembatan, idJembatanImage;
 $(document).ready(function() {
     loadImportJembatanForm();
 
@@ -68,6 +68,7 @@ $(document).ready(function() {
     $('#listDataJembatan tbody').on( 'click', '#btnEdit', function(e) {
       e.stopImmediatePropagation();
       var data = tableDataJembatan.row( $(this).parents('tr') ).data();
+      idJembatanImage = data[7];
       $('input[name=jembatan_id]').val(data[7]);
       loadFormJembatanImage();
 
