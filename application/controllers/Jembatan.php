@@ -76,9 +76,26 @@ class Jembatan extends MY_Controller {
         echo $this->JembatanModel->findManyPeriode();
     }
 
+    public function getDataPeriode2(){
+        echo $this->JembatanModel->findManyPeriode2();
+    }
+
     public function getDataRuas($periode){
         $filter = $this->input->get('q');
         echo $this->JembatanModel->findManyRuasJalan($periode, $filter);
+    }
+
+    public function getDataPengelola($periode){
+        $filter = $this->input->get('q');
+        echo $this->JembatanModel->findManyPengelola($periode, $filter);
+    }
+
+    public function getDataNkJbt($periode, $pengelola){
+        echo $this->JembatanModel->findManyNkJbt($periode, $pengelola);
+    }
+
+    public function getDataRencanaJbt($periode, $pengelola){
+        echo $this->JembatanModel->findManyRencanaJbt($periode, $pengelola);
     }
 
     public function setImage(){

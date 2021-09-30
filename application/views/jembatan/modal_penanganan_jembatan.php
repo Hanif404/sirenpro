@@ -18,7 +18,7 @@
             <div class="col-lg-12">
               <div class="row">
                 <div class="col-md-4">
-                  <select class="form-control" id="fieldJembatanPeriode" style="width:100%"></select>
+                  <select class="form-control fieldJembatanPeriode" style="width:100%"></select>
                 </div>
                 <div class="col-md-8">
                   <select class="form-control" id="fieldJembatanRuas" style="width:100%"></select>
@@ -29,7 +29,7 @@
           <div class="row">
             <div class="col-lg-12">
               <button id="btnViewPenangananJembatan" class="btn btn-primary" style="margin-top: 10px;">Tampilkan Data</button>
-              <button id="btnViewPdf" class="btn btn-success" style="margin-top: 10px;"><span id="txtbtnpdf_penanganan">Laporan Rekapitulasi</span></button>
+              <button id="btnViewDD2Pdf" class="btn btn-success" style="margin-top: 10px;">Laporan Jembatan</button>
             </div>
           </div>
         </div>
@@ -55,7 +55,7 @@
 </div>
 
 <script>
-var tablePenangananJembatan, idKategoriJbt, nmJbt, noJbt, ruasJbt, thnJbt, kotaJbt, lokasiJbt, pengelolaJbt, tglJbt;
+var tablePenangananJembatan, idKategoriJbt, nmJbt, noJbt, ruasJbt, thnJbt, kotaJbt, lokasiJbt, pengelolaJbt, tglJbt, typeViewJembatan = 1;
 $('.btn-close-penanganan-jembatan').on('click', function(){
     $('#penangananJembatanModal').modal('hide');
 });
@@ -86,6 +86,10 @@ $('#btnViewPenangananJembatan').on('click', function(){
       text: 'Field salah atau tidak boleh kosong'
     })
   }
+});
+
+$('#btnViewDD2Pdf').on('click', function(){
+  $('#lapDD2Jembatan').modal('show');
 });
 
 $(document).ready(function() {
@@ -122,6 +126,17 @@ $(document).ready(function() {
   $("#penangananJbtDetModal").on('hide.bs.modal', function () {
     $("#penangananJembatanModal").modal("show");
   });
+
+  //laporan DD2
+  $("#lapDD2Jembatan").on('show.bs.modal', function () {
+    typeViewJembatan = 2;
+    $("#penangananJembatanModal").modal("hide");
+  });
+
+  $("#lapDD2Jembatan").on('hide.bs.modal', function () {
+    typeViewJembatan = 1;
+    $("#penangananJembatanModal").modal("show");
+  });
 });
 
 function loadDropdownJembatan(){
@@ -129,8 +144,13 @@ function loadDropdownJembatan(){
     placeholder: "Pilih Ruas Jalan",
     allowClear: true
   });
+  
+  $('#fieldJembatanPengelola').select2({
+    placeholder: "Pilih Pengelola",
+    allowClear: true
+  });
 
-  $('#fieldJembatanPeriode').select2({
+  $('.fieldJembatanPeriode').select2({
     placeholder: "Pilih Periode",
     allowClear: true,
     minimumResultsForSearch: Infinity,
@@ -156,28 +176,104 @@ function loadDropdownJembatan(){
   }).on('select2:select', function(e) {
     var id = e.params.data.id;
 
-    $('#fieldJembatanRuas').select2({
-      placeholder: "Pilih Ruas Jalan",
+    if(typeViewJembatan === 1){
+      $('#fieldJembatanRuas').select2({
+        placeholder: "Pilih Ruas Jalan",
+        allowClear: true,
+        ajax: {
+            url: "<?= base_url('jembatan/getDataRuas/') ?>"+id,
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+              return {
+                q: params.term, // search term
+                page: params.page
+              };
+            },
+            processResults: function (data, page) {
+              return {
+                results: $.map(data, function(obj) {
+                    return { id: obj.ruas_jalan, text: obj.ruas_jalan };
+                })
+              };
+            },
+            cache: true
+          }
+      });
+    }else if(typeViewJembatan === 2){
+      $('#fieldJembatanPengelola').select2({
+        placeholder: "Pilih Pengelola",
+        allowClear: true,
+        ajax: {
+            url: "<?= base_url('jembatan/getDataPengelola/') ?>"+id,
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+              return {
+                q: params.term, // search term
+                page: params.page
+              };
+            },
+            processResults: function (data, page) {
+              return {
+                results: $.map(data, function(obj) {
+                    return { id: obj.pengelola, text: obj.pengelola };
+                })
+              };
+            },
+            cache: true
+          }
+      });
+    }
+  });
+  
+  $('.fieldJbtYearPeriode').select2({
+    placeholder: "Pilih Periode",
+    allowClear: true,
+    minimumResultsForSearch: Infinity,
+    ajax: {
+        url: "<?= base_url('jembatan/getDataPeriode2') ?>",
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+          return {
+            q: params.term, // search term
+            page: params.page
+          };
+        },
+        processResults: function (data, page) {
+          return {
+            results: $.map(data, function(obj) {
+              return { id: obj.periode_year, text: obj.periode_year };
+            })
+          };
+        },
+        cache: true
+      }
+  }).on('select2:select', function(e) {
+    var id = e.params.data.id;
+    $('#fieldJembatanPengelola').select2({
+      placeholder: "Pilih Pengelola",
       allowClear: true,
       ajax: {
-          url: "<?= base_url('jembatan/getDataRuas/') ?>"+id,
-          dataType: 'json',
-          delay: 250,
-          data: function (params) {
-            return {
-              q: params.term, // search term
-              page: params.page
-            };
-          },
-          processResults: function (data, page) {
-            return {
-              results: $.map(data, function(obj) {
-                  return { id: obj.ruas_jalan, text: obj.ruas_jalan };
-              })
-            };
-          },
-          cache: true
-        }
+        url: "<?= base_url('jembatan/getDataPengelola/') ?>"+id,
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+          return {
+            q: params.term, // search term
+            page: params.page
+          };
+        },
+        processResults: function (data, page) {
+          return {
+            results: $.map(data, function(obj) {
+                return { id: obj.pengelola, text: obj.pengelola };
+            })
+          };
+        },
+        cache: true
+      }
     });
   });
 }

@@ -9,6 +9,9 @@ class JembatanModel extends CI_Model {
 	var $periode = "view_jembatan_periode";
 	var $periodeRuas = "view_jembatan_ruas";
 	var $lastJembatan = "view_last_jembatan";
+	var $pengelolaJembatan = "view_jembatan_pengelola";
+	var $penangananJembatan = "view_jembatan_penanganan";
+	var $periodeJembatanYear = "view_jembatan_periode_2";
     var $bulan = array (1 => 'Januari',
         'Februari',
         'Maret',
@@ -297,6 +300,64 @@ class JembatanModel extends CI_Model {
 			return json_encode($arraylist);
 		} else {
 			return json_encode('');
+		}
+    }
+
+    public function findManyPeriode2(){
+        $this->db->select('*');
+        $this->db->from($this->periodeJembatanYear);
+        $list = $this->db->get();
+        if($list->num_rows() > 0){
+            $arraylist = $list->result_array();
+			return json_encode($arraylist);
+		} else {
+			return json_encode('');
+		}
+    }
+
+    public function findManyPengelola($periode, $filter){
+        $this->db->select('*');
+        $this->db->from($this->pengelolaJembatan);
+        $this->db->where('periode', $periode);
+        if(strlen($filter) > 0){
+			$this->db->like('pengelola', $filter);
+		}
+        $list = $this->db->get();
+        if($list->num_rows() > 0){
+            $arraylist = $list->result_array();
+			return json_encode($arraylist);
+		} else {
+			return json_encode('');
+		}
+    }
+
+    public function findManyNkJbt($periode, $pengelola){
+        $this->db->select("jbt.*, kg.name, DATE_FORMAT(jbt.tgl_inspeksi,'%m-%Y') as periode ");
+        $this->db->from($this->jembatan.' jbt');
+        $this->db->join($this->kategori.' kg', 'jbt.nk_jbt = kg.nilai_kondisi');
+        $this->db->where("DATE_FORMAT(jbt.tgl_inspeksi,'%Y')", $periode);
+        $this->db->where('pengelola', urldecode($pengelola));
+        $list = $this->db->get();
+        if($list->num_rows() > 0){
+            $arraylist = $list->result_array();
+			return json_encode($arraylist);
+		} else {
+			return json_encode([]);
+		}
+    }
+
+    public function findManyRencanaJbt($periode, $pengelola){
+        $this->db->select("*");
+        $this->db->from($this->penangananJembatan);
+        $this->db->where("periode", $periode);
+        $this->db->where('pengelola', urldecode($pengelola));
+        $this->db->order_by("nk_jbt", 'asc');
+        $list = $this->db->get();
+        if($list->num_rows() > 0){
+            $arraylist = $list->result_array();
+			return json_encode($arraylist);
+		} else {
+			return json_encode([]);
 		}
     }
 
