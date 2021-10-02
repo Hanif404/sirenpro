@@ -348,10 +348,43 @@ class JembatanModel extends CI_Model {
     }
 
     public function findManyRekapJbt($periode){
-        $this->db->select("*");
-        $this->db->from($this->rekapJembatanYear);
-        $this->db->where("periode", $periode);
-        $list = $this->db->get();
+        $sql = "
+            select jbt.pengelola, DATE_FORMAT(jbt.tgl_inspeksi,'%Y') as periode, nk_a.jml as jml_a, nk_a.total as total_a, nk_b.jml as jml_b, nk_b.total as total_b, nk_c.jml as jml_c, nk_c.total as total_c, nk_d.jml as jml_d, nk_d.total as total_d, nk_e.jml as jml_e, nk_e.total as total_e
+            from jembatan jbt
+            LEFT JOIN (
+                SELECT pengelola, periode, COUNT(pengelola) as jml, SUM(jumlah) as total
+                FROM view_jembatan_penanganan
+                where nk_jbt in (0,1)
+                GROUP BY pengelola, periode
+            ) nk_a ON jbt.pengelola = nk_a.pengelola and DATE_FORMAT(jbt.tgl_inspeksi,'%Y') = nk_a.periode
+            LEFT JOIN (
+                SELECT pengelola, periode, COUNT(pengelola) as jml, SUM(jumlah) as total
+                FROM view_jembatan_penanganan
+                where nk_jbt = 2
+                GROUP BY pengelola, periode
+            ) nk_b ON jbt.pengelola = nk_b.pengelola and DATE_FORMAT(jbt.tgl_inspeksi,'%Y') = nk_b.periode
+            LEFT JOIN (
+                SELECT pengelola, periode, COUNT(pengelola) as jml, SUM(jumlah) as total
+                FROM view_jembatan_penanganan
+                where nk_jbt = 3
+                GROUP BY pengelola, periode
+            ) nk_c ON jbt.pengelola = nk_c.pengelola and DATE_FORMAT(jbt.tgl_inspeksi,'%Y') = nk_c.periode
+            LEFT JOIN (
+                SELECT pengelola, periode, COUNT(pengelola) as jml, SUM(jumlah) as total
+                FROM view_jembatan_penanganan
+                where nk_jbt = 4
+                GROUP BY pengelola, periode
+            ) nk_d ON jbt.pengelola = nk_d.pengelola and DATE_FORMAT(jbt.tgl_inspeksi,'%Y') = nk_d.periode
+            LEFT JOIN (
+                SELECT pengelola, periode, COUNT(pengelola) as jml, SUM(jumlah) as total
+                FROM view_jembatan_penanganan
+                where nk_jbt = 5
+                GROUP BY pengelola, periode
+            ) nk_e ON jbt.pengelola = nk_e.pengelola and DATE_FORMAT(jbt.tgl_inspeksi,'%Y') = nk_e.periode
+            WHERE DATE_FORMAT(jbt.tgl_inspeksi,'%Y') = $periode
+            GROUP BY jbt.pengelola, DATE_FORMAT(jbt.tgl_inspeksi,'%Y'), nk_a.jml, nk_a.total, nk_b.jml, nk_b.total, nk_c.jml, nk_c.total, nk_d.jml, nk_d.total, nk_e.jml, nk_e.total
+        ";
+        $list = $this->db->query($sql);
         if($list->num_rows() > 0){
             $arraylist = $list->result_array();
 			return json_encode($arraylist);
