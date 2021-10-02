@@ -180,7 +180,7 @@
             contentTable += "<td>"+ data[i].nk_das +"</td>";
             contentTable += "<td>"+ data[i].lantai +"</td>";
             contentTable += "<td>"+ data[i].nk_lnt +"</td>";
-            contentTable += "<td> NK"+ data[i].nk_jbt +"</td>";
+            contentTable += "<td>"+ data[i].nk_jbt +"</td>";
             no++;
             contentTable += "</tr>";
             $('#bodyLapDD2Jembatan').append(contentTable);
@@ -201,7 +201,7 @@
             contentTable += "<td>"+ data[i].nama +"</td>";
             contentTable += "<td>"+ data[i].ruas_jalan +"</td>";
             contentTable += "<td>"+ data[i].lokasi +"</td>";
-            contentTable += "<td> NK"+ data[i].nk_jbt +"</td>";
+            contentTable += "<td>"+ data[i].nk_jbt +"</td>";
             contentTable += "<td align=\"left\">"+ data[i].name +"</td>";
             contentTable += "<td align=\"right\" style=\"padding-right:5px\">"+ parseFloat(data[i].jumlah).toMoney().replace("Rp. ", ""); +"</td>";
             no++;

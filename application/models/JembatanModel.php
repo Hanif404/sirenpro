@@ -12,6 +12,7 @@ class JembatanModel extends CI_Model {
 	var $pengelolaJembatan = "view_jembatan_pengelola";
 	var $penangananJembatan = "view_jembatan_penanganan";
 	var $periodeJembatanYear = "view_jembatan_periode_2";
+	var $rekapJembatanYear = "view_jembatan_rekap";
     var $bulan = array (1 => 'Januari',
         'Februari',
         'Maret',
@@ -337,6 +338,19 @@ class JembatanModel extends CI_Model {
         $this->db->join($this->kategori.' kg', 'jbt.nk_jbt = kg.nilai_kondisi');
         $this->db->where("DATE_FORMAT(jbt.tgl_inspeksi,'%Y')", $periode);
         $this->db->where('pengelola', urldecode($pengelola));
+        $list = $this->db->get();
+        if($list->num_rows() > 0){
+            $arraylist = $list->result_array();
+			return json_encode($arraylist);
+		} else {
+			return json_encode([]);
+		}
+    }
+
+    public function findManyRekapJbt($periode){
+        $this->db->select("*");
+        $this->db->from($this->rekapJembatanYear);
+        $this->db->where("periode", $periode);
         $list = $this->db->get();
         if($list->num_rows() > 0){
             $arraylist = $list->result_array();

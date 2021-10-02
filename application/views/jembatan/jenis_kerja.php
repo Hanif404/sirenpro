@@ -61,7 +61,7 @@ function loadJenisKerjaJembatanForm(){
 
     function resetForm(){
       $('.form-jenisKerja-jembatan')[0].reset();
-      $('.kategori').val(null).trigger('change');
+      $('.kategori-jembatan').val(null).trigger('change');
     }
 
     $('#btnSubmitJenisKerjaJembatan').on('click', function(e){
@@ -118,7 +118,7 @@ function loadJenisKerjaJembatanForm(){
           $('input[name=name]').val(dataJson.data[0].name);
 
           var newOption = new Option(dataJson.data[0].penanganan_text, dataJson.data[0].penanganan_id, true, true);
-          $('.kategori').append(newOption).trigger('change');
+          $('.kategori-jembatan').append(newOption).trigger('change');
         }
       }, 'json');
   	});

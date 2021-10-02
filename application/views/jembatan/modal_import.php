@@ -229,7 +229,7 @@ function loadImportJembatanForm(){
         'nk_bb' : data[16],
         'nk_lnt' : data[17],
         'nk_das' : data[18],
-        'nk_jbt' : data[19] == 0 ? 1 : data[19],
+        'nk_jbt' : data[19],
         'tgl_inspeksi' : date1
       };
       return main;

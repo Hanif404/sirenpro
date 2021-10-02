@@ -200,8 +200,10 @@
 				if(value['nilai_kondisi'] === "1"){
 					content += '<hr style="margin-top:3px;margin-bottom:3px"/>';
 				}
-				var title = value['nilai_kondisi'] == 1 ? 'NK0-NK1' : 'NK'+value['nilai_kondisi'];
-				content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + title + '</li>';
+				if(value['nilai_kondisi'] > 0){
+					var title = value['nilai_kondisi'] == 1 ? 'NK0-NK1' : 'NK'+value['nilai_kondisi'];
+					content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + title + '</li>';
+				}
 			}else{
 				content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + value['name'] + '</li>';
 			}

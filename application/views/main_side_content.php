@@ -52,12 +52,6 @@
     <h6>Tabel Rekap Kemantapan Jembatan</h6>
     <select class="fieldJbtYearPeriode select-2" id="periodeRekapJembatan" style="width:100%"></select>
     <div class="div-block"></div>
-    <select class="daerah select-2" id="cbDaerahJembatan" style="width:100%">
-      <option value="">Pilih Semua</option>
-      <option value="garut">Garut</option>
-      <option value="sumedang">Sumedang</option>
-    </select>
-    <div class="div-block"></div>
     <button id="btnRekapJembatan" class="btn btn-block btn-success">Rekap Data</button>
   </div>
 </div>

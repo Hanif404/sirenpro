@@ -68,26 +68,7 @@
               <th class="tbl-th-jbt">11</th>
               <th class="tbl-th-jbt">12</th>
             </tr>
-            <tr>
-              <th class="tbl-th-jbt">&nbsp;</th>
-              <th class="tbl-th-jbt text-left pl-1">Jumlah</th>
-              <th class="tbl-th-jbt">&nbsp;</th>
-              <th class="tbl-th-jbt text-right pr-1">4</th>
-              <th class="tbl-th-jbt">&nbsp;</th>
-              <th class="tbl-th-jbt text-right pr-1">6</th>
-              <th class="tbl-th-jbt">&nbsp;</th>
-              <th class="tbl-th-jbt text-right pr-1">8</th>
-              <th class="tbl-th-jbt">&nbsp;</th>
-              <th class="tbl-th-jbt text-right pr-1">10</th>
-              <th class="tbl-th-jbt">&nbsp;</th>
-              <th class="tbl-th-jbt text-right pr-1">12</th>
-            </tr>
-            <tr>
-              <th class="tbl-th-jbt">&nbsp;</th>
-              <th class="tbl-th-jbt text-left pl-1" colspan="10">Total</th>
-              <th class="tbl-th-jbt text-right pr-1">-</th>
-            </tr>
-            <tbody id="bodyRekapJbt">
+            <tbody id="bodyLapRekapJembatan">
             </tbody>
           </table>
         </div>
@@ -107,6 +88,77 @@
             $('#LapRekapJbtView').show();
 
             $('.viewTitlePeriodeJbt').text(filterPeriode);
+
+            $('#bodyLapRekapJembatan').empty();
+            $.get('<?= base_url("jembatan/getRekapJbt/");?>' + filterPeriode,function(data) {
+              var no = 1;
+              var total_a = 0;
+              var total_b = 0;
+              var total_c = 0;
+              var total_d = 0;
+              var total_e = 0;
+              if(data.length > 0){
+                for (var i = 0; i < data.length; i++) {
+                  var a = data[i].total_a ? data[i].total_a : 0;
+                  var b = data[i].total_b ? data[i].total_b : 0;
+                  var c = data[i].total_c ? data[i].total_c : 0;
+                  var d = data[i].total_d ? data[i].total_d : 0;
+                  var e = data[i].total_e ? data[i].total_e : 0;
+
+                  var contentTable = "<tr class=\"table-body\">";
+                  contentTable += "<td class=\"tbl-th-jbt\">"+ no +"</td>";
+                  contentTable += "<td class=\"tbl-th-jbt\">"+ data[i].pengelola +"</td>";
+
+                  contentTable += "<td class=\"tbl-th-jbt\">"+ (data[i].jml_a ? data[i].jml_a : 0); +"</td>";
+                  contentTable += "<td class=\"tbl-th-jbt text-right\">"+ parseFloat(a).toMoney().replace("Rp. ", ""); +"</td>";
+
+                  contentTable += "<td class=\"tbl-th-jbt\">"+ (data[i].jml_b ? data[i].jml_b : 0);  +"</td>";
+                  contentTable += "<td class=\"tbl-th-jbt text-right\">"+ parseFloat(b).toMoney().replace("Rp. ", ""); +"</td>";
+
+                  contentTable += "<td class=\"tbl-th-jbt\">"+ (data[i].jml_c ? data[i].jml_c : 0); +"</td>";
+                  contentTable += "<td class=\"tbl-th-jbt text-right\">"+ parseFloat(c).toMoney().replace("Rp. ", ""); +"</td>";
+
+                  contentTable += "<td class=\"tbl-th-jbt\">"+ (data[i].jml_d ? data[i].jml_d : 0); +"</td>";
+                  contentTable += "<td class=\"tbl-th-jbt text-right\">"+ parseFloat(d).toMoney().replace("Rp. ", ""); +"</td>";
+
+                  contentTable += "<td class=\"tbl-th-jbt\">"+ (data[i].jml_e ? data[i].jml_e : 0); +"</td>";
+                  contentTable += "<td class=\"tbl-th-jbt text-right\">"+ parseFloat(e).toMoney().replace("Rp. ", ""); +"</td>";
+
+                  total_a = parseInt(total_a) + parseInt(a); 
+                  total_b = parseInt(total_b) + parseInt(b); 
+                  total_c = parseInt(total_c) + parseInt(c); 
+                  total_d = parseInt(total_d) + parseInt(d); 
+                  total_e = parseInt(total_e) + parseInt(e); 
+                  no++;
+                  contentTable += "</tr>";
+                  $('#bodyLapRekapJembatan').append(contentTable);
+                }
+              }
+
+              var contentFooter = "<tr class=\"table-body\">";
+              contentFooter += "<th class=\"tbl-th-jbt\">&nbsp;</th>";
+              contentFooter += "<th class=\"tbl-th-jbt text-left\">Jumlah</th>";
+              contentFooter += "<th class=\"tbl-th-jbt\">&nbsp;</th>";
+              contentFooter += "<th class=\"tbl-th-jbt text-right\">"+total_a.toMoney().replace("Rp. ", "");+"</th>";
+              contentFooter += "<th class=\"tbl-th-jbt\">&nbsp;</th>";
+              contentFooter += "<th class=\"tbl-th-jbt text-right\">"+total_b.toMoney().replace("Rp. ", "");+"</th>";
+              contentFooter += "<th class=\"tbl-th-jbt\">&nbsp;</th>";
+              contentFooter += "<th class=\"tbl-th-jbt text-right\">"+total_c.toMoney().replace("Rp. ", "");+"</th>";
+              contentFooter += "<th class=\"tbl-th-jbt\">&nbsp;</th>";
+              contentFooter += "<th class=\"tbl-th-jbt text-right\">"+total_d.toMoney().replace("Rp. ", "");+"</th>";
+              contentFooter += "<th class=\"tbl-th-jbt\">&nbsp;</th>";
+              contentFooter += "<th class=\"tbl-th-jbt text-right\">"+total_e.toMoney().replace("Rp. ", "");+"</th>";
+              contentFooter += "</tr>";
+
+              var totalAll = parseInt(total_a) + parseInt(total_b) + parseInt(total_c) + parseInt(total_d) + parseInt(total_e);
+              contentFooter += "<tr>";
+              contentFooter += "<th class=\"tbl-th-jbt\">&nbsp;</th>";
+              contentFooter += "<th class=\"tbl-th-jbt text-left\" colspan=\"10\">Total</th>";
+              contentFooter += "<th class=\"tbl-th-jbt text-right\">"+totalAll.toMoney().replace("Rp. ", "");+"</th>";
+              contentFooter += "</tr>";
+              $('#bodyLapRekapJembatan').append(contentFooter);
+            }, 'json');
+
             $('#lapRekapJbt').modal('show');
         });
 

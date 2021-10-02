@@ -94,6 +94,10 @@ class Jembatan extends MY_Controller {
         echo $this->JembatanModel->findManyNkJbt($periode, $pengelola);
     }
 
+    public function getRekapJbt($periode){
+        echo $this->JembatanModel->findManyRekapJbt($periode);
+    }
+
     public function getDataRencanaJbt($periode, $pengelola){
         echo $this->JembatanModel->findManyRencanaJbt($periode, $pengelola);
     }
