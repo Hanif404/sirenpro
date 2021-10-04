@@ -16,7 +16,7 @@
         </style>
         <div id="LapRekapJbtView" style="display:none">
           <div class="header">
-            <h3>REKAPITULASI BIAYA PROGRAM PENANGANAN</h3>
+            <h3 class="header-1">REKAPITULASI BIAYA PROGRAM PENANGANAN</h3>
             <h4>Data Dasar Prasarana Jembatan Provinsi</h4>
             <h3>UPTD IV - KABUPATEN SUMEDANG & GARUT</h3>
           </div>
@@ -135,7 +135,7 @@
                 }
               }
 
-              var contentFooter = "<tr class=\"table-body\">";
+              var contentFooter = "<tr class=\"table-footer\">";
               contentFooter += "<th class=\"tbl-th-jbt\">&nbsp;</th>";
               contentFooter += "<th class=\"tbl-th-jbt text-left\">Jumlah</th>";
               contentFooter += "<th class=\"tbl-th-jbt\">&nbsp;</th>";
@@ -151,7 +151,7 @@
               contentFooter += "</tr>";
 
               var totalAll = parseInt(total_a) + parseInt(total_b) + parseInt(total_c) + parseInt(total_d) + parseInt(total_e);
-              contentFooter += "<tr>";
+              contentFooter += "<tr class=\"table-footer\">";
               contentFooter += "<th class=\"tbl-th-jbt\">&nbsp;</th>";
               contentFooter += "<th class=\"tbl-th-jbt text-left\" colspan=\"10\">Total</th>";
               contentFooter += "<th class=\"tbl-th-jbt text-right\">"+totalAll.toMoney().replace("Rp. ", "");+"</th>";
@@ -166,7 +166,7 @@
             var htmlTag = $("#LapRekapJbtView").html();
             
             htmlTag = htmlTag.replace(/<style.*?<\/style>/g, '');
-            var styleEmbed = "<style>.tbl-th-jbt{font-size:8pt}.table-style{border-collapse:collapse;width:100%;font-size:8pt;} .table-style th{border:1px solid black;} .table-style td{border:1px solid black;} .table-header{text-transform:uppercase;text-align:center;} .table-body td{padding-left:5px;} .table-footer{text-transform:uppercase;font-weight:bold;} .table-footer td{padding-left:5px;} .column-sm{float:left;width:5%;} .header{text-align:center;margin-bottom:20px;}</style>";
+            var styleEmbed = "<style>.tbl-th-jbt{font-size:8pt} .table-style{border-collapse:collapse;width:100%;font-size:8pt;} .table-style th{border:1px solid black;} .table-style td{border:1px solid black;} .table-header{text-transform:uppercase;text-align:center;} .table-body .text-right {text-align: right!important; padding-right:3px} .table-footer{text-transform:uppercase;font-weight:bold;} .table-footer .text-right {text-align: right!important; padding-right:3px} .column-sm{float:left;width:5%;} .header{text-align:center;padding-bottom:10px} .header h3{margin-bottom: 5px !important;margin-top: 5px !important;} .header h4{margin-bottom: 0 !important;margin-top: 0 !important;}</style>";
             htmlTag = styleEmbed + htmlTag;
             $.post('<?= base_url("ruas/download");?>',{html:htmlTag}, function(data) {
             var win = window.open('<?php echo base_url("assets/file/rekap.pdf")?>', '_blank', 'location=yes', 'clearcache=yes');
