@@ -1358,15 +1358,20 @@
           var content = dataJson.data;
           for (let i = 0; i < content.length; i++) {
             const element = content[i];
+            var nkValue = 1;
+            if(element.nk > 0){
+              nkValue = element.nk;
+            }
+            var iconUrl = "<?php echo base_url()?>assets/image/simbol_jembatan_NK"+ nkValue +".png";
             const color = element.warna.replace("#", '');
             //set marker
             var icon = new L.Icon({
-              iconUrl: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|'+color+'&chf=a,s,ee00FFFF',
+              iconUrl,
               shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-              iconSize: [25, 41],
-              iconAnchor: [12, 41],
+              iconSize: [25, 25],
+              iconAnchor: [12, 25],
               popupAnchor: [1, -34],
-              shadowSize: [41, 41]
+              shadowSize: [41, 25]
             });
             
             L.marker([element.latitude, element.longtitude], {icon, id: element.id}).addTo(layerJembatan).on('click', clickJembatanMarker);

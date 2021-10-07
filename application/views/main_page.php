@@ -202,7 +202,8 @@
 				}
 				if(value['nilai_kondisi'] > 0){
 					var title = value['nilai_kondisi'] == 1 ? 'NK0-NK1' : 'NK'+value['nilai_kondisi'];
-					content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + title + '</li>';
+					var file = "<?php echo base_url()?>assets/image/simbol_jembatan_NK"+ value['nilai_kondisi'] +".png";
+					content += '<li style="padding-top:5px"><img src="'+ file +'"> ' + title + '</li>';
 				}
 			}else{
 				content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + value['name'] + '</li>';

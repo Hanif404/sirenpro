@@ -409,7 +409,7 @@ class JembatanModel extends CI_Model {
     }
 
     public function findManyKab($name){
-        $this->db->select('jbt.*, kg.warna');
+        $this->db->select('jbt.*, kg.warna, kg.nilai_kondisi');
         $this->db->from($this->jembatan.' jbt');
         $this->db->join($this->kategori.' kg', 'jbt.nk_jbt = kg.nilai_kondisi');
         $this->db->join($this->lastJembatan.' lst', 'jbt.nama = lst.nama AND jbt.tgl_inspeksi = lst.MaxDate');
@@ -424,6 +424,7 @@ class JembatanModel extends CI_Model {
     			$row['latitude'] = $ls['latitude'];
     			$row['longtitude'] = $ls['longtitude'];
     			$row['warna'] = $ls['warna'];
+    			$row['nk'] = $ls['nilai_kondisi'];
     			$row['id'] = $ls['id'];
                 $data[] = $row;
 			}
