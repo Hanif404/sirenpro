@@ -85,11 +85,34 @@ class JenisKerjaModel extends CI_Model {
   }
 
 	public function dataCombo($filter, $val){
+		$isNK = false;
+		$row = array();
+		$this->db->select('id');
+		$this->db->from($this->kategori);
+		$this->db->where('jenis', 3);
+		$this->db->where_in('nilai_kondisi', array(0,1));
+		$getKategory = $this->db->get();
+		if($getKategory->num_rows() > 0){
+			$arraylist = $getKategory->result_array();
+			
+			foreach ($arraylist as $ls) {
+				$row[] = $ls['id'];
+			}
+
+			if(in_array($val,$row)){
+				$isNK = true;
+			}
+		}
+
 		$this->db->select('id, name');
 		$this->db->from($this->jenisKerja);
-		$this->db->where('penanganan_id', $val);
 		if(strlen($filter) > 0){
 			$this->db->like('name', $filter);
+		}
+		if($isNK){
+			$this->db->where_in('penanganan_id', $row);
+		}else{
+			$this->db->where('penanganan_id', $val);
 		}
 		$this->db->order_by('id', 'asc');
 		$list = $this->db->get();

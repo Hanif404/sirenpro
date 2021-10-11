@@ -1406,10 +1406,16 @@
         }
       }, 'json');
 
+      for (var j = 1; j <= 8; j++) {
+        var image = document.getElementById('file_view_'+j);
+        image.src = '<?= base_url('assets/image/no_image.png'); ?>';
+      }
+
       $.get('<?= base_url("jembatan/getData/");?>'+id, function(dataJson) {
         if(dataJson.code === 200){
           content = dataJson.data;
           if(content.length > 0){
+            console.log(content);
             for (var j = 0; j < content.length; j++) {
               var image = document.getElementById('file_view_'+content[j].type);
               image.src = '<?= base_url(); ?>'+content[j].name;

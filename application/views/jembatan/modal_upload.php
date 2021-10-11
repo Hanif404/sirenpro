@@ -71,6 +71,10 @@ var loadFile = function(event, field) {
 
 var loadFormJembatanImage = function(){
   $('.form-image-jembatan')[0].reset();
+  for (var j = 1; j <= 8; j++) {
+    var image = document.getElementById('file_'+j);
+    image.src = '<?= base_url('assets/image/no_image.png'); ?>';
+  }
 
   $.get('<?= base_url("jembatan/getData/");?>'+idJembatanImage, function(dataJson) {
     if(dataJson.code === 200){

@@ -20,6 +20,9 @@ class KategoriModel extends CI_Model {
 		if(strlen($filter) > 0){
 			$this->db->like('nama', $filter);
 		}
+		if($type == 3){
+			$this->db->where('nilai_kondisi >', 0);
+		}
 		$this->db->where('jenis', $type);
 		$this->db->order_by('id', 'asc');
 		$list = $this->db->get();
