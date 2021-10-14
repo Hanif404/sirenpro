@@ -1362,13 +1362,13 @@
             if(element.nk > 0){
               nkValue = element.nk;
             }
-            var iconUrl = "<?php echo base_url()?>assets/image/simbol_jembatan_NK"+ nkValue +".png";
+            var iconUrl = "<?php echo base_url()?>assets/image/jembatan_NK"+ nkValue +".png";
             const color = element.warna.replace("#", '');
             //set marker
             var icon = new L.Icon({
               iconUrl,
               shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-              iconSize: [25, 25],
+              iconSize: [35, 25],
               iconAnchor: [12, 25],
               popupAnchor: [1, -34],
               shadowSize: [41, 25]
@@ -1415,7 +1415,6 @@
         if(dataJson.code === 200){
           content = dataJson.data;
           if(content.length > 0){
-            console.log(content);
             for (var j = 0; j < content.length; j++) {
               var image = document.getElementById('file_view_'+content[j].type);
               image.src = '<?= base_url(); ?>'+content[j].name;

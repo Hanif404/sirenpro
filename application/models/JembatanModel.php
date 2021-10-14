@@ -233,7 +233,7 @@ class JembatanModel extends CI_Model {
     }
 
     public function findOneById($id){
-        $this->db->select('*');
+        $this->db->select("*, DATE_FORMAT(tgl_inspeksi,'%Y-%m-%d') as tgl_inspeksi");
         $this->db->from($this->jembatan);
         $this->db->where('id', $id);
         $list = $this->db->get();

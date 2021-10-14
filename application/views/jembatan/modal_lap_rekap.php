@@ -16,9 +16,8 @@
         </style>
         <div id="LapRekapJbtView" style="display:none">
           <div class="header">
-            <h3 class="header-1">REKAPITULASI BIAYA PROGRAM PENANGANAN</h3>
-            <h4>Data Dasar Prasarana Jembatan Provinsi</h4>
-            <h3>UPTD IV - KABUPATEN SUMEDANG & GARUT</h3>
+            <h3>REKAPITULASI PROGRAM PENANGANAN JEMBATAN</h3>
+            <h4>UPTD Pengelolaan Jalan dan Jembatan Wilayah Pelayanan IV</h4>
           </div>
           <table width="100%" border="0">
             <tr>

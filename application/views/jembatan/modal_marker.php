@@ -29,23 +29,23 @@
               <td id="viewTahunJbt">-</td>
             </tr>
             <tr>
-              <td width="20%">Panjang</td>
+              <td width="20%">Panjang (m)</td>
               <td>:</td>
               <td id="viewPnjJbt">-</td>
-              <td>Kota</td>
+              <td>Kabupaten</td>
               <td>:</td>
               <td id="viewKotaJbt">-</td>
             </tr>
             <tr>
-              <td width="20%">Lebar</td>
+              <td width="20%">Lebar (m)</td>
               <td>:</td>
               <td id="viewLbrJbt">-</td>
-              <td>Pengelola</td>
+              <td>SPJJ</td>
               <td>:</td>
               <td id="viewPengelolaJbt">-</td>
             </tr>
             <tr>
-              <td width="20%">BA</td>
+              <td width="20%">Bangunan Atas</td>
               <td>:</td>
               <td id="viewBaJbt">-</td>
               <td>Lokasi</td>
@@ -53,7 +53,7 @@
               <td id="viewlokasiJbt">-</td>
             </tr>
             <tr>
-              <td width="20%">BB</td>
+              <td width="20%">Bangunan Bawah</td>
               <td>:</td>
               <td id="viewBbJbt">-</td>
               <td>Tgl. Inspeksi</td>

@@ -34,7 +34,7 @@
                   <td id="txtTahunJbt">-</td>
                 </tr>
                 <tr>
-                  <td>Kota</td>
+                  <td>Kabupaten</td>
                   <td>:</td>
                   <td id="txtKotaJbt">-</td>
                   <td>Lokasi</td>
@@ -42,7 +42,7 @@
                   <td id="txtlokasiJbt">-</td>
                 </tr>
                 <tr>
-                  <td>Pengelola</td>
+                  <td>SPJJ</td>
                   <td>:</td>
                   <td id="txtPengelolaJbt">-</td>
                   <td>Tgl. Inspeksi</td>

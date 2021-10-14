@@ -201,9 +201,24 @@
 					content += '<hr style="margin-top:3px;margin-bottom:3px"/>';
 				}
 				if(value['nilai_kondisi'] > 0){
-					var title = value['nilai_kondisi'] == 1 ? 'NK0-NK1' : 'NK'+value['nilai_kondisi'];
-					var file = "<?php echo base_url()?>assets/image/simbol_jembatan_NK"+ value['nilai_kondisi'] +".png";
-					content += '<li style="padding-top:5px"><img src="'+ file +'"> ' + title + '</li>';
+					var title;
+					var file = "<?php echo base_url()?>assets/image/jembatan_NK"+ value['nilai_kondisi'] +".png";
+					if(value['nilai_kondisi'] == 1){
+						title = '<table><tr><td rowspan="2"><img src="'+ file +'"></td><td>NK0 = Jembatan baru/tanpa kerusakan (Pemeliharaan Rutin)</td></tr><tr><td>NK1 = Kerusakan kecil (Pemeliharaan Rutin)</td></tr></table>';
+						content += '<li style="padding-top:5px;"> ' + title + '</li>';
+					}else if(value['nilai_kondisi'] == 2){
+						title = '<table><tr><td><img src="'+ file +'"></td><td>NK2 = Kerusakan yang memerlukan pemantauan/pemeliharaan(Pemeliharaan Berkala)</td></tr></table>';
+						content += '<li style="padding-top:5px;">' + title + '</li>';
+					}else if(value['nilai_kondisi'] == 3){
+						title = '<table><tr><td><img src="'+ file +'"></td><td>NK3 = Kerusakan perlu tindakan cepat (Rehabilitasi)</td></tr></table>';
+						content += '<li style="padding-top:5px;">' + title + '</li>';
+					}else if(value['nilai_kondisi'] == 4){
+						title = '<table><tr><td><img src="'+ file +'"></td><td>NK4 = Kondisi kritis (Perkuatan/Penggantian)</td></tr></table>';
+						content += '<li style="padding-top:5px;">' + title + '</li>';
+					}else if(value['nilai_kondisi'] == 5){
+						title = '<table><tr><td><img src="'+ file +'"></td><td>NK5 = Jembatan tidak berfungsi (Penggantian/Pembangunan)</td></tr></table>';
+						content += '<li style="padding-top:5px;">' + title + '</li>';
+					}
 				}
 			}else{
 				content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + value['name'] + '</li>';

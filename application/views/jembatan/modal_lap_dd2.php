@@ -35,8 +35,8 @@
 
         <div id="LapDD2JembatanView" style="display:none; padding-top:50px">
           <div class="header">
-            <h3>DATA KONDISI JEMBATAN (DD2)</h3>
-            <h4>Data Dasar Prasarana Jembatan Provinsi</h4>
+            <h3>DATA KONDISI JEMBATAN</h3>
+            <h4>UPTD Pengelolaan Jalan dan Jembatan Wilayah Pelayanan IV</h4>
           </div>
           <table width="100%" border="0">
             <tr>
@@ -92,9 +92,8 @@
 
         <div id="LapRencanaJembatanView" style="display:none; padding-top:50px">
           <div class="header">
-            <h3>RENCANA ANGGARAN BIAYA PROGRAM PENANGANAN</h3>
-            <h4>Data Dasar Prasarana Jembatan Provinsi</h4>
-            <h3>UPTD IV - KABUPATEN SUMEDANG & GARUT</h3>
+            <h3>RENCANA ANGGARAN BIAYA PROGRAM PENANGANAN JEMBATAN</h3>
+            <h4>UPTD Pengelolaan Jalan dan Jembatan Wilayah Pelayanan IV</h4>
           </div>
           <table width="100%" border="0">
             <tr>
