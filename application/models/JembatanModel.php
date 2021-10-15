@@ -245,6 +245,19 @@ class JembatanModel extends CI_Model {
         }
     }
 
+    public function dataComboPengelola(){
+		$this->db->select('pengelola');
+		$this->db->from($this->jembatan);
+        $this->db->group_by('pengelola');
+		$list = $this->db->get();
+		if($list->num_rows() > 0){
+			$arraylist = $list->result_array();
+			return json_encode($arraylist);
+		} else {
+			return json_encode('');
+		}
+	}
+
     public function findMany($id){
         $this->db->select('*');
         $this->db->from($this->jembatanImage);
@@ -408,12 +421,16 @@ class JembatanModel extends CI_Model {
 		}
     }
 
-    public function findManyKab($name){
+    public function findManyKab($name, $type){
         $this->db->select('jbt.*, kg.warna, kg.nilai_kondisi');
         $this->db->from($this->jembatan.' jbt');
         $this->db->join($this->kategori.' kg', 'jbt.nk_jbt = kg.nilai_kondisi');
         $this->db->join($this->lastJembatan.' lst', 'jbt.nama = lst.nama AND jbt.tgl_inspeksi = lst.MaxDate');
-        $this->db->like('jbt.nama_kota', $name);
+        if($type == 1){
+            $this->db->like('jbt.nama_kota', $name);
+        }else{
+            $this->db->where('jbt.pengelola', urldecode($name));
+        }
         $list = $this->db->get();
         if($list->num_rows() > 0){
             $arraylist = $list->result_array();

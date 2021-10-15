@@ -33,6 +33,9 @@
       <option value="sumedang">Sumedang</option>
     </select>
     <div class="div-block"></div>
+    <select class="select-2" id="cbViewPengelolaJembatan" style="width:100%">
+    </select>
+    <div class="div-block"></div>
     <hr/>
     <h6>Tabel Rekap Kemantapan Jalan</h6>
     <select class="periode select-2" id="periodeRekap" style="width:100%"></select>
@@ -1346,39 +1349,80 @@
       });
     }
 
+    $('#cbViewPengelolaJembatan').select2({
+      placeholder: "Pilih Pengelola",
+      allowClear: false,
+      minimumResultsForSearch: Infinity,
+      ajax: {
+          url: "<?= base_url('jembatan/getComboPengelola') ?>",
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            return {
+              q: params.term, // search term
+              page: params.page
+            };
+          },
+          processResults: function (data, page) {
+            return {
+              results: $.map(data, function(obj) {
+                  return { id: obj.pengelola, text: obj.pengelola };
+              })
+            };
+          },
+          cache: true
+        }
+    }).on('select2:select', function (e) {
+      var id = e.params.data.id;
+      layerJembatan.clearLayers();
+      $('#cbViewJembatan').val(null).trigger('change');
+
+      $.get('<?= base_url("jembatan/getDataByKab/");?>' + encodeURI(id) +'/2', function(dataJson) {
+        if(dataJson.code === 200){
+          var content = dataJson.data;
+          generateJembatanMarker(content);
+        }
+      }, 'json');
+    });
+    
     $('#cbViewJembatan').select2({
       placeholder: "Pilih Kota",
       minimumResultsForSearch: Infinity
     }).on('select2:select', function(e) {
       var id = e.params.data.id;
       layerJembatan.clearLayers();
+      $('#cbViewPengelolaJembatan').val(null).trigger('change');
 
       $.get('<?= base_url("jembatan/getDataByKab/");?>' + id, function(dataJson) {
         if(dataJson.code === 200){
           var content = dataJson.data;
-          for (let i = 0; i < content.length; i++) {
-            const element = content[i];
-            var nkValue = 1;
-            if(element.nk > 0){
-              nkValue = element.nk;
-            }
-            var iconUrl = "<?php echo base_url()?>assets/image/jembatan_NK"+ nkValue +".png";
-            const color = element.warna.replace("#", '');
-            //set marker
-            var icon = new L.Icon({
-              iconUrl,
-              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-              iconSize: [35, 25],
-              iconAnchor: [12, 25],
-              popupAnchor: [1, -34],
-              shadowSize: [41, 25]
-            });
-            
-            L.marker([element.latitude, element.longtitude], {icon, id: element.id}).addTo(layerJembatan).on('click', clickJembatanMarker);
-          }
+          generateJembatanMarker(content);
         }
       }, 'json');
     });
+
+    function generateJembatanMarker(content){
+      for (let i = 0; i < content.length; i++) {
+        const element = content[i];
+        var nkValue = 1;
+        if(element.nk > 0){
+          nkValue = element.nk;
+        }
+        var iconUrl = "<?php echo base_url()?>assets/image/jembatan_NK"+ nkValue +".png";
+        const color = element.warna.replace("#", '');
+        //set marker
+        var icon = new L.Icon({
+          iconUrl,
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+          iconSize: [35, 25],
+          iconAnchor: [12, 25],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 25]
+        });
+        
+        L.marker([element.latitude, element.longtitude], {icon, id: element.id}).addTo(layerJembatan).on('click', clickJembatanMarker);
+      }
+    }
 
     function clickJembatanMarker() {
       var id = this.options.id;

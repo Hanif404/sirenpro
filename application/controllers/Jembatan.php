@@ -67,9 +67,13 @@ class Jembatan extends MY_Controller {
         $this->wrapper(true, $return, 'success get data', 200);
     }
     
-    public function getDataByKab($name){
-        $return = $this->JembatanModel->findManyKab($name);
+    public function getDataByKab($name, $type = 1){
+        $return = $this->JembatanModel->findManyKab($name, $type);
         $this->wrapper(true, $return, 'success get data', 200);
+    }
+
+    public function getComboPengelola(){
+        echo $this->JembatanModel->dataComboPengelola();
     }
 
     public function getDataPeriode(){
