@@ -20,6 +20,12 @@
     </div>
   </div>
   <div class="sidebar-wrapper" style="padding-bottom: 10px;">
+    <div class="div-block"></div>
+      <div class="custom-control custom-switch">
+      <input type="checkbox" class="custom-control-input" id="BecanaSwitch" onclick="onLoadBencana()">
+      <label class="custom-control-label" for="BecanaSwitch">Rawan Bencana</label>
+    </div>
+    <div class="div-block"></div>
     <h5>Skema Kemantapan Jalan</h5>
     <select class="periode select-2" name="periode" style="width:100%"></select>
     <div class="div-block"></div>
@@ -340,7 +346,11 @@
     function resetForm(){
       $('.form-pengguna').validate().settings.ignore = "input[type=hidden]";
       $('.form-pengguna')[0].reset();
+      $('#fieldUserId').val("");
+      $('#fieldUserProfileOld').val("");
+      $('#fieldUserPassOld').val("");
       $('.is-active').val("1").trigger('change');
+      $('.is-admin').val("2").trigger('change');
     }
 
     $('#btnSubmitPengguna').on('click', function(e){
@@ -408,6 +418,9 @@
         },
         password : {
           required: true
+        },
+        is_admin : {
+          required: true
         }
       }
     });
@@ -424,10 +437,10 @@
           $('input[name=nip]').val(dataJson.data[0].nip);
           $('input[name=password_old]').val(dataJson.data[0].password);
           $('input[name=file_profile_old]').val(dataJson.data[0].photo);
+          $('.is-admin').val(dataJson.data[0].is_admin).trigger('change');
+          $('.is-active').val(dataJson.data[0].is_active).trigger('change');
 
           $('.form-pengguna').validate().settings.ignore = "input[name=password]";
-          $('.is-active').val(dataJson.data[0].is_active); // Select the option with a value of '1'
-          $('.is-active').trigger('change'); // Notify any JS components that the value changed
         }
       }, 'json');
     });
@@ -1303,6 +1316,12 @@
 
     $('.is-active').select2({
       placeholder: "Pilih Active",
+      allowClear: false,
+      minimumResultsForSearch: Infinity
+    });
+
+    $('.is-admin').select2({
+      placeholder: "Pilih Role",
       allowClear: false,
       minimumResultsForSearch: Infinity
     });

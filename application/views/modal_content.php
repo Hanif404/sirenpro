@@ -322,9 +322,9 @@
       </div>
       <div class="modal-body">
         <form class="form-pengguna" method="post" enctype="multipart/form-data" action="<?= base_url('pengguna/setItem/profile');?>">
-          <input type="hidden" name="id" />
-          <input type="hidden" name="file_profile_old" />
-          <input type="hidden" name="password_old" />
+          <input type="hidden" name="id" id="fieldUserId"/>
+          <input type="hidden" name="file_profile_old" id="fieldUserProfileOld"/>
+          <input type="hidden" name="password_old" id="fieldUserPassOld" />
           <div class="container">
             <div class="row">
               <div class="col-lg-6">
@@ -364,7 +364,7 @@
                   <div class="col-lg-6">
                     <div class="form-group">
                       <label for="input3">Role</label>
-                      <select class="is-active" name="is_admin" style="width:100%">
+                      <select class="is-admin" name="is_admin" style="width:100%">
                         <option value="2">Operator</option>
                         <option value="3">Viewer</option>
                       </select>

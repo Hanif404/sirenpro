@@ -103,41 +103,51 @@
 		}).addTo(mymap);
 	});
 
-	$.get('<?= base_url("rawan/getLongsor");?>', function(data) {
-		for (var i = 0; i < data.length; i++) {
-			var latlng = new L.LatLng(data[i].latitude, data[i].longtitude)
-			var marker = L.marker(latlng, {
-			  icon: L.icon({
-			    iconUrl: '<?= base_url("assets/image/rawan_longsor.png")?>',
-			    className: 'blinking'
-			  })
-			}).bindPopup("KM "+data[i].location).addTo(layerRawanLongsor);
-		}
-	}, 'json');
+	function onLoadBencana(){
+		if($('#BecanaSwitch').is(':checked')){
+			$('.displayBencana').show();
+			$.get('<?= base_url("rawan/getLongsor");?>', function(data) {
+				for (var i = 0; i < data.length; i++) {
+					var latlng = new L.LatLng(data[i].latitude, data[i].longtitude)
+					var marker = L.marker(latlng, {
+					icon: L.icon({
+						iconUrl: '<?= base_url("assets/image/rawan_longsor.png")?>',
+						className: 'blinking'
+					})
+					}).bindPopup("KM "+data[i].location).addTo(layerRawanLongsor);
+				}
+			}, 'json');
 
-	$.get('<?= base_url("rawan/getBanjir");?>', function(data) {
-		for (var i = 0; i < data.length; i++) {
-			var latlng = new L.LatLng(data[i].latitude, data[i].longtitude)
-			var marker = L.marker(latlng, {
-				icon: L.icon({
-					iconUrl: '<?= base_url("assets/image/rawan_banjir.png")?>',
-					className: 'blinking'
-				})
-			}).bindPopup("KM "+data[i].location).addTo(layerRawanBanjir);
-		}
-	}, 'json');
+			$.get('<?= base_url("rawan/getBanjir");?>', function(data) {
+				for (var i = 0; i < data.length; i++) {
+					var latlng = new L.LatLng(data[i].latitude, data[i].longtitude)
+					var marker = L.marker(latlng, {
+						icon: L.icon({
+							iconUrl: '<?= base_url("assets/image/rawan_banjir.png")?>',
+							className: 'blinking'
+						})
+					}).bindPopup("KM "+data[i].location).addTo(layerRawanBanjir);
+				}
+			}, 'json');
 
-	$.get('<?= base_url("rawan/getKecelakaan");?>', function(data) {
-		for (var i = 0; i < data.length; i++) {
-			var latlng = new L.LatLng(data[i].latitude, data[i].longtitude)
-			var marker = L.marker(latlng, {
-				icon: L.icon({
-					iconUrl: '<?= base_url("assets/image/rawan_kecelakaan.png")?>',
-					className: 'blinking'
-				})
-			}).bindPopup("KM "+data[i].location).addTo(layerRawanKecalakaan);
+			$.get('<?= base_url("rawan/getKecelakaan");?>', function(data) {
+				for (var i = 0; i < data.length; i++) {
+					var latlng = new L.LatLng(data[i].latitude, data[i].longtitude)
+					var marker = L.marker(latlng, {
+						icon: L.icon({
+							iconUrl: '<?= base_url("assets/image/rawan_kecelakaan.png")?>',
+							className: 'blinking'
+						})
+					}).bindPopup("KM "+data[i].location).addTo(layerRawanKecalakaan);
+				}
+			}, 'json');
+		}else{
+			$('.displayBencana').hide();
+			layerRawanLongsor.clearLayers();
+			layerRawanBanjir.clearLayers();
+			layerRawanKecalakaan.clearLayers();
 		}
-	}, 'json');
+	}
 
 	function showLine(periode, id) {
 		resetView();
@@ -224,10 +234,10 @@
 				content += '<li><div class="legenda-line" style="background-color:' + value['warna'] + '"></div> ' + value['name'] + '</li>';
 			}
 		});
-		content += '<hr style="margin-top:3px;margin-bottom:3px"/>';
-		content += '<li><img src="<?php echo base_url('assets/image/rawan_longsor.png')?>"> Lokasi Rawan Longsor</li>';
-		content += '<li style="padding-top:5px"><img src="<?php echo base_url('assets/image/rawan_banjir.png')?>"> Lokasi Rawan Banjir</li>';
-		content += '<li style="padding-top:5px"><img src="<?php echo base_url('assets/image/rawan_kecelakaan.png')?>"> Lokasi Rawan Kecelakaan</li>';
+		content += '<hr class="displayBencana" style="margin-top:3px;margin-bottom:3px;display:none"/>';
+		content += '<li class="displayBencana" style="display:none"><img src="<?php echo base_url('assets/image/rawan_longsor.png')?>"> Lokasi Rawan Longsor</li>';
+		content += '<li class="displayBencana" style="padding-top:5px;display:none"><img src="<?php echo base_url('assets/image/rawan_banjir.png')?>"> Lokasi Rawan Banjir</li>';
+		content += '<li class="displayBencana" style="padding-top:5px;display:none"><img src="<?php echo base_url('assets/image/rawan_kecelakaan.png')?>"> Lokasi Rawan Kecelakaan</li>';
 		content += '</ul>';
 		$('.sidemenu-legenda').html(content);
 	},'json');
